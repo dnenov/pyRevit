@@ -10,12 +10,77 @@ from pyrevit.compat import get_elementid_from_value_func
 get_elementid_from_value = get_elementid_from_value_func()
 
 logger = script.get_logger()
-doc = revit.doc
+doc = HOST_APP.doc
 project_units = doc.GetUnits()
 
 script.get_output().close_others()
 
 unit_postfix_pattern = re.compile(r"\s*\[.*\]$")
+
+
+def load_metadata(workbook):
+    """
+    Load unit metadata from the _metadata sheet if it exists.
+    Returns a dict {param_name: (forge_type_id, unit_type_id, symbol_type_id, is_schedule_override)}
+    """
+    metadata = {}
+    try:
+        metadata_sheet = workbook.sheet_by_name("_metadata")
+        # Skip header row
+        for row_idx in range(1, metadata_sheet.nrows):
+            row = metadata_sheet.row_values(row_idx)
+            if len(row) < 5:
+                continue
+
+            param_name = row[0]
+            forge_type_id_str = row[1]
+            unit_type_id_str = row[2]
+            symbol_type_id_str = row[3]
+            is_override = row[4]
+
+            # Reconstruct ForgeTypeId objects from strings
+            forge_type_id = None
+            unit_type_id = None
+            symbol_type_id = None
+
+            if forge_type_id_str:
+                try:
+                    forge_type_id = DB.ForgeTypeId(str(forge_type_id_str))
+                except Exception:
+                    logger.warning(
+                        "Could not reconstruct ForgeTypeId for '{}': {}".format(
+                            param_name, forge_type_id_str
+                        )
+                    )
+
+            if unit_type_id_str:
+                try:
+                    unit_type_id = DB.ForgeTypeId(str(unit_type_id_str))
+                except Exception:
+                    logger.warning(
+                        "Could not reconstruct UnitTypeId for '{}': {}".format(
+                            param_name, unit_type_id_str
+                        )
+                    )
+
+            if symbol_type_id_str:
+                try:
+                    symbol_type_id = DB.ForgeTypeId(str(symbol_type_id_str))
+                except Exception:
+                    pass
+
+            metadata[param_name] = (
+                forge_type_id,
+                unit_type_id,
+                symbol_type_id,
+                str(is_override).lower() in ("yes", "true", "1"),
+            )
+
+        logger.info("Loaded metadata for {} parameters".format(len(metadata)))
+    except Exception as e:
+        logger.info("No metadata sheet found or error reading it: {}".format(e))
+
+    return metadata
 
 
 def main():
@@ -37,6 +102,9 @@ def main():
 
     param_names = headers[1:]
 
+    # Load metadata if available
+    metadata = load_metadata(workbook)
+
     with revit.Transaction("Import Parameters from Excel"):
         for row_idx in range(1, sheet.nrows):
             row = sheet.row_values(row_idx)
@@ -47,12 +115,12 @@ def main():
                     logger.warning("Element with ID {} not found.".format(el_id_val))
                     continue
 
-                for col_idx, param_name in enumerate(param_names):
+                for col_idx, param_name_raw in enumerate(param_names):
                     new_val = row[col_idx + 1]
                     if new_val in (None, ""):
                         continue
 
-                    param_name = unit_postfix_pattern.sub("", param_name).strip()
+                    param_name = unit_postfix_pattern.sub("", param_name_raw).strip()
                     param = el.LookupParameter(param_name)
                     if not param:
                         logger.info(
@@ -81,7 +149,9 @@ def main():
                                     try:
                                         # Check if it's a string-like type
                                         str_val = str(new_val).strip().lower()
-                                        int_val = 1 if str_val in ("yes", "1", "true") else 0
+                                        int_val = (
+                                            1 if str_val in ("yes", "1", "true") else 0
+                                        )
                                     except (AttributeError, TypeError):
                                         # Not a string, treat as numeric
                                         int_val = int(float(new_val))
@@ -95,12 +165,52 @@ def main():
                                     )
                                 )
                         elif storage_type == DB.StorageType.Double:
-                            forge_type_id = get_parameter_data_type(param.Definition)
-                            if forge_type_id and DB.UnitUtils.IsMeasurableSpec(forge_type_id):
+                            # Check if we have metadata for this parameter
+                            unit_type_id = None
+                            if param_name in metadata:
+                                forge_type_id, meta_unit_id, _, is_override = metadata[
+                                    param_name
+                                ]
+                                if meta_unit_id:
+                                    unit_type_id = meta_unit_id
+                                    logger.debug(
+                                        "Using metadata unit for '{}': {} (override: {})".format(
+                                            param_name, unit_type_id.TypeId, is_override
+                                        )
+                                    )
+
+                            # Fallback to project units if no metadata
+                            if not unit_type_id:
+                                forge_type_id = get_parameter_data_type(
+                                    param.Definition
+                                )
+                                if forge_type_id and DB.UnitUtils.IsMeasurableSpec(
+                                    forge_type_id
+                                ):
+                                    try:
+                                        unit_type_id = project_units.GetFormatOptions(
+                                            forge_type_id
+                                        ).GetUnitTypeId()
+                                        logger.debug(
+                                            "Using project unit for '{}': {}".format(
+                                                param_name,
+                                                (
+                                                    unit_type_id.TypeId
+                                                    if unit_type_id
+                                                    else "none"
+                                                ),
+                                            )
+                                        )
+                                    except Exception as e:
+                                        logger.warning(
+                                            "Could not get project unit for '{}': {}".format(
+                                                param_name, e
+                                            )
+                                        )
+
+                            # Convert and set value
+                            if unit_type_id:
                                 try:
-                                    unit_type_id = project_units.GetFormatOptions(
-                                        forge_type_id
-                                    ).GetUnitTypeId()
                                     new_val = DB.UnitUtils.ConvertToInternalUnits(
                                         float(new_val), unit_type_id
                                     )
@@ -112,6 +222,7 @@ def main():
                                         )
                                     )
                             else:
+                                # No unit conversion needed
                                 param.Set(float(new_val))
                         elif storage_type == DB.StorageType.ElementId:
                             logger.info(

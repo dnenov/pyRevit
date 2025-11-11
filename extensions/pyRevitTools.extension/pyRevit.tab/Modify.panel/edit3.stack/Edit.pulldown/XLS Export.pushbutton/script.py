@@ -3,7 +3,7 @@ import os
 import re
 from collections import namedtuple
 
-from pyrevit import script, forms, coreutils, revit, traceback, DB, HOST_APP
+from pyrevit import script, forms, coreutils, revit, DB, HOST_APP
 from pyrevit.revit import get_parameter_data_type, is_yesno_parameter
 from pyrevit.compat import get_elementid_value_func
 
@@ -16,14 +16,24 @@ ele_itemplate = forms.utils.load_ctrl_template(ele_item_xml)
 
 script.get_output().close_others()
 logger = script.get_logger()
-doc = revit.doc
+doc = HOST_APP.doc
 active_view = revit.active_view
 project_units = doc.GetUnits()
 
 unit_postfix_pattern = re.compile(r"\s*\[.*\]$")
 
 ParamDef = namedtuple(
-    "ParamDef", ["name", "istype", "definition", "isreadonly", "isunit", "storagetype"]
+    "ParamDef",
+    [
+        "name",
+        "istype",
+        "definition",
+        "isreadonly",
+        "isunit",
+        "storagetype",
+        "forge_type_id",
+        "unit_type_id",
+    ],
 )
 ElementDef = namedtuple(
     "ElementDef",
@@ -38,6 +48,53 @@ ElementDef = namedtuple(
         "count",  # Number of elements in this group
     ],
 )
+
+
+def get_unit_label_and_value(param_val, forge_type_id, field, project_units):
+    """
+    Returns (converted_value, label_string, unit_type_id, symbol_type_id) for a parameter value.
+    Respects schedule field overrides if provided, otherwise uses project units.
+    """
+    if not forge_type_id or not DB.UnitUtils.IsMeasurableSpec(forge_type_id):
+        return param_val.AsValueString(), "", None, None
+
+    # Prefer field overrides, otherwise project units
+    fmt_opts = None
+    if field:
+        try:
+            field_fmt = field.GetFormatOptions()
+            # Only use field format if it's not using defaults
+            if field_fmt and not field_fmt.UseDefault:
+                fmt_opts = field_fmt
+        except Exception:
+            pass
+
+    # Fall back to project units if no valid field override
+    if not fmt_opts:
+        fmt_opts = project_units.GetFormatOptions(forge_type_id)
+
+    # Check UseDefault before accessing unit type
+    if fmt_opts.UseDefault:
+        # Should not happen with project units, but handle it safely
+        fmt_opts = project_units.GetFormatOptions(forge_type_id)
+
+    unit_id = fmt_opts.GetUnitTypeId()
+    symbol_id = fmt_opts.GetSymbolTypeId()
+
+    # Convert
+    val = DB.UnitUtils.ConvertFromInternalUnits(param_val.AsDouble(), unit_id)
+
+    # Label
+    label = ""
+    try:
+        label = DB.LabelUtils.GetLabelForSymbol(symbol_id)
+    except Exception:
+        try:
+            label = DB.LabelUtils.GetLabelForUnit(unit_id)
+        except Exception:
+            label = ""
+
+    return val, "[{}]".format(label) if label else "", unit_id, symbol_id
 
 
 def create_element_definitions(elements):
@@ -158,11 +215,16 @@ def schedule_filter(schedule):
 
 
 def get_schedule_elements_and_params(schedule):
-    """Get elements and parameters from a schedule. Returns a tuple of elements and parameters."""
+    """
+    Get elements and parameters from a schedule.
+    Returns a tuple of (elements, parameters, field_mapping).
+    field_mapping is a dict {param_name: field} for schedule field overrides.
+    """
     schedule_def = schedule.Definition
 
     visible_fields = []
     param_defs_dict = {}
+    field_mapping = {}
     non_storage_type = coreutils.get_enum_none(DB.StorageType)
 
     for field_id in schedule_def.GetFieldOrder():
@@ -204,14 +266,35 @@ def get_schedule_elements_and_params(schedule):
                 def_name = param.Definition.Name
                 if def_name not in param_defs_dict:
                     param_data_type = get_parameter_data_type(param.Definition)
+
+                    # Get unit type ID from field format options if available
+                    unit_type_id = None
+                    if param_data_type and DB.UnitUtils.IsMeasurableSpec(
+                        param_data_type
+                    ):
+                        try:
+                            fmt_opts = field.GetFormatOptions()
+                            if fmt_opts:
+                                unit_type_id = fmt_opts.GetUnitTypeId()
+                        except Exception:
+                            pass
+
                     param_defs_dict[def_name] = ParamDef(
                         name=def_name,
                         istype=False,
                         definition=param.Definition,
                         isreadonly=param.IsReadOnly,
-                        isunit=DB.UnitUtils.IsMeasurableSpec(param_data_type) if param_data_type else False,
+                        isunit=(
+                            DB.UnitUtils.IsMeasurableSpec(param_data_type)
+                            if param_data_type
+                            else False
+                        ),
                         storagetype=param.StorageType,
+                        forge_type_id=param_data_type,
+                        unit_type_id=unit_type_id,
                     )
+                    # Store field mapping for this parameter
+                    field_mapping[def_name] = field
                 break
 
     param_defs = sorted(param_defs_dict.values(), key=lambda pd: pd.name)
@@ -219,7 +302,7 @@ def get_schedule_elements_and_params(schedule):
     if not param_defs:
         raise ValueError("No valid parameters found in schedule")
 
-    return elements, param_defs
+    return elements, param_defs, field_mapping
 
 
 def select_parameters(src_elements):
@@ -233,13 +316,31 @@ def select_parameters(src_elements):
                 def_name = p.Definition.Name
                 if def_name not in param_defs_dict:
                     param_data_type = get_parameter_data_type(p.Definition)
+
+                    # For non-schedule exports, use project units
+                    unit_type_id = None
+                    if param_data_type and DB.UnitUtils.IsMeasurableSpec(
+                        param_data_type
+                    ):
+                        try:
+                            fmt_opts = project_units.GetFormatOptions(param_data_type)
+                            unit_type_id = fmt_opts.GetUnitTypeId()
+                        except Exception:
+                            pass
+
                     param_defs_dict[def_name] = ParamDef(
                         name=def_name,
                         istype=False,
                         definition=p.Definition,
                         isreadonly=p.IsReadOnly,
-                        isunit=DB.UnitUtils.IsMeasurableSpec(param_data_type) if param_data_type else False,
+                        isunit=(
+                            DB.UnitUtils.IsMeasurableSpec(param_data_type)
+                            if param_data_type
+                            else False
+                        ),
                         storagetype=p.StorageType,
+                        forge_type_id=param_data_type,
+                        unit_type_id=unit_type_id,
                     )
 
     param_defs = sorted(param_defs_dict.values(), key=lambda pd: pd.name)
@@ -257,8 +358,11 @@ def select_parameters(src_elements):
     return selected_params
 
 
-def export_xls(src_elements, selected_params):
-    """Export the given elements and parameters to an Excel file."""
+def export_xls(src_elements, selected_params, field_mapping=None):
+    """
+    Export the given elements and parameters to an Excel file.
+    field_mapping is an optional dict {param_name: field} for schedule overrides.
+    """
     default_name = "Export_{}.xlsx".format(
         doc.Title.replace(".rvt", "").replace(" ", "_")
     )
@@ -267,6 +371,8 @@ def export_xls(src_elements, selected_params):
         raise ValueError("No file path set")
     workbook = xlsxwriter.Workbook(file_path)
     worksheet = workbook.add_worksheet("Export")
+    metadata_sheet = workbook.add_worksheet("_metadata")
+    metadata_sheet.hide()
 
     bold = workbook.add_format({"bold": True})
     unlocked = workbook.add_format({"locked": False})
@@ -275,14 +381,26 @@ def export_xls(src_elements, selected_params):
     worksheet.freeze_panes(1, 0)
     worksheet.write(0, 0, "ElementId", bold)
 
+    # Write metadata headers
+    metadata_sheet.write(0, 0, "Parameter Name", bold)
+    metadata_sheet.write(0, 1, "ForgeTypeId", bold)
+    metadata_sheet.write(0, 2, "UnitTypeId", bold)
+    metadata_sheet.write(0, 3, "SymbolTypeId", bold)
+    metadata_sheet.write(0, 4, "IsScheduleOverride", bold)
+
     valid_params = []
     for param in selected_params:
         if unit_postfix_pattern.search(param.name):
             logger.warning(
-                "Dropping {} from export. Parameter name already contains brackets.".format(param.name)
+                "Dropping {} from export. Parameter name already contains brackets.".format(
+                    param.name
+                )
             )
             continue
         valid_params.append(param)
+
+    if field_mapping is None:
+        field_mapping = {}
 
     for col_idx, param in enumerate(valid_params):
         postfix = ""  # Reset postfix for each column
@@ -293,16 +411,60 @@ def export_xls(src_elements, selected_params):
         if param.isreadonly:
             header_format = workbook.add_format({"bold": True, "bg_color": "#FF3131"})
 
-        forge_type_id = get_parameter_data_type(param.definition)
+        forge_type_id = param.forge_type_id
+        unit_type_id = None
+        symbol_type_id = None
+        is_schedule_override = param.name in field_mapping
+
         if forge_type_id and DB.UnitUtils.IsMeasurableSpec(forge_type_id):
-            symbol_type_id = project_units.GetFormatOptions(
-                forge_type_id
-            ).GetSymbolTypeId()
-            if not symbol_type_id.Empty():
-                symbol = DB.LabelUtils.GetLabelForSymbol(symbol_type_id)
-                postfix = " [" + symbol + "]"
+            # Get field for this parameter if available
+            field = field_mapping.get(param.name)
+
+            # Get format options (field override or project units)
+            fmt_opts = None
+            if field:
+                try:
+                    field_fmt = field.GetFormatOptions()
+                    # Only use field format if it's not using defaults
+                    if field_fmt and not field_fmt.UseDefault:
+                        fmt_opts = field_fmt
+                except Exception:
+                    pass
+
+            # Fall back to project units if no valid field override
+            if not fmt_opts:
+                fmt_opts = project_units.GetFormatOptions(forge_type_id)
+
+            # Check UseDefault before accessing unit type
+            if not fmt_opts.UseDefault:
+                unit_type_id = fmt_opts.GetUnitTypeId()
+                symbol_type_id = fmt_opts.GetSymbolTypeId()
+
+                if not symbol_type_id.Empty():
+                    try:
+                        symbol = DB.LabelUtils.GetLabelForSymbol(symbol_type_id)
+                        postfix = " [" + symbol + "]"
+                    except Exception:
+                        try:
+                            symbol = DB.LabelUtils.GetLabelForUnit(unit_type_id)
+                            postfix = " [" + symbol + "]"
+                        except Exception:
+                            pass
 
         worksheet.write(0, col_idx + 1, param.name + postfix, header_format)
+
+        # Write metadata for this parameter
+        metadata_sheet.write(col_idx + 1, 0, param.name)
+        metadata_sheet.write(
+            col_idx + 1, 1, forge_type_id.TypeId if forge_type_id else ""
+        )
+        metadata_sheet.write(
+            col_idx + 1, 2, unit_type_id.TypeId if unit_type_id else ""
+        )
+        metadata_sheet.write(
+            col_idx + 1, 3, symbol_type_id.TypeId if symbol_type_id else ""
+        )
+        metadata_sheet.write(col_idx + 1, 4, "Yes" if is_schedule_override else "No")
 
     max_widths = [len("ElementId")] + [len(p.name) for p in valid_params]
 
@@ -319,13 +481,18 @@ def export_xls(src_elements, selected_params):
                 if param_val.HasValue:
                     try:
                         if param_val.StorageType == DB.StorageType.Double:
-                            forge_type_id = get_parameter_data_type(param.definition)
-                            val = param_val.AsDouble()
-                            if forge_type_id and DB.UnitUtils.IsMeasurableSpec(forge_type_id):
-                                unit_type_id = param_val.GetUnitTypeId()
-                                val = DB.UnitUtils.ConvertFromInternalUnits(
-                                    param_val.AsDouble(), unit_type_id
+                            forge_type_id = param.forge_type_id
+                            field = field_mapping.get(param_name)
+
+                            if forge_type_id and DB.UnitUtils.IsMeasurableSpec(
+                                forge_type_id
+                            ):
+                                # Use helper function to get proper conversion
+                                val, _, _, _ = get_unit_label_and_value(
+                                    param_val, forge_type_id, field, project_units
                                 )
+                            else:
+                                val = param_val.AsDouble()
                         elif param_val.StorageType == DB.StorageType.String:
                             val = param_val.AsString()
                         elif param_val.StorageType == DB.StorageType.Integer:
@@ -387,7 +554,10 @@ def main(advanced=False):
             )
             if not schedule:
                 return
-            src_elements, selected_params = get_schedule_elements_and_params(schedule)
+            src_elements, selected_params, field_mapping = (
+                get_schedule_elements_and_params(schedule)
+            )
+            export_xls(src_elements, selected_params, field_mapping)
 
         else:
             opts = [
@@ -398,9 +568,7 @@ def main(advanced=False):
                 "Current View",
                 "Selection",
             ]
-            selection = forms.SelectFromList.show(
-                opts, title="Select Export Scope"
-            )
+            selection = forms.SelectFromList.show(opts, title="Select Export Scope")
             if not selection:
                 return
             if selection == "Schedule":
@@ -411,35 +579,41 @@ def main(advanced=False):
                 )
                 if not schedule:
                     return
-                src_elements, selected_params = get_schedule_elements_and_params(
-                    schedule
+                src_elements, selected_params, field_mapping = (
+                    get_schedule_elements_and_params(schedule)
                 )
+                export_xls(src_elements, selected_params, field_mapping)
             else:
                 if "Document" in selection:
                     elements = revit.query.get_all_elements(doc)
                     if selection == "Document - types":
                         type_filter = DB.ElementIsElementTypeFilter()
-                        elements = [el for el in elements if type_filter.PassesFilter(el)]
+                        elements = [
+                            el for el in elements if type_filter.PassesFilter(el)
+                        ]
 
                     elif selection == "Document - instances":
                         type_filter = DB.ElementIsElementTypeFilter(True)
-                        elements = [el for el in elements if type_filter.PassesFilter(el)]
+                        elements = [
+                            el for el in elements if type_filter.PassesFilter(el)
+                        ]
                 elif selection == "Current View":
                     elements = revit.query.get_all_elements_in_view(active_view)
                 elif selection == "Selection":
                     elements = revit.get_selection()
                     if not elements:
                         with forms.WarningBar(title="Pick Elements to Export"):
-                            elements = revit.pick_elements(message="Pick Elements to Export")
+                            elements = revit.pick_elements(
+                                message="Pick Elements to Export"
+                            )
 
                 src_elements = select_elements(elements)
                 selected_params = select_parameters(src_elements)
-
-        export_xls(src_elements, selected_params)
+                # No field mapping for non-schedule exports
+                export_xls(src_elements, selected_params, field_mapping=None)
 
     except Exception as e:
-        logger.error("Error: {}".format(e))
-        logger.error(traceback.format_exc())
+        logger.exception("Error: {}".format(e))
 
 
 if __name__ == "__main__":

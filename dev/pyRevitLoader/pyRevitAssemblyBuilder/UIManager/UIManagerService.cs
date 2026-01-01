@@ -283,8 +283,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                         if (panelBtn != null)
                         {
                             ApplyIconToPushButtonThemeAware(panelBtn, component);
-                            if (!string.IsNullOrEmpty(component.Tooltip))
-                                panelBtn.ToolTip = component.Tooltip;
+                            panelBtn.ToolTip = BuildButtonTooltip(component);
                             ApplyHighlightToButton(panelBtn, component);
                             ModifyToPanelButton(tabName, parentPanel, panelBtn);
                         }
@@ -300,8 +299,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                         if (btn != null)
                         {
                             ApplyIconToPushButtonThemeAware(btn, component);
-                            if (!string.IsNullOrEmpty(component.Tooltip))
-                                btn.ToolTip = component.Tooltip;
+                            btn.ToolTip = BuildButtonTooltip(component);
                             ApplyHighlightToButton(btn, component);
                         }
                     }
@@ -316,8 +314,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                         {
                             // Apply initial icon (may be overridden by __selfinit__)
                             ApplyIconToPushButtonThemeAware(smartBtn, component);
-                            if (!string.IsNullOrEmpty(component.Tooltip))
-                                smartBtn.ToolTip = component.Tooltip;
+                            smartBtn.ToolTip = BuildButtonTooltip(component);
                             ApplyHighlightToButton(smartBtn, component);
                             
                             // Execute __selfinit__ for SmartButton
@@ -342,8 +339,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                             if (linkBtn != null)
                             {
                                 ApplyIconToPushButtonThemeAware(linkBtn, component);
-                                if (!string.IsNullOrEmpty(component.Tooltip))
-                                    linkBtn.ToolTip = component.Tooltip;
+                                linkBtn.ToolTip = BuildButtonTooltip(component);
                                 ApplyHighlightToButton(linkBtn, component);
                             }
                         }
@@ -371,8 +367,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                             ApplyIconToSplitButtonThemeAware(splitBtn, component);
 
                             // Assign tooltip to the split button itself
-                            if (!string.IsNullOrEmpty(component.Tooltip))
-                                splitBtn.ToolTip = component.Tooltip;
+                            splitBtn.ToolTip = BuildButtonTooltip(component);
 
                             // Apply highlight to the split button itself
                             ApplyHighlightToButton(splitBtn, component);
@@ -399,8 +394,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                                     if (subBtn != null)
                                     {
                                         ApplyIconToPushButtonThemeAware(subBtn, sub, component);
-                                        if (!string.IsNullOrEmpty(sub.Tooltip))
-                                            subBtn.ToolTip = sub.Tooltip;
+                                        subBtn.ToolTip = BuildButtonTooltip(sub);
                                         ApplyHighlightToButton(subBtn, sub);
                                     }
                                 }
@@ -413,8 +407,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                                         if (linkSubBtn != null)
                                         {
                                             ApplyIconToPushButtonThemeAware(linkSubBtn, sub, component);
-                                            if (!string.IsNullOrEmpty(sub.Tooltip))
-                                                linkSubBtn.ToolTip = sub.Tooltip;
+                                            linkSubBtn.ToolTip = BuildButtonTooltip(sub);
                                             ApplyHighlightToButton(linkSubBtn, sub);
                                         }
                                     }
@@ -524,8 +517,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                         if (ribbonItem is PushButton pushBtn)
                         {
                             ApplyIconToPushButtonThemeAware(pushBtn, origComponent);
-                            if (!string.IsNullOrEmpty(origComponent.Tooltip))
-                                pushBtn.ToolTip = origComponent.Tooltip;
+                            pushBtn.ToolTip = BuildButtonTooltip(origComponent);
                             ApplyHighlightToButton(pushBtn, origComponent);
                             
                             // Execute __selfinit__ for SmartButtons in stack
@@ -544,8 +536,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                         {
                             // Apply icon and tooltip to the pulldown button itself in stack
                             ApplyIconToPulldownButtonThemeAware(pdBtn, origComponent);
-                            if (!string.IsNullOrEmpty(origComponent.Tooltip))
-                                pdBtn.ToolTip = origComponent.Tooltip;
+                            pdBtn.ToolTip = BuildButtonTooltip(origComponent);
                             
                             // Apply highlight to the pulldown button itself in stack
                             ApplyHighlightToButton(pdBtn, origComponent);
@@ -572,8 +563,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                                     if (subBtn != null)
                                     {
                                         ApplyIconToPulldownSubButtonThemeAware(subBtn, sub, origComponent);
-                                        if (!string.IsNullOrEmpty(sub.Tooltip))
-                                            subBtn.ToolTip = sub.Tooltip;
+                                        subBtn.ToolTip = BuildButtonTooltip(sub);
                                         ApplyHighlightToButton(subBtn, sub);
                                     }
                                 }
@@ -601,8 +591,7 @@ namespace pyRevitAssemblyBuilder.UIManager
 
             // Apply icon and tooltip to the pulldown button itself
             ApplyIconToPulldownButtonThemeAware(pdBtn, component);
-            if (!string.IsNullOrEmpty(component.Tooltip))
-                pdBtn.ToolTip = component.Tooltip;
+            pdBtn.ToolTip = BuildButtonTooltip(component);
             
             // Apply highlight to the pulldown button itself
             ApplyHighlightToButton(pdBtn, component);
@@ -629,8 +618,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                     if (subBtn != null)
                     {
                         ApplyIconToPulldownSubButtonThemeAware(subBtn, sub, component);
-                        if (!string.IsNullOrEmpty(sub.Tooltip))
-                            subBtn.ToolTip = sub.Tooltip;
+                        subBtn.ToolTip = BuildButtonTooltip(sub);
                         ApplyHighlightToButton(subBtn, sub);
                     }
                 }
@@ -643,8 +631,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                         if (linkSubBtn != null)
                         {
                             ApplyIconToPulldownSubButtonThemeAware(linkSubBtn, sub, component);
-                            if (!string.IsNullOrEmpty(sub.Tooltip))
-                                linkSubBtn.ToolTip = sub.Tooltip;
+                            linkSubBtn.ToolTip = BuildButtonTooltip(sub);
                             ApplyHighlightToButton(linkSubBtn, sub);
                         }
                     }
@@ -696,6 +683,47 @@ namespace pyRevitAssemblyBuilder.UIManager
             }
             
             return baseText;
+        }
+
+        /// <summary>
+        /// Builds a tooltip string with bundle metadata, matching the pythonic loader behavior.
+        /// The tooltip includes the original tooltip text, bundle name with type, and author(s).
+        /// </summary>
+        /// <param name="component">The component to build tooltip for.</param>
+        /// <returns>The formatted tooltip string with bundle metadata.</returns>
+        /// <remarks>
+        /// Format matches pyrevit.loader.uimaker._make_button_tooltip():
+        /// <code>
+        /// &lt;tooltip text&gt;
+        /// 
+        /// Bundle Name:
+        /// &lt;Name&gt; (&lt;type&gt;)
+        /// 
+        /// Author(s):
+        /// &lt;Author&gt;
+        /// </code>
+        /// </remarks>
+        private string BuildButtonTooltip(ParsedComponent component)
+        {
+            var tooltip = string.Empty;
+
+            // Add original tooltip if present
+            if (!string.IsNullOrEmpty(component.Tooltip))
+            {
+                tooltip = component.Tooltip + "\n\n";
+            }
+
+            // Add Bundle Name with type (matching Python: button.name, button.type_id.replace(".", ""))
+            var typeId = component.Type.ToExtension().Replace(".", "");
+            tooltip += $"Bundle Name:\n{component.Name} ({typeId})";
+
+            // Add Author(s) if present
+            if (!string.IsNullOrEmpty(component.Author))
+            {
+                tooltip += $"\n\nAuthor(s):\n{component.Author}";
+            }
+
+            return tooltip;
         }
 
         /// <summary>

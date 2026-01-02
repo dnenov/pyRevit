@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using pyRevitLabs.Json.Linq;
 
 namespace pyRevitExtensionParser
 {
@@ -145,12 +146,61 @@ namespace pyRevitExtensionParser
         private static ParsedExtension ParseExtension(string extDir)
         {
             var extName = Path.GetFileNameWithoutExtension(extDir);
-            var children = ParseComponents(extDir, extName);
-
+            
             var bundlePath = Path.Combine(extDir, "bundle.yaml");
             ParsedBundle parsedBundle = FileExists(bundlePath)
                 ? BundleParser.BundleYamlParser.Parse(bundlePath)
                 : null;
+
+            // Pass extension-level templates to child components
+            // Include author as a template if it exists
+            var extensionTemplates = parsedBundle?.Templates != null 
+                ? new Dictionary<string, string>(parsedBundle.Templates)
+                : new Dictionary<string, string>();
+            
+            // If extension has an author, add it as a template for children to inherit
+            if (!string.IsNullOrEmpty(parsedBundle?.Author))
+            {
+                extensionTemplates["author"] = parsedBundle.Author;
+            }
+            
+            // Read extension.json for additional templates
+            var extensionJsonPath = Path.Combine(extDir, "extension.json");
+            if (FileExists(extensionJsonPath))
+            {
+                try
+                {
+                    var jsonContent = File.ReadAllText(extensionJsonPath);
+                    var json = JObject.Parse(jsonContent);
+                    
+                    // Read templates section if present
+                    var templates = json["templates"] as JObject;
+                    if (templates != null)
+                    {
+                        foreach (var prop in templates.Properties())
+                        {
+                            // extension.json templates override bundle.yaml templates
+                            extensionTemplates[prop.Name] = prop.Value.ToString();
+                        }
+                    }
+                    
+                    // Also read top-level author if templates.author doesn't exist
+                    if (!extensionTemplates.ContainsKey("author"))
+                    {
+                        var author = json["author"]?.ToString();
+                        if (!string.IsNullOrEmpty(author))
+                        {
+                            extensionTemplates["author"] = author;
+                        }
+                    }
+                }
+                catch
+                {
+                    // If JSON parsing fails, continue without extension.json templates
+                }
+            }
+            
+            var children = ParseComponents(extDir, extName, null, extensionTemplates.Count > 0 ? extensionTemplates : null);
 
             // Read extension config from pyRevit config file (cached)
             var config = GetConfig();
@@ -307,10 +357,52 @@ namespace pyRevitExtensionParser
             return roots;
         }
 
+        /// <summary>
+        /// Substitutes liquid template tags ({{variable}}) in a string with values from the templates dictionary.
+        /// </summary>
+        /// <param name="input">The input string containing template tags.</param>
+        /// <param name="templates">Dictionary of template variable names and their values.</param>
+        /// <returns>The string with all template tags substituted.</returns>
+        private static string SubstituteTemplates(string input, Dictionary<string, string> templates)
+        {
+            if (string.IsNullOrEmpty(input) || templates == null || templates.Count == 0)
+                return input;
+
+            var result = input;
+            foreach (var kvp in templates)
+            {
+                var tag = "{{" + kvp.Key + "}}";
+                if (result.Contains(tag))
+                {
+                    result = result.Replace(tag, kvp.Value);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Substitutes liquid template tags in a dictionary of localized values.
+        /// </summary>
+        private static Dictionary<string, string> SubstituteTemplatesInDict(
+            Dictionary<string, string> localizedValues, 
+            Dictionary<string, string> templates)
+        {
+            if (localizedValues == null || templates == null || templates.Count == 0)
+                return localizedValues;
+
+            var result = new Dictionary<string, string>();
+            foreach (var kvp in localizedValues)
+            {
+                result[kvp.Key] = SubstituteTemplates(kvp.Value, templates);
+            }
+            return result;
+        }
+
         private static List<ParsedComponent> ParseComponents(
             string baseDir,
             string extensionName,
-            string parentPath = null)
+            string parentPath = null,
+            Dictionary<string, string> inheritedTemplates = null)
         {
             var components = new List<ParsedComponent>();
 
@@ -410,7 +502,39 @@ namespace pyRevitExtensionParser
                 }
 
                 var bundleFile = Path.Combine(dir, "bundle.yaml");
-                var children = ParseComponents(dir, extensionName, fullPath);
+                
+                // Then parse bundle and override with bundle values if they exist
+                var bundleInComponent = FileExists(bundleFile) ? BundleParser.BundleYamlParser.Parse(bundleFile) : null;
+
+                // Merge templates: inherited templates + current bundle templates
+                // Current bundle templates override inherited ones
+                var mergedTemplates = new Dictionary<string, string>();
+                if (inheritedTemplates != null)
+                {
+                    foreach (var kvp in inheritedTemplates)
+                    {
+                        mergedTemplates[kvp.Key] = kvp.Value;
+                    }
+                }
+                if (bundleInComponent?.Templates != null)
+                {
+                    foreach (var kvp in bundleInComponent.Templates)
+                    {
+                        mergedTemplates[kvp.Key] = kvp.Value;
+                    }
+                }
+
+                // Get author from bundle to add to templates for child components
+                // This allows children to use {{author}} to inherit from parent
+                string bundleAuthor = bundleInComponent?.Author;
+                if (!string.IsNullOrEmpty(bundleAuthor) && !bundleAuthor.Contains("{{"))
+                {
+                    // Only add if it's a concrete value, not a template reference itself
+                    mergedTemplates["author"] = bundleAuthor;
+                }
+
+                // Pass merged templates to child components
+                var children = ParseComponents(dir, extensionName, fullPath, mergedTemplates);
 
                 // First, get values from Python script
                 string title = null, author = null, doc = null;
@@ -422,9 +546,6 @@ namespace pyRevitExtensionParser
                     (title, scriptLocalizedTitles, author, doc, scriptLocalizedTooltips) = ReadPythonScriptConstants(scriptPath);
                 }
 
-                // Then parse bundle and override with bundle values if they exist
-                var bundleInComponent = FileExists(bundleFile) ? BundleParser.BundleYamlParser.Parse(bundleFile) : null;
-                
                 // Override script values with bundle values (bundle takes precedence)
                 if (bundleInComponent != null)
                 {
@@ -463,6 +584,16 @@ namespace pyRevitExtensionParser
                     }
                 }
 
+                // Apply template substitution to string values
+                title = SubstituteTemplates(title, mergedTemplates);
+                doc = SubstituteTemplates(doc, mergedTemplates);
+                author = SubstituteTemplates(author, mergedTemplates);
+                var hyperlink = SubstituteTemplates(bundleInComponent?.Hyperlink, mergedTemplates);
+                
+                // Apply template substitution to localized values
+                finalLocalizedTitles = SubstituteTemplatesInDict(finalLocalizedTitles, mergedTemplates);
+                finalLocalizedTooltips = SubstituteTemplatesInDict(finalLocalizedTooltips, mergedTemplates);
+
                 components.Add(new ParsedComponent
                 {
                     Name = namePart,
@@ -479,7 +610,7 @@ namespace pyRevitExtensionParser
                     Title = title,
                     Author = author,
                     Context = bundleInComponent?.Context,
-                    Hyperlink = bundleInComponent?.Hyperlink,
+                    Hyperlink = hyperlink,
                     Highlight = bundleInComponent?.Highlight,
                     PanelBackground = bundleInComponent?.PanelBackground,
                     TitleBackground = bundleInComponent?.TitleBackground,

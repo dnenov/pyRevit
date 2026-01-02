@@ -17,6 +17,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Reference Include="pyRevitLabs.Json" HintPath="$(PyRevitDevLibsDir)\pyRevitLabs.Json.dll" Private="false" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Compile Include="BundleParser.cs" />
       <Compile Include="ComboBoxMember.cs" />
       <Compile Include="CommandAvailability.cs" />

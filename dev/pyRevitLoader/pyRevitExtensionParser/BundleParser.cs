@@ -171,12 +171,42 @@ namespace pyRevitExtensionParser
                 // Handle multiline content continuation
                 if (state.IsInMultilineValue)
                 {
-                    // Content must be indented more than the language key (more than 2 spaces)
-                    if (raw.StartsWith("    ") || raw.StartsWith("\t\t"))
+                    // For top-level multiline (like tooltip: |), content is indented with 2 spaces
+                    // For nested multiline (like tooltip:\n  en_us: |), content is indented with 4 spaces
+                    // Accept both levels of indentation for multiline content
+                    if (raw.StartsWith("  ") || raw.StartsWith("\t"))
                     {
-                        var content = raw.TrimStart();
-                        state.MultilineContent.Add(content);
-                        continue;
+                        // Check if this is a new language key declaration (e.g., "  fr_fr: >-")
+                        // This happens in localized sections where multiline content for one language
+                        // is followed by another language key at the same indentation level
+                        var isNewLanguageKey = false;
+                        if ((state.CurrentSection == "title" || state.CurrentSection == "titles" ||
+                             state.CurrentSection == "tooltip" || state.CurrentSection == "tooltips") &&
+                            line.Contains(":"))
+                        {
+                            // Check if this looks like a language key (short alphanumeric before colon)
+                            var colonIdx = line.IndexOf(':');
+                            var potentialKey = line.Substring(0, colonIdx).Trim();
+                            // Language keys are typically short (e.g., "ru", "en_us", "fr_fr", "de_de", "chinese_s")
+                            if (potentialKey.Length <= 12 && !potentialKey.Contains(" "))
+                            {
+                                isNewLanguageKey = true;
+                            }
+                        }
+                        
+                        if (isNewLanguageKey)
+                        {
+                            // End current multiline and process as new language key
+                            FinishMultilineValue(parsed, state);
+                            state.ResetMultiline();
+                            // Fall through to parse as second-level item
+                        }
+                        else
+                        {
+                            var content = raw.TrimStart();
+                            state.MultilineContent.Add(content);
+                            continue;
+                        }
                     }
                     else
                     {
@@ -291,21 +321,78 @@ namespace pyRevitExtensionParser
                     break;
                 case "title":
                 case "titles":
-                    // Check if this is a simple non-localized title on the same line
-                    if (!string.IsNullOrEmpty(value))
+                    // Handle multiline indicators or simple non-localized title
+                    if (value == "|-")
+                    {
+                        // Literal multiline (preserve line breaks)
+                        state.IsInMultilineValue = true;
+                        state.IsLiteralMultiline = true;
+                        state.CurrentLanguageKey = "en_us";
+                    }
+                    else if (value == ">-")
+                    {
+                        // Folded multiline (join lines)
+                        state.IsInMultilineValue = true;
+                        state.IsFoldedMultiline = true;
+                        state.CurrentLanguageKey = "en_us";
+                    }
+                    else if (value == "|" || value == ">")
+                    {
+                        // Legacy multiline
+                        state.IsInMultilineValue = true;
+                        state.CurrentLanguageKey = "en_us";
+                    }
+                    else if (!string.IsNullOrEmpty(value))
                     {
                         parsed.Titles["en_us"] = StripQuotes(value);
                     }
                     break;
                 case "tooltip":
                 case "tooltips":
-                    // Check if this is a simple non-localized tooltip on the same line
-                    if (!string.IsNullOrEmpty(value))
+                    // Handle multiline indicators or simple non-localized tooltip
+                    if (value == "|-")
+                    {
+                        // Literal multiline (preserve line breaks)
+                        state.IsInMultilineValue = true;
+                        state.IsLiteralMultiline = true;
+                        state.CurrentLanguageKey = "en_us";
+                    }
+                    else if (value == ">-")
+                    {
+                        // Folded multiline (join lines)
+                        state.IsInMultilineValue = true;
+                        state.IsFoldedMultiline = true;
+                        state.CurrentLanguageKey = "en_us";
+                    }
+                    else if (value == "|" || value == ">")
+                    {
+                        // Legacy multiline
+                        state.IsInMultilineValue = true;
+                        state.CurrentLanguageKey = "en_us";
+                    }
+                    else if (!string.IsNullOrEmpty(value))
                     {
                         parsed.Tooltips["en_us"] = StripQuotes(value);
                     }
                     break;
-                // Other sections handled by nested parsing
+                // These sections have nested content and are handled by second/third level parsing
+                case "layout":
+                case "layout_order":
+                case "engine":
+                case "modules":
+                case "members":
+                case "templates":
+                    // Just set the section, don't process value - nested content follows
+                    break;
+                default:
+                    // Any unknown top-level key is treated as a template variable
+                    // This supports liquid tag substitution like {{template_test}}
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        var originalKey = line.Substring(0, colonIndex).Trim();
+                        parsed.Templates[originalKey] = StripQuotes(value);
+                    }
+                    break;
             }
         }
 
@@ -371,6 +458,19 @@ namespace pyRevitExtensionParser
             if (state.CurrentSection == "background" && line.Contains(":"))
             {
                 ParseBackgroundConfig(line, parsed);
+                return;
+            }
+
+            // Templates section - nested key:value pairs
+            if (state.CurrentSection == "templates" && line.Contains(":"))
+            {
+                var colonIndex = line.IndexOf(':');
+                var key = line.Substring(0, colonIndex).Trim();
+                var value = line.Substring(colonIndex + 1).Trim();
+                if (!string.IsNullOrEmpty(value))
+                {
+                    parsed.Templates[key] = StripQuotes(value);
+                }
             }
         }
 

@@ -50,6 +50,7 @@
     <Compile Include="PythonScriptMultiLangTest.cs" />
     <Compile Include="ComboBoxTests.cs" />
     <Compile Include="SmartButtonTests.cs" />
+    <Compile Include="TemplateInheritanceTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,10 +67,18 @@
       <HintPath>..\..\libs\netfx\pyRevitLabs.NLog.dll</HintPath>
       <Private>true</Private>
     </Reference>
+    <Reference Include="pyRevitLabs.Json">
+      <HintPath>..\..\libs\netfx\pyRevitLabs.Json.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <Reference Include="pyRevitLabs.NLog">
       <HintPath>..\..\libs\netcore\pyRevitLabs.NLog.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="pyRevitLabs.Json">
+      <HintPath>..\..\libs\netcore\pyRevitLabs.Json.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>

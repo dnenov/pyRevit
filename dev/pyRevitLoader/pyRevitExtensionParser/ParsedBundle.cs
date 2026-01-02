@@ -244,5 +244,28 @@ namespace pyRevitExtensionParser
         /// </code>
         /// </example>
         public List<ComboBoxMember> Members { get; set; } = new List<ComboBoxMember>();
+
+        /// <summary>
+        /// Gets or sets template variables for liquid tag substitution.
+        /// </summary>
+        /// <remarks>
+        /// <para>Template variables can be used in child components using the {{variable}} syntax.</para>
+        /// <para>Variables defined in parent bundles are passed down to children.</para>
+        /// <para>Any top-level key that doesn't match a known property is treated as a template variable.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// template_test: "My custom value"
+        /// author: "John Doe"
+        /// docpath: "https://example.com/docs"
+        /// </code>
+        /// These can be used in child bundles:
+        /// <code>
+        /// tooltip: "Documentation: {{docpath}}"
+        /// authors:
+        ///   - "{{author}}"
+        /// </code>
+        /// </example>
+        public Dictionary<string, string> Templates { get; set; } = new Dictionary<string, string>();
     }
 }

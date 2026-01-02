@@ -175,5 +175,115 @@ namespace pyRevitExtensionParserTest
             Assert.That(result.Titles["es_es"], Is.EqualTo("Blog")); // Single quotes stripped
             Assert.That(result.Titles["de_de"], Is.EqualTo("Blog")); // Double quotes stripped
         }
+
+        [Test]
+        public void TestMultilineTooltipWithPipeOperator()
+        {
+            // Test YAML multiline block scalar (|) at the top level
+            var testYaml = @"tooltip: |
+  Test pyRevit Bundle Tooltip
+  Second line of tooltip
+  Third line";
+
+            File.WriteAllText(_tempTestFile, testYaml);
+
+            var result = BundleParser.BundleYamlParser.Parse(_tempTestFile);
+
+            Assert.That(result.Tooltips.Count, Is.EqualTo(1));
+            Assert.That(result.Tooltips["en_us"], Is.EqualTo("Test pyRevit Bundle Tooltip\nSecond line of tooltip\nThird line"));
+        }
+
+        [Test]
+        public void TestMultilineTooltipWithLiteralPipe()
+        {
+            // Test YAML literal block scalar (|-) at the top level
+            var testYaml = @"tooltip: |-
+  Test pyRevit Bundle Tooltip
+  Line two
+  Line three";
+
+            File.WriteAllText(_tempTestFile, testYaml);
+
+            var result = BundleParser.BundleYamlParser.Parse(_tempTestFile);
+
+            Assert.That(result.Tooltips.Count, Is.EqualTo(1));
+            Assert.That(result.Tooltips["en_us"], Is.EqualTo("Test pyRevit Bundle Tooltip\nLine two\nLine three"));
+        }
+
+        [Test]
+        public void TestMultilineTitleWithPipeOperator()
+        {
+            // Test YAML multiline block scalar (|) for title
+            var testYaml = @"title: |
+  My Custom
+  Button Title";
+
+            File.WriteAllText(_tempTestFile, testYaml);
+
+            var result = BundleParser.BundleYamlParser.Parse(_tempTestFile);
+
+            Assert.That(result.Titles.Count, Is.EqualTo(1));
+            Assert.That(result.Titles["en_us"], Is.EqualTo("My Custom\nButton Title"));
+        }
+
+        [Test]
+        public void TestTemplateVariables()
+        {
+            // Test that template variables are parsed from bundle.yaml
+            // Note: 'author' is a known property and is NOT stored as a template
+            var testYaml = @"template_test: Bundle liquid templating works
+docpath: https://example.com/docs
+custom_var: Some custom value
+title:
+  en_us: Test Button";
+
+            File.WriteAllText(_tempTestFile, testYaml);
+
+            var result = BundleParser.BundleYamlParser.Parse(_tempTestFile);
+
+            Assert.That(result.Templates.Count, Is.EqualTo(3));
+            Assert.That(result.Templates["template_test"], Is.EqualTo("Bundle liquid templating works"));
+            Assert.That(result.Templates["docpath"], Is.EqualTo("https://example.com/docs"));
+            Assert.That(result.Templates["custom_var"], Is.EqualTo("Some custom value"));
+        }
+
+        [Test]
+        public void TestTemplatesSection()
+        {
+            // Test that template variables are parsed from nested templates section
+            var testYaml = @"templates:
+  custom_var: Custom value
+  another_var: Another value
+title:
+  en_us: Test Button";
+
+            File.WriteAllText(_tempTestFile, testYaml);
+
+            var result = BundleParser.BundleYamlParser.Parse(_tempTestFile);
+
+            Assert.That(result.Templates.Count, Is.EqualTo(2));
+            Assert.That(result.Templates["custom_var"], Is.EqualTo("Custom value"));
+            Assert.That(result.Templates["another_var"], Is.EqualTo("Another value"));
+        }
+
+        [Test]
+        public void TestMultilineWithTemplateVariables()
+        {
+            // Test multiline tooltip with template variable syntax
+            var testYaml = @"tooltip: |
+  Test pyRevit Bundle Tooltip
+  {{template_test}}
+template_test: Substitution placeholder";
+
+            File.WriteAllText(_tempTestFile, testYaml);
+
+            var result = BundleParser.BundleYamlParser.Parse(_tempTestFile);
+
+            Assert.That(result.Tooltips.Count, Is.EqualTo(1));
+            // The tooltip contains the template variable syntax
+            Assert.That(result.Tooltips["en_us"], Does.Contain("{{template_test}}"));
+            // The template variable is also captured
+            Assert.That(result.Templates["template_test"], Is.EqualTo("Substitution placeholder"));
+        }
     }
 }

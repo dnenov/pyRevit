@@ -120,7 +120,8 @@ namespace pyRevitExtensionParser
             CommandComponentType.PanelButton,
             CommandComponentType.SmartButton,
             CommandComponentType.UrlButton,
-            CommandComponentType.InvokeButton
+            CommandComponentType.InvokeButton,
+            CommandComponentType.ContentButton
         };
 
         public IEnumerable<ParsedComponent> CollectCommandComponents()

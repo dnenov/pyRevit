@@ -310,6 +310,14 @@ namespace pyRevitExtensionParser
                 case "highlight":
                     parsed.Highlight = value?.ToLowerInvariant();
                     break;
+                case "content":
+                    // Content path for .content bundles (family .rfa files)
+                    parsed.Content = StripQuotes(value);
+                    break;
+                case "content_alt":
+                    // Alternative content path for .content bundles (CTRL+Click)
+                    parsed.ContentAlt = StripQuotes(value);
+                    break;
                 case "background":
                     // Single-line format: background: '#BB005591'
                     if (!string.IsNullOrEmpty(value))

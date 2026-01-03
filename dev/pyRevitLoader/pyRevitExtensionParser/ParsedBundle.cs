@@ -425,5 +425,33 @@ namespace pyRevitExtensionParser
         /// </code>
         /// </example>
         public Dictionary<string, string> Templates { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Gets or sets the content file path for .content bundles.
+        /// </summary>
+        /// <remarks>
+        /// <para>Used for content-type bundles (.content) that import Revit families (.rfa).</para>
+        /// <para>The path can be absolute or relative to the bundle directory.</para>
+        /// <para>Relative paths support parent directory navigation (e.g., "..\A.rfa").</para>
+        /// </remarks>
+        /// <example>
+        /// <code>content: "A.rfa"</code>
+        /// <code>content: "..\A.rfa"</code>
+        /// <code>content: "C:\Families\MyFamily.rfa"</code>
+        /// </example>
+        public string Content { get; set; }
+
+        /// <summary>
+        /// Gets or sets the alternative content file path for .content bundles.
+        /// </summary>
+        /// <remarks>
+        /// <para>Alternative content is loaded when the user invokes the command with CTRL+Click.</para>
+        /// <para>The path can be absolute or relative to the bundle directory.</para>
+        /// <para>If not specified, defaults to the same file as Content.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>content_alt: "B.rfa"</code>
+        /// </example>
+        public string ContentAlt { get; set; }
     }
 }

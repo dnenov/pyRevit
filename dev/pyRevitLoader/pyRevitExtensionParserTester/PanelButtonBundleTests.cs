@@ -548,6 +548,86 @@ print('test')");
             Assert.AreEqual("PyRevitTestInvokeCommand", classInvoke.CommandClass);
         }
 
+        [Test]
+        public void TestContentBundleParsing()
+        {
+            // Parse the pyRevitDevTools extension to test content bundles
+            // TestDirectory: pyRevitLoader/pyRevitExtensionParserTester/bin/Debug/net8.0-windows
+            // Need to go 6 levels up: net8.0-windows -> Debug -> bin -> pyRevitExtensionParserTester -> pyRevitLoader -> dev -> pyRevit (repo root)
+            var devToolsPath = Path.GetFullPath(Path.Combine(
+                TestContext.CurrentContext.TestDirectory,
+                "..", "..", "..", "..", "..", "..",
+                "extensions", "pyRevitDevTools.extension"
+            ));
+
+            if (!Directory.Exists(devToolsPath))
+            {
+                Assert.Ignore($"pyRevitDevTools extension not found at: {devToolsPath}");
+                return;
+            }
+
+            var extensions = ParseInstalledExtensions(new[] { devToolsPath });
+            Assert.IsNotNull(extensions);
+
+            var devToolsExt = extensions.FirstOrDefault();
+            Assert.IsNotNull(devToolsExt, "pyRevitDevTools extension should be parsed");
+
+            TestContext.Out.WriteLine("=== Testing Content Bundle Parsing ===");
+
+            // Find "Test Content Bundle" - has RFA files in folder, no content in bundle.yaml
+            var contentBundle = FindComponentRecursively(devToolsExt, "TestContentBundle");
+            if (contentBundle != null)
+            {
+                TestContext.Out.WriteLine($"Content Bundle: {contentBundle.DisplayName}");
+                TestContext.Out.WriteLine($"Type: {contentBundle.Type}");
+                TestContext.Out.WriteLine($"ScriptPath: {contentBundle.ScriptPath ?? "None"}");
+                TestContext.Out.WriteLine($"ConfigScriptPath: {contentBundle.ConfigScriptPath ?? "None"}");
+
+                Assert.AreEqual(CommandComponentType.ContentButton, contentBundle.Type);
+                Assert.IsNotNull(contentBundle.ScriptPath, "Content bundle should have ScriptPath set to RFA file");
+                Assert.IsTrue(contentBundle.ScriptPath.EndsWith(".rfa", StringComparison.OrdinalIgnoreCase),
+                    "ScriptPath should point to .rfa file");
+            }
+
+            // Find "Test Content Bundle - rfa in same folder and specified in bundle"
+            var contentBundleInFolder = FindComponentRecursively(devToolsExt, "TestContentBundle-rfainsamefolderandspecifiedinbundle");
+            if (contentBundleInFolder != null)
+            {
+                TestContext.Out.WriteLine($"\nContent Bundle (in folder): {contentBundleInFolder.DisplayName}");
+                TestContext.Out.WriteLine($"Type: {contentBundleInFolder.Type}");
+                TestContext.Out.WriteLine($"ScriptPath: {contentBundleInFolder.ScriptPath ?? "None"}");
+                TestContext.Out.WriteLine($"ConfigScriptPath: {contentBundleInFolder.ConfigScriptPath ?? "None"}");
+
+                Assert.AreEqual(CommandComponentType.ContentButton, contentBundleInFolder.Type);
+                Assert.IsNotNull(contentBundleInFolder.ScriptPath, "Content bundle should have ScriptPath set from bundle.yaml content");
+                Assert.IsTrue(contentBundleInFolder.ScriptPath.EndsWith("A.rfa", StringComparison.OrdinalIgnoreCase),
+                    "ScriptPath should point to A.rfa as specified in bundle.yaml");
+                Assert.IsNotNull(contentBundleInFolder.ConfigScriptPath, "Content bundle should have ConfigScriptPath set from bundle.yaml content_alt");
+                Assert.IsTrue(contentBundleInFolder.ConfigScriptPath.EndsWith("B.rfa", StringComparison.OrdinalIgnoreCase),
+                    "ConfigScriptPath should point to B.rfa as specified in bundle.yaml content_alt");
+            }
+
+            // Find "Test Content Bundle - with rfa outside of content folder"
+            var contentBundleOutsideFolder = FindComponentRecursively(devToolsExt, "TestContentBundle-withrfaoutsideofcontentfolder");
+            if (contentBundleOutsideFolder != null)
+            {
+                TestContext.Out.WriteLine($"\nContent Bundle (outside folder): {contentBundleOutsideFolder.DisplayName}");
+                TestContext.Out.WriteLine($"Type: {contentBundleOutsideFolder.Type}");
+                TestContext.Out.WriteLine($"ScriptPath: {contentBundleOutsideFolder.ScriptPath ?? "None"}");
+                TestContext.Out.WriteLine($"ConfigScriptPath: {contentBundleOutsideFolder.ConfigScriptPath ?? "None"}");
+
+                Assert.AreEqual(CommandComponentType.ContentButton, contentBundleOutsideFolder.Type);
+                // This bundle uses relative path "..\A.rfa" which should resolve to the parent directory
+                Assert.IsNotNull(contentBundleOutsideFolder.ScriptPath, "Content bundle should have ScriptPath resolved from relative path");
+                Assert.IsTrue(contentBundleOutsideFolder.ScriptPath.EndsWith("A.rfa", StringComparison.OrdinalIgnoreCase),
+                    "ScriptPath should point to A.rfa in parent directory");
+                // Note: content_alt in this bundle has an absolute path that may not exist on all machines
+                // So ConfigScriptPath may be null if the file doesn't exist
+            }
+
+            TestContext.Out.WriteLine("\n=== Content Bundle Parsing Tests Passed ===");
+        }
+
         // Helper method to find components recursively
         private ParsedComponent? FindComponentRecursively(ParsedComponent? parent, string componentName)
         {

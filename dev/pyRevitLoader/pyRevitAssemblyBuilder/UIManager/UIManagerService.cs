@@ -292,6 +292,7 @@ namespace pyRevitAssemblyBuilder.UIManager
                 case CommandComponentType.PushButton:
                 case CommandComponentType.UrlButton:
                 case CommandComponentType.InvokeButton:
+                case CommandComponentType.ContentButton:
                     if (!ItemExistsInPanel(parentPanel, component.Name))
                     {
                         var pbData = CreatePushButton(component, assemblyInfo);
@@ -388,7 +389,8 @@ namespace pyRevitAssemblyBuilder.UIManager
                                 }
                                 else if (sub.Type == CommandComponentType.PushButton ||
                                          sub.Type == CommandComponentType.UrlButton ||
-                                         sub.Type == CommandComponentType.InvokeButton)
+                                         sub.Type == CommandComponentType.InvokeButton ||
+                                         sub.Type == CommandComponentType.ContentButton)
                                 {
                                     var subBtn = splitBtn.AddPushButton(CreatePushButton(sub, assemblyInfo));
                                     if (subBtn != null)
@@ -474,7 +476,8 @@ namespace pyRevitAssemblyBuilder.UIManager
                 if (child.Type == CommandComponentType.PushButton ||
                     child.Type == CommandComponentType.SmartButton ||
                     child.Type == CommandComponentType.UrlButton ||
-                    child.Type == CommandComponentType.InvokeButton)
+                    child.Type == CommandComponentType.InvokeButton ||
+                    child.Type == CommandComponentType.ContentButton)
                 {
                     itemDataList.Add(CreatePushButton(child, assemblyInfo));
                     originalItems.Add(child);
@@ -557,7 +560,8 @@ namespace pyRevitAssemblyBuilder.UIManager
                                 }
                                 else if (sub.Type == CommandComponentType.PushButton ||
                                          sub.Type == CommandComponentType.UrlButton ||
-                                         sub.Type == CommandComponentType.InvokeButton)
+                                         sub.Type == CommandComponentType.InvokeButton ||
+                                         sub.Type == CommandComponentType.ContentButton)
                                 {
                                     var subBtn = pdBtn.AddPushButton(CreatePushButton(sub, assemblyInfo));
                                     if (subBtn != null)
@@ -631,7 +635,8 @@ namespace pyRevitAssemblyBuilder.UIManager
                 }
                 else if (sub.Type == CommandComponentType.PushButton ||
                          sub.Type == CommandComponentType.UrlButton ||
-                         sub.Type == CommandComponentType.InvokeButton)
+                         sub.Type == CommandComponentType.InvokeButton ||
+                         sub.Type == CommandComponentType.ContentButton)
                 {
                     var subBtn = pdBtn.AddPushButton(CreatePushButton(sub, assemblyInfo));
                     if (subBtn != null)

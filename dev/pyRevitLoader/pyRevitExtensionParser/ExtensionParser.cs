@@ -491,6 +491,82 @@ namespace pyRevitExtensionParser
                 // If no separate config script found, use the main script path
                 if (configScriptPath == null)
                     configScriptPath = scriptPath;
+
+                // Handle .content bundles - special logic for Revit family (.rfa) files
+                // Content bundles load RFA files, with scriptPath being the primary content
+                // and configScriptPath being the alternative content (CTRL+Click)
+                if (componentType == CommandComponentType.ContentButton)
+                {
+                    var bundleYaml = Path.Combine(dir, "bundle.yaml");
+                    var tempBundle = FileExists(bundleYaml) ? BundleParser.BundleYamlParser.Parse(bundleYaml) : null;
+                    
+                    // Try to get content from bundle.yaml metadata first
+                    if (tempBundle != null && !string.IsNullOrEmpty(tempBundle.Content))
+                    {
+                        scriptPath = ResolveContentPath(dir, tempBundle.Content);
+                    }
+                    
+                    // If no content in metadata, use naming convention
+                    if (scriptPath == null)
+                    {
+                        // Look for version-specific content first: content_{version}.rfa
+                        var versionedContent = GetFilesInDirectory(dir, "content_*.rfa", SearchOption.TopDirectoryOnly)
+                            .FirstOrDefault();
+                        if (versionedContent != null)
+                        {
+                            scriptPath = versionedContent;
+                        }
+                        else
+                        {
+                            // Look for default content.rfa
+                            var defaultContent = Path.Combine(dir, "content.rfa");
+                            if (FileExists(defaultContent))
+                            {
+                                scriptPath = defaultContent;
+                            }
+                            else
+                            {
+                                // Look for any .rfa file in the directory
+                                var anyRfa = GetFilesInDirectory(dir, "*.rfa", SearchOption.TopDirectoryOnly)
+                                    .FirstOrDefault();
+                                if (anyRfa != null)
+                                {
+                                    scriptPath = anyRfa;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Handle alternative content (CTRL+Click)
+                    if (tempBundle != null && !string.IsNullOrEmpty(tempBundle.ContentAlt))
+                    {
+                        configScriptPath = ResolveContentPath(dir, tempBundle.ContentAlt);
+                    }
+                    else
+                    {
+                        // Look for version-specific alternative content: other_{version}.rfa
+                        var versionedAltContent = GetFilesInDirectory(dir, "other_*.rfa", SearchOption.TopDirectoryOnly)
+                            .FirstOrDefault();
+                        if (versionedAltContent != null)
+                        {
+                            configScriptPath = versionedAltContent;
+                        }
+                        else
+                        {
+                            // Look for default other.rfa
+                            var defaultAltContent = Path.Combine(dir, "other.rfa");
+                            if (FileExists(defaultAltContent))
+                            {
+                                configScriptPath = defaultAltContent;
+                            }
+                            else
+                            {
+                                // Fall back to main content path
+                                configScriptPath = scriptPath;
+                            }
+                        }
+                    }
+                }
                 
                 // Look for on/off icons for smartbuttons and toggle buttons
                 string onIconPath = null, onIconDarkPath = null, offIconPath = null, offIconDarkPath = null;
@@ -699,6 +775,41 @@ namespace pyRevitExtensionParser
 
             // Fallback to first available value
             return localizedValues.Values.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Resolves a content path for .content bundles.
+        /// Handles both absolute and relative paths, including parent directory navigation.
+        /// </summary>
+        /// <param name="bundleDir">The directory of the content bundle</param>
+        /// <param name="contentPath">The content path from bundle.yaml (can be relative or absolute)</param>
+        /// <returns>The resolved absolute path if it exists, null otherwise</returns>
+        private static string ResolveContentPath(string bundleDir, string contentPath)
+        {
+            if (string.IsNullOrEmpty(contentPath))
+                return null;
+
+            // Check if it's an absolute path
+            if (Path.IsPathRooted(contentPath))
+            {
+                if (FileExists(contentPath) && 
+                    contentPath.EndsWith(".rfa", StringComparison.OrdinalIgnoreCase))
+                {
+                    return contentPath;
+                }
+                return null;
+            }
+
+            // Treat as relative to bundle directory
+            // Normalize the path to handle .. and . properly
+            var resolvedPath = Path.GetFullPath(Path.Combine(bundleDir, contentPath));
+            if (FileExists(resolvedPath) && 
+                resolvedPath.EndsWith(".rfa", StringComparison.OrdinalIgnoreCase))
+            {
+                return resolvedPath;
+            }
+
+            return null;
         }
 
         private static string SanitizeClassName(string name)

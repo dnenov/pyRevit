@@ -4,6 +4,7 @@ using pyRevitAssemblyBuilder.AssemblyMaker;
 using pyRevitAssemblyBuilder.Interfaces;
 using pyRevitAssemblyBuilder.UIManager;
 using pyRevitAssemblyBuilder.UIManager.Icons;
+using pyRevitAssemblyBuilder.UIManager.Tooltips;
 
 namespace pyRevitAssemblyBuilder.SessionManager
 {
@@ -65,15 +66,26 @@ namespace pyRevitAssemblyBuilder.SessionManager
         }
 
         /// <summary>
+        /// Creates a TooltipManager instance.
+        /// </summary>
+        /// <param name="logger">The logger instance.</param>
+        /// <returns>A new ITooltipManager instance.</returns>
+        public static ITooltipManager CreateTooltipManager(ILogger logger)
+        {
+            return new TooltipManager(logger);
+        }
+
+        /// <summary>
         /// Creates a UIManagerService instance.
         /// </summary>
         /// <param name="uiApplication">The Revit UIApplication instance.</param>
         /// <param name="logger">The logger instance.</param>
         /// <param name="iconManager">The icon manager instance.</param>
+        /// <param name="tooltipManager">The tooltip manager instance.</param>
         /// <returns>A new IUIManagerService instance.</returns>
-        public static IUIManagerService CreateUIManagerService(UIApplication uiApplication, ILogger logger, IIconManager iconManager)
+        public static IUIManagerService CreateUIManagerService(UIApplication uiApplication, ILogger logger, IIconManager iconManager, ITooltipManager tooltipManager)
         {
-            return new UIManagerService(uiApplication, logger, iconManager);
+            return new UIManagerService(uiApplication, logger, iconManager, tooltipManager);
         }
 
         /// <summary>
@@ -99,7 +111,8 @@ namespace pyRevitAssemblyBuilder.SessionManager
             var extensionManager = CreateExtensionManagerService();
             var hookManager = CreateHookManager(logger);
             var iconManager = CreateIconManager(logger);
-            var uiManager = CreateUIManagerService(uiApplication, logger, iconManager);
+            var tooltipManager = CreateTooltipManager(logger);
+            var uiManager = CreateUIManagerService(uiApplication, logger, iconManager, tooltipManager);
 
             return new SessionManagerService(
                 assemblyBuilder, 

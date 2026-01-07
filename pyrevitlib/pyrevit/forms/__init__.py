@@ -2257,7 +2257,10 @@ def select_sheets(
         sheetset_ops = sorted(
             [SheetOption(x) for x in sheetset_sheets], key=lambda x: x.number
         )
-        all_ops[sheetset.Name] = sheetset_ops
+        if sheetset.Name == 'All Sheets':
+            all_ops["[" + sheetset.Name + "]"] = sheetset_ops
+        else:
+            all_ops[sheetset.Name] = sheetset_ops
 
     # ask user for multiple sheets
     selected_sheets = SelectFromList.show(

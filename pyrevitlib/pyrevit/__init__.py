@@ -19,8 +19,11 @@ import os.path as op
 from collections import namedtuple
 import traceback
 import re
+from pyrevit.compat import PY3
 
 import clr  # pylint: disable=E0401
+
+import System
 
 from pyrevit import compat
 
@@ -29,8 +32,12 @@ PYREVIT_CLI_NAME = 'pyrevit.exe'
 
 # extract version from version file
 VERSION_STRING = '0.0.'
-with open(op.join(op.dirname(__file__), 'version'), 'r') as version_file:
-    VERSION_STRING = version_file.read()
+if PY3:
+    with open(op.join(op.dirname(__file__), 'version'), 'r', encoding='utf-8') as version_file:
+        VERSION_STRING = version_file.read()
+else:
+    with open(op.join(op.dirname(__file__), 'version'), 'r') as version_file:
+        VERSION_STRING = version_file.read()
 matches = re.findall(r'(\d+)\.(\d+)\.(\d+)\.?(.+)?', VERSION_STRING)[0]
 if len(matches) == 4:
     VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, BUILD_METADATA = matches
@@ -54,12 +61,12 @@ try:
 except NameError:
     raise Exception('Critical Error. Can not find home directory.')
 
-
 # try get net folder
-net_folder = "netcore" if compat.is_netcore() else "netfx"
+DOTNET_RUNTIME_ID = "netcore" if compat.NETCORE else "netfx"
 
 # BIN directory
-BIN_DIR = op.join(HOME_DIR, 'bin', net_folder)
+ROOT_BIN_DIR = op.join(HOME_DIR, 'bin')
+BIN_DIR = op.join(ROOT_BIN_DIR, DOTNET_RUNTIME_ID)
 
 # main pyrevit lib folders
 MAIN_LIB_DIR = op.join(HOME_DIR, 'pyrevitlib')
@@ -696,14 +703,6 @@ class _ExecutorParams(object):
             return __builtins__['__uibutton__']
 
     @property
-    def doc_mode(self):
-        """bool: Check if pyrevit is running by doc generator."""
-        try:
-            return __sphinx__
-        except NameError:
-            return False
-
-    @property
     def result_dict(self):
         """``Dictionary<String, String>``: Return results dict for logging."""
         if self.script_runtime:
@@ -738,101 +737,88 @@ DOCS = _DocsGetter()
 # config user environment paths
 # -----------------------------------------------------------------------------
 # user env paths
-if EXEC_PARAMS.doc_mode:
-    ALLUSER_PROGRAMDATA = USER_ROAMING_DIR = USER_SYS_TEMP = USER_DESKTOP = \
-    EXTENSIONS_DEFAULT_DIR = THIRDPARTY_EXTENSIONS_DEFAULT_DIR = ' '
-else:
-    ALLUSER_PROGRAMDATA = os.getenv('programdata')
-    USER_ROAMING_DIR = os.getenv('appdata')
-    USER_SYS_TEMP = os.getenv('temp')
-    USER_DESKTOP = op.expandvars('%userprofile%\\desktop')
+ALLUSER_PROGRAMDATA = os.getenv('programdata')
+USER_ROAMING_DIR = os.getenv('appdata')
+USER_SYS_TEMP = os.getenv('temp')
+USER_DESKTOP = op.expandvars('%userprofile%\\desktop')
 
-    # verify directory per issue #369
-    if not USER_DESKTOP or not op.exists(USER_DESKTOP):
-        USER_DESKTOP = USER_SYS_TEMP
+# verify directory per issue #369
+if not USER_DESKTOP or not op.exists(USER_DESKTOP):
+    USER_DESKTOP = USER_SYS_TEMP
 
-    # default extensions directory
-    EXTENSIONS_DEFAULT_DIR = op.join(HOME_DIR, 'extensions')
-    THIRDPARTY_EXTENSIONS_DEFAULT_DIR = \
-        op.join(USER_ROAMING_DIR, PYREVIT_ADDON_NAME, 'Extensions')
+# default extensions directory
+EXTENSIONS_DEFAULT_DIR = op.join(HOME_DIR, 'extensions')
+THIRDPARTY_EXTENSIONS_DEFAULT_DIR = \
+    op.join(USER_ROAMING_DIR, PYREVIT_ADDON_NAME, 'Extensions')
 
 # create paths for pyrevit files
-if EXEC_PARAMS.doc_mode:
-    PYREVIT_ALLUSER_APP_DIR = PYREVIT_APP_DIR = PYREVIT_VERSION_APP_DIR = ' '
-else:
-    # pyrevit file directory
-    PYREVIT_ALLUSER_APP_DIR = op.join(ALLUSER_PROGRAMDATA, PYREVIT_ADDON_NAME)
-    PYREVIT_APP_DIR = op.join(USER_ROAMING_DIR, PYREVIT_ADDON_NAME)
-    PYREVIT_VERSION_APP_DIR = op.join(PYREVIT_APP_DIR, HOST_APP.version)
+# pyrevit file directory
+PYREVIT_ALLUSER_APP_DIR = op.join(ALLUSER_PROGRAMDATA, PYREVIT_ADDON_NAME)
+PYREVIT_APP_DIR = op.join(USER_ROAMING_DIR, PYREVIT_ADDON_NAME)
+PYREVIT_VERSION_APP_DIR = op.join(PYREVIT_APP_DIR, HOST_APP.version)
 
-    # add runtime paths to sys.paths
-    # this will allow importing any dynamically compiled DLLs that
-    # would be placed under this paths.
-    for pyrvt_app_dir in [PYREVIT_APP_DIR,
-                          PYREVIT_VERSION_APP_DIR,
-                          THIRDPARTY_EXTENSIONS_DEFAULT_DIR]:
-        if not op.isdir(pyrvt_app_dir):
-            try:
-                os.mkdir(pyrvt_app_dir)
-                sys.path.append(pyrvt_app_dir)
-            except Exception as err:
-                raise PyRevitException('Can not access pyRevit '
-                                       'folder at: {} | {}'
-                                       .format(pyrvt_app_dir, err))
-        else:
+# add runtime paths to sys.paths
+# this will allow importing any dynamically compiled DLLs that
+# would be placed under this paths.
+for pyrvt_app_dir in [PYREVIT_APP_DIR,
+                        PYREVIT_VERSION_APP_DIR,
+                        THIRDPARTY_EXTENSIONS_DEFAULT_DIR]:
+    if not op.isdir(pyrvt_app_dir):
+        try:
+            os.mkdir(pyrvt_app_dir)
             sys.path.append(pyrvt_app_dir)
+        except Exception as err:
+            raise PyRevitException('Can not access pyRevit '
+                                    'folder at: {} | {}'
+                                    .format(pyrvt_app_dir, err))
+    else:
+        sys.path.append(pyrvt_app_dir)
 
 
 # -----------------------------------------------------------------------------
 # standard prefixes for naming pyrevit files (config, appdata and temp files)
 # -----------------------------------------------------------------------------
-if EXEC_PARAMS.doc_mode:
-    PYREVIT_FILE_PREFIX_UNIVERSAL = PYREVIT_FILE_PREFIX = \
-        PYREVIT_FILE_PREFIX_STAMPED = None
-    PYREVIT_FILE_PREFIX_UNIVERSAL_USER = PYREVIT_FILE_PREFIX_USER = \
-        PYREVIT_FILE_PREFIX_STAMPED_USER = None
-else:
-    # e.g. pyRevit_
-    PYREVIT_FILE_PREFIX_UNIVERSAL = '{}_'.format(PYREVIT_ADDON_NAME)
-    PYREVIT_FILE_PREFIX_UNIVERSAL_REGEX = \
-        r'^' + PYREVIT_ADDON_NAME + r'_(?P<fname>.+)'
+# e.g. pyRevit_
+PYREVIT_FILE_PREFIX_UNIVERSAL = '{}_'.format(PYREVIT_ADDON_NAME)
+PYREVIT_FILE_PREFIX_UNIVERSAL_REGEX = \
+    r'^' + PYREVIT_ADDON_NAME + r'_(?P<fname>.+)'
 
-    # e.g. pyRevit_2018_
-    PYREVIT_FILE_PREFIX = '{}_{}_'.format(PYREVIT_ADDON_NAME,
-                                          HOST_APP.version)
-    PYREVIT_FILE_PREFIX_REGEX = \
-        r'^' + PYREVIT_ADDON_NAME + r'_(?P<version>\d{4})_(?P<fname>.+)'
+# e.g. pyRevit_2018_
+PYREVIT_FILE_PREFIX = '{}_{}_'.format(PYREVIT_ADDON_NAME,
+                                        HOST_APP.version)
+PYREVIT_FILE_PREFIX_REGEX = \
+    r'^' + PYREVIT_ADDON_NAME + r'_(?P<version>\d{4})_(?P<fname>.+)'
 
-    # e.g. pyRevit_2018_14422_
-    PYREVIT_FILE_PREFIX_STAMPED = '{}_{}_{}_'.format(PYREVIT_ADDON_NAME,
-                                                     HOST_APP.version,
-                                                     HOST_APP.proc_id)
-    PYREVIT_FILE_PREFIX_STAMPED_REGEX = \
-        r'^' + PYREVIT_ADDON_NAME \
-        + r'_(?P<version>\d{4})_(?P<pid>\d+)_(?P<fname>.+)'
+# e.g. pyRevit_2018_14422_
+PYREVIT_FILE_PREFIX_STAMPED = '{}_{}_{}_'.format(PYREVIT_ADDON_NAME,
+                                                    HOST_APP.version,
+                                                    HOST_APP.proc_id)
+PYREVIT_FILE_PREFIX_STAMPED_REGEX = \
+    r'^' + PYREVIT_ADDON_NAME \
+    + r'_(?P<version>\d{4})_(?P<pid>\d+)_(?P<fname>.+)'
 
-    # e.g. pyRevit_eirannejad_
-    PYREVIT_FILE_PREFIX_UNIVERSAL_USER = '{}_{}_'.format(PYREVIT_ADDON_NAME,
-                                                         HOST_APP.username)
-    PYREVIT_FILE_PREFIX_UNIVERSAL_USER_REGEX = \
-        r'^' + PYREVIT_ADDON_NAME + r'_(?P<user>.+)_(?P<fname>.+)'
+# e.g. pyRevit_eirannejad_
+PYREVIT_FILE_PREFIX_UNIVERSAL_USER = '{}_{}_'.format(PYREVIT_ADDON_NAME,
+                                                        HOST_APP.username)
+PYREVIT_FILE_PREFIX_UNIVERSAL_USER_REGEX = \
+    r'^' + PYREVIT_ADDON_NAME + r'_(?P<user>.+)_(?P<fname>.+)'
 
-    # e.g. pyRevit_2018_eirannejad_
-    PYREVIT_FILE_PREFIX_USER = '{}_{}_{}_'.format(PYREVIT_ADDON_NAME,
-                                                  HOST_APP.version,
-                                                  HOST_APP.username)
-    PYREVIT_FILE_PREFIX_USER_REGEX = \
-        r'^' + PYREVIT_ADDON_NAME \
-        + r'_(?P<version>\d{4})_(?P<user>.+)_(?P<fname>.+)'
+# e.g. pyRevit_2018_eirannejad_
+PYREVIT_FILE_PREFIX_USER = '{}_{}_{}_'.format(PYREVIT_ADDON_NAME,
+                                                HOST_APP.version,
+                                                HOST_APP.username)
+PYREVIT_FILE_PREFIX_USER_REGEX = \
+    r'^' + PYREVIT_ADDON_NAME \
+    + r'_(?P<version>\d{4})_(?P<user>.+)_(?P<fname>.+)'
 
-    # e.g. pyRevit_2018_eirannejad_14422_
-    PYREVIT_FILE_PREFIX_STAMPED_USER = '{}_{}_{}_{}_'.format(PYREVIT_ADDON_NAME,
-                                                             HOST_APP.version,
-                                                             HOST_APP.username,
-                                                             HOST_APP.proc_id)
-    PYREVIT_FILE_PREFIX_STAMPED_USER_REGEX = \
-        r'^' + PYREVIT_ADDON_NAME \
-        + r'_(?P<version>\d{4})_(?P<user>.+)_(?P<pid>\d+)_(?P<fname>.+)'
+# e.g. pyRevit_2018_eirannejad_14422_
+PYREVIT_FILE_PREFIX_STAMPED_USER = '{}_{}_{}_{}_'.format(PYREVIT_ADDON_NAME,
+                                                            HOST_APP.version,
+                                                            HOST_APP.username,
+                                                            HOST_APP.proc_id)
+PYREVIT_FILE_PREFIX_STAMPED_USER_REGEX = \
+    r'^' + PYREVIT_ADDON_NAME \
+    + r'_(?P<version>\d{4})_(?P<user>.+)_(?P<pid>\d+)_(?P<fname>.+)'
 
 # -----------------------------------------------------------------------------
 # config labs modules

@@ -1,10 +1,9 @@
 # -*- coding: UTF-8 -*-
-#pylint: disable=import-error,invalid-name,broad-except,superfluous-parens
 import datetime
 
 from pyrevit import coreutils
 from pyrevit import revit, DB
-from pyrevit.compat import get_value_func
+from pyrevit.compat import get_elementid_value_func
 
 from pyrevit.preflight import PreflightTestCase
 
@@ -258,7 +257,7 @@ def checkModel(doc, output):
     projectNumber = project_info_collector.Number
     projectName = project_info_collector.Name
     projectClient = project_info_collector.ClientName
-    value_func = get_value_func()
+    get_elementid_value = get_elementid_value_func()
     if len(name) == 0:
         # name = "Not saved file"
         printedName = "Not saved file"
@@ -436,7 +435,7 @@ def checkModel(doc, output):
             # to support french files
             or schedName[:28] != "<Nomenclature des révisions>"):
             if schedName not in schedulesOnSheet:
-                if value_func(schedule.OwnerViewId) != -1:
+                if get_elementid_value(schedule.OwnerViewId) != -1:
                     # print schedName
                     # print schedule.Id
                     schedulesOnSheet.append(schedName)
@@ -448,7 +447,7 @@ def checkModel(doc, output):
             # to support french files
             or schedName[:28] != "<Nomenclature des révisions>"):
             if schedName not in schedulesOnSheet:
-                if value_func(schedule.OwnerViewId) != -1:
+                if get_elementid_value(schedule.OwnerViewId) != -1:
                     # print schedName
                     # print schedule.Id
                     schedulesOnSheet.append(schedName)
@@ -928,7 +927,7 @@ def checkModel(doc, output):
     for element in elements:
         try:
             category = element.Category.Name
-            categoryId = value_func(element.Category.Id)
+            categoryId = get_elementid_value(element.Category.Id)
             # filtering out DWGs and DXFs, categories from banlist
             # filtering out categories in catBanlist
             # DB.BuiltInCategory Ids are negative integers
@@ -1167,44 +1166,47 @@ def checkModel(doc, output):
             worksetKind = str(worksetTable.GetWorkset(worksetId).Kind)
             if worksetKind == "UserWorkset":
                 worksetName = worksetTable.GetWorkset(worksetId).Name
-                if element.Name not in ('DefaultLocation', '', None) or element.Category.Name not in ('', None):
-                    # Removes the location objects from the list as well as empty elements or proxies
-                    if worksetName not in worksetNames:
-                        worksetNames.append(worksetName)
-                    graphWorksetsData.append(worksetName)
-        # sorting results in chart legend
-        worksetNames.sort()
+                if hasattr(element, "Name") and hasattr(element, "Category") and hasattr(element.Category, "Name"):
+                    if element.Name not in ('DefaultLocation', '', None) or element.Category.Name not in ('', None):
+                        # Removes the location objects from the list as well as empty elements or proxies
+                        if worksetName not in worksetNames:
+                            worksetNames.append(worksetName)
+                        graphWorksetsData.append(worksetName)
+                else:
+                    if "Unassigned" not in worksetNames:
+                        worksetNames.append("Unassigned")
+                    graphWorksetsData.append("Unassigned")
 
-        worksetsSet = []
-        for i in worksetNames:
-            count = graphWorksetsData.count(i)
-            worksetsSet.append(count)
-        worksetNames = [x.encode("utf8") for x in worksetNames]
+    # print worksetNames
+    # sorting results in chart legend
+    worksetNames.sort()
 
-        # Worksets OUTPUT print chart only when file is workshared
-        if len(worksetNames) > 0:
-            chartWorksets = output.make_doughnut_chart()
-            chartWorksets.options.title = {
-                "display": True,
-                "text": "Element Count by Workset",
-                "fontSize": 25,
-                "fontColor": "#000",
-                "fontStyle": "bold",
-            }
-            chartWorksets.data.labels = worksetNames
-            set_a = chartWorksets.data.new_dataset("Not Standard")
-            set_a.data = worksetsSet
+    worksetsSet = [graphWorksetsData.count(i) for i in worksetNames]
+    worksetNames = [x.encode("utf8") for x in worksetNames]
 
-            set_a.backgroundColor = COLORS
+    # Worksets OUTPUT print chart only when file is workshared
+    if worksetNames:
+        chartWorksets = output.make_doughnut_chart()
+        chartWorksets.options.title = {
+            "display": True,
+            "text": "Element Count by Workset",
+            "fontSize": 25,
+            "fontColor": "#000",
+            "fontStyle": "bold",
+        }
+        chartWorksets.data.labels = worksetNames
+        set_a = chartWorksets.data.new_dataset("Not Standard")
+        set_a.data = worksetsSet
 
-            worksetsCount = len(worksetNames)
-            if worksetsCount < 15:
-                chartWorksets.set_height(100)
-            elif worksetsCount < 30:
-                chartWorksets.set_height(160)
-            else:
-                chartWorksets.set_height(200)
+        set_a.backgroundColor = COLORS
 
+        worksetsCount = len(worksetNames)
+        if worksetsCount < 15:
+            chartWorksets.set_height(100)
+        elif worksetsCount < 30:
+            chartWorksets.set_height(160)
+        else:
+            chartWorksets.set_height(200)
             chartWorksets.draw()
 
 class ModelChecker(PreflightTestCase):
@@ -1235,8 +1237,6 @@ class ModelChecker(PreflightTestCase):
     name = "Model Checker"
     author = "David Vadkerti, Jean-Marc Couffin"
 
-    def setUp(self, doc, output):
-        pass
 
     def startTest(self, doc, output):
         timer = coreutils.Timer()
@@ -1245,9 +1245,3 @@ class ModelChecker(PreflightTestCase):
         endtime_hms = str(datetime.timedelta(seconds=endtime))
         endtime_hms_claim = "Transaction took " + endtime_hms
         print(endtime_hms_claim)
-
-    def tearDown(self, doc, output):
-        pass
-
-    def doCleanups(self, doc, output):
-        pass

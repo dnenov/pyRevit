@@ -1,9 +1,14 @@
 """Manage pyRevit labs tasks"""
 # pylint: disable=invalid-name,broad-except
 import sys
+import io
 import os.path as op
 import logging
 from typing import Dict, Optional
+
+# Configure UTF-8 encoding for console output
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # dev scripts
 from scripts import utils
@@ -82,11 +87,12 @@ def build_deps(_: Dict[str, str]):
     _build("IronPython2 (netcore)", configs.IRONPYTHON2_SQLITE, framework="netstandard2.0", publish_dir=configs.ENGINES2PATH_NETCORE)
     _build("IronPython2 (netcore)", configs.IRONPYTHON2_WPF, framework="net6.0-windows", publish_dir=configs.ENGINES2PATH_NETCORE)
 
-    _build("IronPython3 (netfx)", configs.IRONPYTHON3, framework="net48", publish_dir=configs.ENGINES3PATH_NETFX)
-    _build("IronPython3 (netcore)", configs.IRONPYTHON3_LIB, framework="net6.0", publish_dir=configs.ENGINES3PATH_NETCORE)
-    _build("IronPython3 (netcore)", configs.IRONPYTHON3_MODULES, framework="net6.0", publish_dir=configs.ENGINES3PATH_NETCORE)
-    _build("IronPython3 (netcore)", configs.IRONPYTHON3_SQLITE, framework="net6.0", publish_dir=configs.ENGINES3PATH_NETCORE)
-    _build("IronPython3 (netcore)", configs.IRONPYTHON3_WPF, framework="net6.0-windows", publish_dir=configs.ENGINES3PATH_NETCORE)
+    # NOTE: Enable when produced custom IronPython3 build
+    # _build("IronPython3 (netfx)", configs.IRONPYTHON3, framework="net48", publish_dir=configs.ENGINES3PATH_NETFX)
+    # _build("IronPython3 (netcore)", configs.IRONPYTHON3_LIB, framework="net6.0", publish_dir=configs.ENGINES3PATH_NETCORE)
+    # _build("IronPython3 (netcore)", configs.IRONPYTHON3_MODULES, framework="net6.0", publish_dir=configs.ENGINES3PATH_NETCORE)
+    # _build("IronPython3 (netcore)", configs.IRONPYTHON3_SQLITE, framework="net6.0", publish_dir=configs.ENGINES3PATH_NETCORE)
+    # _build("IronPython3 (netcore)", configs.IRONPYTHON3_WPF, framework="net6.0-windows", publish_dir=configs.ENGINES3PATH_NETCORE)
 
     _build("Python.Net (netfx)", configs.CPYTHONRUNTIME, framework="netstandard2.0", publish_dir=configs.LIBSPATH_NETFX)
     _build("Python.Net (netcore)", configs.CPYTHONRUNTIME, framework="netstandard2.0", publish_dir=configs.LIBSPATH_NETCORE)
@@ -110,4 +116,9 @@ def build_labs(args: Dict[str, str]):
 def build_runtime(args: Dict[str, str]):
     """Build pyRevit runtime."""
     config = args.get("<config>") or "Release"
-    _build("runtime", configs.RUNTIME, config=config)
+    
+    IPY2712PR = "IPY2712PR"
+    IPY342 = "IPY342"
+    
+    _build(f"runtime {IPY2712PR}", configs.RUNTIME, config=config + f" {IPY2712PR}")
+    _build(f"runtime {IPY342}", configs.RUNTIME, config=config + f" {IPY342}")

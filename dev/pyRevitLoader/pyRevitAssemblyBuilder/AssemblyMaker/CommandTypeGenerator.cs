@@ -94,7 +94,7 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
                 sb.AppendLine($"        @\"{EscapeForVerbatim(arguments)}\",");
                 sb.AppendLine($"        \"\",");
                 sb.AppendLine($"        @\"{EscapeForVerbatim(tooltip)}\",");
-                sb.AppendLine($"        \"{Escape(cmd.Name)}\",");
+                sb.AppendLine($"        \"{Escape(cmd.DisplayName)}\",");  // Use DisplayName to match button's Revit API name for toggle_icon
                 sb.AppendLine($"        \"{Escape(bundle)}\",");
                 sb.AppendLine($"        \"{Escape(extName)}\",");
                 sb.AppendLine($"        \"{cmd.UniqueId}\",");

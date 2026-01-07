@@ -896,7 +896,9 @@ namespace pyRevitExtensionParser
             }
             else if (isFolded)
             {
-                // Folded style: join lines with spaces, preserve paragraph breaks
+                // Folded style: join lines with spaces, empty lines become single newlines
+                // Per YAML spec, in folded style (>-), consecutive non-empty lines are joined with spaces,
+                // and empty lines create paragraph breaks (single newlines)
                 var result = new List<string>();
                 var currentParagraph = new List<string>();
 
@@ -904,13 +906,14 @@ namespace pyRevitExtensionParser
                 {
                     if (string.IsNullOrWhiteSpace(line))
                     {
-                        // Empty line - end current paragraph
+                        // Empty line - end current paragraph and start new one
                         if (currentParagraph.Count > 0)
                         {
                             result.Add(string.Join(" ", currentParagraph));
                             currentParagraph.Clear();
                         }
-                        result.Add("");
+                        // Don't add empty string - the newline between paragraphs 
+                        // comes from joining result list with "\n"
                     }
                     else
                     {

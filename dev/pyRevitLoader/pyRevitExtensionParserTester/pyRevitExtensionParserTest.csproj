@@ -52,6 +52,7 @@
     <Compile Include="SmartButtonTests.cs" />
     <Compile Include="TemplateInheritanceTests.cs" />
     <Compile Include="ControlIdTests.cs" />
+    <Compile Include="MultilineTitleTest.cs" />
   </ItemGroup>
 
   <ItemGroup>

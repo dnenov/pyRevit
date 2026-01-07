@@ -728,8 +728,8 @@ namespace pyRevitExtensionParser
                 }
                 else
                 {
-                    // Default from bundle (zero-doc)
-                    finalContext = bundleContext;
+                    // No context defined - button will always be available (no availability class)
+                    finalContext = null;
                 }
 
                 // Determine final highlight: bundle takes precedence over script

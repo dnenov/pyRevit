@@ -275,7 +275,7 @@ context:
         [Test]
         public void TestDefaultContextWhenNotSpecified()
         {
-            // Test that default context is (zero-doc) when not specified
+            // Test that context is null when not specified (no availability class will be created)
             var yamlContent = @"title:
   en_us: Test No Context
 ";
@@ -287,10 +287,10 @@ context:
                 var bundle = BundleParser.BundleYamlParser.Parse(tempFile);
                 
                 TestContext.Out.WriteLine($"Context (raw): {bundle.Context ?? "null"}");
-                TestContext.Out.WriteLine($"Context (formatted): {bundle.GetFormattedContext()}");
+                TestContext.Out.WriteLine($"Context (formatted): {bundle.GetFormattedContext() ?? "null"}");
                 
                 Assert.That(bundle.Context, Is.Null.Or.Empty);
-                Assert.That(bundle.GetFormattedContext(), Is.EqualTo("(zero-doc)"));
+                Assert.That(bundle.GetFormattedContext(), Is.Null);
             }
             finally
             {

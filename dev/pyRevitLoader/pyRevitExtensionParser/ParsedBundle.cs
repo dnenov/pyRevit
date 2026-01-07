@@ -269,8 +269,8 @@ namespace pyRevitExtensionParser
                 return "(" + Context + ")";
             }
             
-            // Default: zero-doc (always available)
-            return "(zero-doc)";
+            // No context defined - return null (button always available, no availability class needed)
+            return null;
         }
 
         /// <summary>

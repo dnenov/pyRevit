@@ -73,9 +73,9 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
                 // Build engine configs based on bundle configuration or script type
                 string engineCfgs = CommandGenerationUtilities.BuildEngineConfigs(cmd, scriptPath);
                 
-                // Get context from component - already formatted by ParsedBundle.GetFormattedContext()
-                // Default to ExtensionConstants.DEFAULT_CONTEXT if not specified
-                string context = !string.IsNullOrEmpty(cmd.Context) ? cmd.Context : ExtensionConstants.DEFAULT_CONTEXT;
+                // Get context from component - only use if explicitly defined
+                string context = cmd.Context ?? string.Empty;
+                bool hasExplicitContext = !string.IsNullOrEmpty(cmd.Context);
                 
                 string arguments = CommandGenerationUtilities.BuildCommandArguments(extension, cmd, revitVersion);
 
@@ -107,14 +107,17 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
                 sb.AppendLine("}");
                 sb.AppendLine();
 
-                // — Availability class —
-                sb.AppendLine($"public class {safeClassName}_avail : ScriptCommandExtendedAvail");
-                sb.AppendLine("{");
-                sb.AppendLine($"    public {safeClassName}_avail() : base(\"{context}\")");
-                sb.AppendLine("    {");
-                sb.AppendLine("    }");
-                sb.AppendLine("}");
-                sb.AppendLine();
+                // — Availability class — only create if context is explicitly defined
+                if (hasExplicitContext)
+                {
+                    sb.AppendLine($"public class {safeClassName}_avail : ScriptCommandExtendedAvail");
+                    sb.AppendLine("{");
+                    sb.AppendLine($"    public {safeClassName}_avail() : base(\"{context}\")");
+                    sb.AppendLine("    {");
+                    sb.AppendLine("    }");
+                    sb.AppendLine("}");
+                    sb.AppendLine();
+                }
             }
 
             return sb.ToString();

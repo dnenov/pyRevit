@@ -60,9 +60,10 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
             foreach (var child in component.Children ?? Enumerable.Empty<ParsedComponent>())
             {
                 // Skip if this item already exists in the panel (e.g., during reload)
-                if (ItemExistsInPanel(parentPanel, child.UniqueId))
+                // Check by DisplayName since that's what's used for the button's internal Name property
+                if (ItemExistsInPanel(parentPanel, child.DisplayName))
                 {
-                    _logger.Debug($"Skipping stack item '{child.UniqueId}' - already exists in panel.");
+                    _logger.Debug($"Skipping stack item '{child.DisplayName}' - already exists in panel.");
                     return; // If any item exists, the whole stack was already added
                 }
 

@@ -53,6 +53,7 @@
     <Compile Include="TemplateInheritanceTests.cs" />
     <Compile Include="ControlIdTests.cs" />
     <Compile Include="MultilineTitleTest.cs" />
+    <Compile Include="UrlButtonTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

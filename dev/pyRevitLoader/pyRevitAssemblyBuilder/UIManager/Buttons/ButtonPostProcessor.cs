@@ -137,6 +137,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
 
         /// <summary>
         /// Gets the Autodesk.Windows.RibbonButton from a Revit UI RibbonItem.
+        /// Uses reflection to access the internal getRibbonItem method.
         /// </summary>
         private RibbonButton? GetAutodeskWindowsButton(RibbonItem ribbonItem)
         {
@@ -145,7 +146,18 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
 
             try
             {
-                // Search for the button in the Autodesk.Windows.ComponentManager.Ribbon
+                // Use reflection to call the internal getRibbonItem method
+                // This is the same approach used by pyrevit.coreutils.ribbon.py
+                var getRibbonItemMethod = ribbonItem.GetType().GetMethod(
+                    "getRibbonItem",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    
+                if (getRibbonItemMethod != null)
+                {
+                    var result = getRibbonItemMethod.Invoke(ribbonItem, null);
+                    return result as RibbonButton;
+                }
+                
                 var ribbon = ComponentManager.Ribbon;
                 if (ribbon?.Tabs == null)
                     return null;

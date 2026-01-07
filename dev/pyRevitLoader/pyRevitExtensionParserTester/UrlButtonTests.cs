@@ -39,6 +39,7 @@ namespace pyRevitExtensionParserTest
                 TestContext.Out.WriteLine("Available components:");
                 PrintAllComponents(devToolsExt, "");
                 Assert.Fail("apidocs URL button not found");
+                return;
             }
             
             TestContext.Out.WriteLine($"\nFound URL Button: {apidocsButton.DisplayName}");
@@ -54,13 +55,13 @@ namespace pyRevitExtensionParserTest
             
             // Verify the hyperlink is parsed
             Assert.IsNotNull(apidocsButton.Hyperlink, "Hyperlink should not be null");
-            Assert.IsNotEmpty(apidocsButton.Hyperlink, "Hyperlink should not be empty");
-            Assert.IsTrue(apidocsButton.Hyperlink.StartsWith("http"), 
+            Assert.IsNotEmpty(apidocsButton.Hyperlink!, "Hyperlink should not be empty");
+            Assert.IsTrue(apidocsButton.Hyperlink!.StartsWith("http"), 
                 "Hyperlink should be a valid URL");
             
             // Verify other properties
             Assert.IsNotNull(apidocsButton.Tooltip, "Tooltip should not be null");
-            Assert.AreEqual("zero-doc", apidocsButton.Context, "Context should be zero-doc");
+            Assert.AreEqual("(zero-doc)", apidocsButton.Context, "Context should be (zero-doc)");
             
             TestContext.Out.WriteLine("\n✓ URL button parsing test passed!");
         }
@@ -81,9 +82,10 @@ namespace pyRevitExtensionParserTest
             
             var extensions = ParseInstalledExtensions(new[] { devToolsPath });
             var devToolsExt = extensions.FirstOrDefault();
+            Assert.IsNotNull(devToolsExt, "Extension should be parsed");
             
             // Count all URL buttons in the extension
-            var urlButtons = GetAllComponentsFlat(devToolsExt)
+            var urlButtons = GetAllComponentsFlat(devToolsExt!)
                 .Where(c => c.Type == CommandComponentType.UrlButton)
                 .ToList();
             
@@ -94,6 +96,7 @@ namespace pyRevitExtensionParserTest
                 TestContext.Out.WriteLine($"\nURL Button: {btn.DisplayName}");
                 TestContext.Out.WriteLine($"  Hyperlink: {btn.Hyperlink}");
                 TestContext.Out.WriteLine($"  Tooltip: {btn.Tooltip}");
+                TestContext.Out.WriteLine($"  Highlight: {btn.Highlight ?? "(none)"}");
                 
                 // Verify each URL button has a hyperlink
                 Assert.IsNotNull(btn.Hyperlink, 
@@ -104,9 +107,57 @@ namespace pyRevitExtensionParserTest
             
             Assert.IsTrue(urlButtons.Count > 0, "Should find at least one URL button");
         }
+
+        [Test]
+        public void TestUrlButtonHighlightParsing()
+        {
+            // Test that ButtonA.urlbutton with highlight: updated is parsed correctly
+            var devToolsPath = Path.Combine(
+                TestContext.CurrentContext.TestDirectory, 
+                "..", "..", "..", "..", "..", "..",
+                "extensions", "pyRevitDevTools.extension");
+            
+            if (!Directory.Exists(devToolsPath))
+            {
+                Assert.Inconclusive($"pyRevitDevTools extension not found at {devToolsPath}");
+                return;
+            }
+            
+            var extensions = ParseInstalledExtensions(new[] { devToolsPath });
+            var devToolsExt = extensions.FirstOrDefault();
+            Assert.IsNotNull(devToolsExt, "Should parse pyRevitDevTools extension");
+            
+            // Find the ButtonA URL button
+            var buttonA = FindComponentRecursively(devToolsExt, "ButtonA");
+            
+            if (buttonA == null)
+            {
+                // Print all components to help debug
+                TestContext.Out.WriteLine("Available components:");
+                PrintAllComponents(devToolsExt, "");
+                Assert.Fail("ButtonA URL button not found");
+                return;
+            }
+            
+            TestContext.Out.WriteLine($"\nFound ButtonA URL Button: {buttonA.DisplayName}");
+            TestContext.Out.WriteLine($"Type: {buttonA.Type}");
+            TestContext.Out.WriteLine($"Hyperlink: {buttonA.Hyperlink}");
+            TestContext.Out.WriteLine($"Highlight: {buttonA.Highlight ?? "(null)"}");
+            TestContext.Out.WriteLine($"BundleFile: {buttonA.BundleFile}");
+            
+            // Verify it's parsed as a URL button
+            Assert.AreEqual(CommandComponentType.UrlButton, buttonA.Type, 
+                "Button should be parsed as UrlButton type");
+            
+            // Verify the highlight is parsed
+            Assert.IsNotNull(buttonA.Highlight, "Highlight should not be null");
+            Assert.AreEqual("updated", buttonA.Highlight!, "Highlight should be 'updated'");
+            
+            TestContext.Out.WriteLine("\n✓ URL button highlight parsing test passed!");
+        }
         
         // Helper method to find a component recursively
-        private ParsedComponent FindComponentRecursively(ParsedComponent root, string name)
+        private ParsedComponent? FindComponentRecursively(ParsedComponent root, string name)
         {
             if (root.Name != null && root.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase))
                 return root;
@@ -124,7 +175,7 @@ namespace pyRevitExtensionParserTest
             return null;
         }
         
-        private ParsedComponent FindComponentRecursively(ParsedExtension extension, string name)
+        private ParsedComponent? FindComponentRecursively(ParsedExtension extension, string name)
         {
             if (extension.Children != null)
             {

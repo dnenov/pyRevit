@@ -261,7 +261,7 @@
     <system:String x:Key="UI-UX.ProjectSample1">Projekt 1</system:String>
     <system:String x:Key="UI-UX.ProjectSample2">Projekt 2</system:String>
 
-    <system:String x:Key="UI-UX.FamilySample1">Familie 2</system:String>
+    <system:String x:Key="UI-UX.FamilySample1">Familie 1</system:String>
     <system:String x:Key="UI-UX.FamilySample2">Familie 2</system:String>
 
     <system:String x:Key="UI-UX.ColoringTheme">Färbungsthema</system:String>

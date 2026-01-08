@@ -106,6 +106,12 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
             {
                 if (sub.Type == CommandComponentType.Separator)
                 {
+                    // Skip adding separators during reload - they persist in the UI
+                    if (assemblyInfo?.IsReloading == true)
+                    {
+                        Logger.Debug($"Skipping separator during reload for pulldown button '{component.DisplayName}'.");
+                        continue;
+                    }
                     try
                     {
                         pdBtn.AddSeparator();
@@ -120,7 +126,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                          sub.Type == CommandComponentType.InvokeButton ||
                          sub.Type == CommandComponentType.ContentButton)
                 {
-                    var subBtn = pdBtn.AddPushButton(CreatePushButtonData(sub, assemblyInfo));
+                    var subBtn = pdBtn.AddPushButton(CreatePushButtonData(sub, assemblyInfo!));
                     if (subBtn != null)
                     {
                         ButtonPostProcessor.Process(subBtn, sub, component, IconMode.SmallToBoth);
@@ -128,7 +134,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                 }
                 else if (sub.Type == CommandComponentType.SmartButton)
                 {
-                    var smartSubBtn = pdBtn.AddPushButton(CreatePushButtonData(sub, assemblyInfo));
+                    var smartSubBtn = pdBtn.AddPushButton(CreatePushButtonData(sub, assemblyInfo!));
                     if (smartSubBtn != null)
                     {
                         ButtonPostProcessor.Process(smartSubBtn, sub, component, IconMode.SmallToBoth);

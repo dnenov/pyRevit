@@ -203,7 +203,7 @@ namespace pyRevitAssemblyBuilder.UIManager
             switch (component.Type)
             {
                 case CommandComponentType.Separator:
-                    HandleSeparator(parentPanel);
+                    HandleSeparator(parentPanel, assemblyInfo);
                     break;
 
                 case CommandComponentType.Stack:
@@ -234,8 +234,15 @@ namespace pyRevitAssemblyBuilder.UIManager
             }
         }
 
-        private void HandleSeparator(RibbonPanel? parentPanel)
+        private void HandleSeparator(RibbonPanel? parentPanel, ExtensionAssemblyInfo assemblyInfo)
         {
+            // Skip adding separators during reload - they persist in the UI
+            if (assemblyInfo?.IsReloading == true)
+            {
+                _logger.Debug($"Skipping separator during reload for panel '{parentPanel?.Name}'.");
+                return;
+            }
+
             if (parentPanel != null)
             {
                 try

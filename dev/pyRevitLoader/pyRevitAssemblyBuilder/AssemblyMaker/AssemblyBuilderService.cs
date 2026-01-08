@@ -60,6 +60,15 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
             if (extension == null)
                 throw new ArgumentNullException(nameof(extension));
 
+            // Check if any assembly for this extension is already loaded in the AppDomain.
+            // This determines if we are reloading (extension was already loaded previously).
+            // Matches pythonic loader's _is_any_ext_asm_loaded() check in asmmaker.py
+            bool isReloading = IsAnyExtensionAssemblyLoaded(extension);
+            if (isReloading)
+            {
+                _logger.Debug($"Extension '{extension.Name}' is being reloaded (assembly already loaded in AppDomain).");
+            }
+
             // Pre-load module DLLs before building the assembly
             // This matches the pythonic loader's approach: collect modules and load them
             // so they're available in the AppDomain for CLREngine to reference
@@ -86,7 +95,7 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
                 try
                 {
                     var assemblyName = AssemblyName.GetAssemblyName(outputPath);
-                    return new ExtensionAssemblyInfo(extension.Name, outputPath, isReloading: false);
+                    return new ExtensionAssemblyInfo(extension.Name, outputPath, isReloading);
                 }
                 catch (Exception ex)
                 {
@@ -110,12 +119,48 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
             {
                 BuildWithRoslyn(extension, outputPath, libraryExtensions);
 
-                return new ExtensionAssemblyInfo(extension.Name, outputPath, isReloading: false);
+                return new ExtensionAssemblyInfo(extension.Name, outputPath, isReloading);
             }
             catch
             {
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Checks if any assembly for this extension is already loaded in the AppDomain.
+        /// This is used to detect if we are reloading an extension.
+        /// </summary>
+        /// <param name="extension">The extension to check.</param>
+        /// <returns>True if an assembly for this extension is already loaded.</returns>
+        private bool IsAnyExtensionAssemblyLoaded(ParsedExtension extension)
+        {
+            const string PYREVIT_PREFIX = "pyRevit_";
+            
+            foreach (var loadedAsm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    var asmName = loadedAsm.GetName().Name;
+                    if (asmName == null)
+                        continue;
+
+                    // Check if this is a pyRevit extension assembly for this extension
+                    // Assembly names follow the pattern: pyRevit_{revitVersion}_{hash}_{extensionName}
+                    if (asmName.StartsWith(PYREVIT_PREFIX) && asmName.EndsWith(extension.Name))
+                    {
+                        _logger.Debug($"Found loaded extension assembly: {asmName}");
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Some assemblies may throw when getting their name, skip them
+                    _logger.Debug($"Error checking assembly: {ex.Message}");
+                }
+            }
+            
+            return false;
         }
 
         /// <summary>

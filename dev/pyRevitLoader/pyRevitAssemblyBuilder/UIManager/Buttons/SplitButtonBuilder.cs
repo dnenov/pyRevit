@@ -87,6 +87,12 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
             {
                 if (sub.Type == CommandComponentType.Separator)
                 {
+                    // Skip adding separators during reload - they persist in the UI
+                    if (assemblyInfo?.IsReloading == true)
+                    {
+                        Logger.Debug($"Skipping separator during reload for split button '{component.DisplayName}'.");
+                        continue;
+                    }
                     try
                     {
                         splitBtn.AddSeparator();
@@ -101,7 +107,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                          sub.Type == CommandComponentType.InvokeButton ||
                          sub.Type == CommandComponentType.ContentButton)
                 {
-                    var subBtn = splitBtn.AddPushButton(CreatePushButtonData(sub, assemblyInfo));
+                    var subBtn = splitBtn.AddPushButton(CreatePushButtonData(sub, assemblyInfo!));
                     if (subBtn != null)
                     {
                         ButtonPostProcessor.Process(subBtn, sub, component);

@@ -1,12 +1,14 @@
 tooltip:
-  ru: Самый лучший интерфейс!
   en_us: The best interface ever!
+  ru: Самый лучший интерфейс!
+  chinese_s: 最好的界面！
   es_es: Lo mejor que hay!
   de_de: Öffnet das Eingabefeld für die Suche!
   fr_fr: La meilleure interface!
 title:
-  ru: Поиск
   en_us: 'Search'
+  ru: Поиск
+  chinese_s: 搜索
   fa: 'جستجو'
   bg: 'Търси'
   nl_nl: 'Zoek'

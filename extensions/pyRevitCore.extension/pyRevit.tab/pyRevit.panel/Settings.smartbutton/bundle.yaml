@@ -4,7 +4,7 @@ title:
   fr_fr: Paramètres
   es_es: 'Configuración'
   de_de: Einstellungen
-  zh_cn: 设置
+  chinese_s: 设置
 tooltip:
   ru: >-
     Показывает окно настроек pyRevit. Вы можете настраивать как pyRevit загружает и устанавливает некоторые параметры.
@@ -39,6 +39,12 @@ tooltip:
 
     Zeigt die Konfigurationsdatei im Explorer an. 
   zh_cn: >-
+    显示 pyRevit 的首选项窗口。您可以在此处自定义 pyRevit 的加载方式并设置一些基本参数。
+
+    Shift-Click:
+
+    在资源管理器中显示配置文件。
+  chinese_s: >-
     显示 pyRevit 的首选项窗口。您可以在此处自定义 pyRevit 的加载方式并设置一些基本参数。
 
     Shift-Click:

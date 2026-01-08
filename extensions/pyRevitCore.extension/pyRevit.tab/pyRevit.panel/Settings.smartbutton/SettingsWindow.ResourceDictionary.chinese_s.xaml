@@ -260,7 +260,7 @@
     <system:String x:Key="UI-UX.ProjectSample1">项目 1</system:String>
     <system:String x:Key="UI-UX.ProjectSample2">项目 2</system:String>
 
-    <system:String x:Key="UI-UX.FamilySample1">族 2</system:String>
+    <system:String x:Key="UI-UX.FamilySample1">族 1</system:String>
     <system:String x:Key="UI-UX.FamilySample2">族 2</system:String>
 
     <system:String x:Key="UI-UX.ColoringTheme">着色主题</system:String>

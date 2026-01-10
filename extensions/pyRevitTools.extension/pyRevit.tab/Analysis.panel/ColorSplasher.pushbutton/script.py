@@ -1091,52 +1091,68 @@ class ColorSplasherWindow(forms.WPFWindow):
         """Apply gradient colors to all values"""
         self.list_box2.SelectionChanged -= self.list_selected_index_changed
         try:
-            list_values = []
             number_items = self.list_box2.Items.Count
             if number_items <= 2:
                 return
-            else:
-                first_item = self.list_box2.Items[0]
-                last_item = self.list_box2.Items[number_items - 1]
-                first_row = self._get_data_row_from_item(first_item, 0)
-                last_row = self._get_data_row_from_item(last_item, number_items - 1)
-                if first_row is None or last_row is None:
-                    return
-                start_color = first_row["Value"].colour
-                end_color = last_row["Value"].colour
+            
+            # Get first and last colors
+            first_item = self.list_box2.Items[0]
+            last_item = self.list_box2.Items[number_items - 1]
+            first_row = self._get_data_row_from_item(first_item, 0)
+            last_row = self._get_data_row_from_item(last_item, number_items - 1)
+            if first_row is None or last_row is None:
+                return
+            start_color = first_row["Value"].colour
+            end_color = last_row["Value"].colour
 
-                list_colors = self.get_gradient_colors(
-                    start_color, end_color, number_items
-                )
-                for indx in range(number_items):
-                    item = self.list_box2.Items[indx]
-                    row = self._get_data_row_from_item(item, indx)
-                    if row is None:
-                        continue
-                    value = row["Value"]
-                    value.n1 = abs(list_colors[indx][1])
-                    value.n2 = abs(list_colors[indx][2])
-                    value.n3 = abs(list_colors[indx][3])
-                    value.colour = Drawing.Color.FromArgb(value.n1, value.n2, value.n3)
-                    list_values.append(value)
-                self._table_data_3 = DataTable("Data")
-                self._table_data_3.Columns.Add("Key", System.String)
-                self._table_data_3.Columns.Add("Value", System.Object)
-                vl_par = [x.value for x in list_values]
-                for key_, value_ in zip(vl_par, list_values):
-                    self._table_data_3.Rows.Add(key_, value_)
+            # Generate gradient colors
+            list_colors = self.get_gradient_colors(
+                start_color, end_color, number_items
+            )
+            
+            # Collect existing values and update their colors
+            list_values = []
+            for indx in range(number_items):
+                item = self.list_box2.Items[indx]
+                row = self._get_data_row_from_item(item, indx)
+                if row is None:
+                    continue
+                value = row["Value"]
+                # Update colors in existing ValuesInfo object (preserve all data including ele_id list)
+                value.n1 = abs(list_colors[indx][1])
+                value.n2 = abs(list_colors[indx][2])
+                value.n3 = abs(list_colors[indx][3])
+                value.colour = Drawing.Color.FromArgb(value.n1, value.n2, value.n3)
+                list_values.append(value)
 
-                default_view = self._table_data_3.DefaultView
-                default_view.Refresh()
-                self.list_box2.ItemsSource = default_view
-                self.list_box2.SelectedIndex = -1
-                self._update_placeholder_visibility()
-                self.list_box2.UpdateLayout()
+            # Recreate table with new ValuesInfo objects (like check_item does)
+            self._table_data_3 = DataTable("Data")
+            self._table_data_3.Columns.Add("Key", System.String)
+            self._table_data_3.Columns.Add("Value", System.Object)
+            
+            vl_par = [x.value for x in list_values]
+            for key_, value_ in zip(vl_par, list_values):
+                self._table_data_3.Rows.Add(key_, value_)
 
-                self._update_listbox_colors_async()
+            # Set ItemsSource and update (same pattern as check_item)
+            default_view = self._table_data_3.DefaultView
+            self.list_box2.ItemsSource = default_view
+            self.list_box2.SelectedIndex = -1
+            self._update_placeholder_visibility()
+            self.list_box2.UpdateLayout()
+
+            try:
+                self.list_box2.SelectionChanged -= self.list_selected_index_changed
+            except Exception:
+                pass
+            self.list_box2.SelectionChanged += self.list_selected_index_changed
+
+            # Update colors asynchronously (same as check_item)
+            self._update_listbox_colors_async()
         except Exception:
             external_event_trace()
-        self.list_box2.SelectionChanged += self.list_selected_index_changed
+        finally:
+            self.list_box2.SelectionChanged += self.list_selected_index_changed
 
     def button_click_create_legend(self, sender, e):
         if self.list_box2.Items.Count <= 0:

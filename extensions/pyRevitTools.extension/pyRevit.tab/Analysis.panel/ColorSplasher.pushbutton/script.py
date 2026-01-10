@@ -78,6 +78,7 @@ class SubscribeView(UI.IExternalEventHandler):
                             if not new_doc.Equals(current_doc):
                                 wndw.Close()
                         except (AttributeError, RuntimeError):
+                            # If we can't get current doc, continue without closing window
                             pass
                 new_view = get_active_view(e.Document)
                 if new_view != 0:
@@ -971,6 +972,7 @@ class ColorSplasherWindow(forms.WPFWindow):
                 self.list_box2, System.Windows.Controls.ScrollBarVisibility.Auto
             )
         except Exception:
+            # ScrollViewer setup is optional, continue if it fails
             pass
 
         self.Closing += self.closing_event
@@ -980,6 +982,7 @@ class ColorSplasherWindow(forms.WPFWindow):
             try:
                 self.Icon = Drawing.Icon(icon_filename)
             except Exception:
+                # Icon loading is optional, continue if it fails
                 pass
 
     def search_box_enter(self, sender, e):
@@ -1144,6 +1147,7 @@ class ColorSplasherWindow(forms.WPFWindow):
             try:
                 self.list_box2.SelectionChanged -= self.list_selected_index_changed
             except Exception:
+                # Handler may not be subscribed, ignore unsubscribe errors
                 pass
             self.list_box2.SelectionChanged += self.list_selected_index_changed
 
@@ -1373,6 +1377,7 @@ class ColorSplasherWindow(forms.WPFWindow):
         try:
             self.list_box2.SelectionChanged -= self.list_selected_index_changed
         except Exception:
+            # Handler may not be subscribed, ignore unsubscribe errors
             pass
 
         # Get selected category
@@ -1451,6 +1456,7 @@ class ColorSplasherWindow(forms.WPFWindow):
         try:
             self.list_box2.SelectionChanged -= self.list_selected_index_changed
         except Exception:
+            # Handler may not be subscribed, ignore unsubscribe errors
             pass
         self.list_box2.SelectionChanged += self.list_selected_index_changed
 

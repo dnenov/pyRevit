@@ -1835,9 +1835,9 @@ def get_active_view(ac_doc):
     ):
         selected_view = ac_doc.GetElement(uidoc.GetOpenUIViews()[0].ViewId)
     if not selected_view.CanUseTemporaryVisibilityModes():
+        wndw = getattr(SubscribeView, "_wndw", None)
         task2 = None
         try:
-            wndw = getattr(SubscribeView, "_wndw", None)
             if wndw:
                 task2 = UI.TaskDialog(
                     wndw.get_locale_string("ColorSplasher.TaskDialog.Title")
@@ -1866,7 +1866,6 @@ def get_active_view(ac_doc):
             )
         task2.Show()
         try:
-            wndw = getattr(SubscribeView, "_wndw", None)
             if wndw:
                 wndw.Topmost = True
         except Exception:

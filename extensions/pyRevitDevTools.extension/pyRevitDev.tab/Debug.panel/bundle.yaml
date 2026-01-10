@@ -1,3 +1,10 @@
+title:
+  en_us: Debug
+  fr_fr: Débogage
+  ru: Отладка
+  chinese_s: 调试
+  es_es: Depuración
+  de_de: Debuggen
 layout:
   - Logs
   - -----

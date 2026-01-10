@@ -1,9 +1,10 @@
 title:
-  ru: Листы
   en_us: Sheets
   fr_fr: Feuilles
-  de_de: Pläne
+  ru: Листы
   chinese_s: 图纸
+  es_es: Hojas
+  de_de: Pläne
 layout:
   - Copy Views
   - Move Views

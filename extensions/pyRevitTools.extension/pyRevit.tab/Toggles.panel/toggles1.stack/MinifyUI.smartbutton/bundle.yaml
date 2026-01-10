@@ -1,23 +1,31 @@
 title:
-  ru: Мини-ть RevitUI
-  fr_fr: Minimiser UI Revit
   en_us: Minify Revit UI
-  de_de: Revit UI minimieren
+  fr_fr: Minimiser UI Revit
+  ru: Мини-ть RevitUI
   chinese_s: 简化 Revit 界面
+  es_es: Minify Revit UI
+  de_de: Revit UI minimieren
 tooltip:
-  ru: >-
-    Минимизирует список открытых вкладок Revit.
+  en_us: >-
+    Reduce the list of open Revit tabs
 
     Shift+Click:
 
-    Настроить, какие вкладки должны быть скрыты в мини-режиме.
+    Customize which tabs should be hidden in minified mode
   fr_fr: >-
     Réduire la liste des onglets Revit ouverts
 
     Shift+Clic :
 
     Personnalisez les onglets à masquer en mode minimisé
-  en_us: >-
+  ru: >-
+    Минимизирует список открытых вкладок Revit.
+
+    Shift+Click:
+
+    Настроить, какие вкладки должны быть скрыты в мини-режиме.
+  chinese_s: "减少打开的 Revit 选项卡列表\nShift+单击：\n自定义在简化模式下应隐藏哪些选项卡"
+  es_es: >-
     Reduce the list of open Revit tabs
 
     Shift+Click:
@@ -28,6 +36,5 @@ tooltip:
 
     Shift+Click:
 
-    Es öffnet sich ein Auswahldialog mit allen verfügbaren Registerkarten.  Alle Register die hier ausgewählt werden, werden ausgeblendet,  wenn man den Befehl "Revit UI minimieren" aktiviert. 
-  chinese_s: "减少打开的 Revit 选项卡列表\nShift+单击：\n自定义在简化模式下应隐藏哪些选项卡"
+    Es öffnet sich ein Auswahldialog mit allen verfügbaren Registerkarten.  Alle Register die hier ausgewählt werden, werden ausgeblendet,  wenn man den Befehl "Revit UI minimieren" aktiviert.
 context: zero-doc

@@ -1,9 +1,10 @@
 title:
-  ru: Сопоставление
   en_us: Match
   fr_fr: Correspondance
-  de_de: Kopieren
+  ru: Сопоставление
   chinese_s: 匹配
+  es_es: Coincidir
+  de_de: Kopieren
 layout:
   - Match
   - Match Paint

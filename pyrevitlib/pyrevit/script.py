@@ -201,7 +201,7 @@ def reset_config(section=None):
     """
     from pyrevit.userconfig import user_config
     if not section:
-        script_cfg_postfix = 'config'
+        script_cfg_postfix = '_config'
         section = EXEC_PARAMS.command_name + script_cfg_postfix
     elif section in [PyRevit.PyRevitConsts.ConfigsCoreSection]:
         raise PyRevitException('Can not remove internal config section: {}'

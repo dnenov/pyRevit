@@ -1,41 +1,19 @@
 title:
-  ru: Экспортировать конфигурацию семейства
-  fr_fr: Exporter la configuration de la famille
   en_us: Export Family Config
-  de_de: Exportiert die Familien Konfiguration
+  fr_fr: Exporter la configuration de la famille
+  ru: Экспортировать конфигурацию семейства
   chinese_s: 导出族配置
+  es_es: Exportar configuración de familia
+  de_de: Exportiert die Familien Konfiguration
 tooltip:
-  ru: >-
-    Экспортирует конфигурацию семейства в yaml файл.
+  en_us: >-
+    Export family configurations to yaml file.
 
-    Конфигурационный файл семейства является yaml файлом,
+    Family configuration file is a yaml file,
 
-    предоставляет информацию о параметрах и типах, определенных в семействе.
+    providing info about the parameters and types defined in the family.
 
-    Структура конфигурационного файла показана ниже:
-        parameters:
-          <наименование-параметра>:
-                  type: <Autodesk.Revit.DB.ParameterType>
-                  category: <Autodesk.Revit.DB.BuiltInParameterGroup>
-                  instance: <true|false>
-                  reporting: <true|false>
-                  formula: <строка>
-                  default: <строка>
-        types:
-          <наименование типа>:
-                  <наименование-параметра>: <значение>
-                  <наименование-параметра>: <значение>
-                  ...
-    Пример:
-
-    parameters:
-          Shelf Height (Upper):
-                  type: Length
-                  category: PG_GEOMETRY
-                  instance: false
-    types:
-          24D"x36H":
-                  Shelf Height (Upper): 3'-0"
+    The structure of this config file is as shown below:
   fr_fr: >-
     Exportez les configurations de famille vers le fichier yaml.
 
@@ -64,82 +42,82 @@ tooltip:
 
     paramètres:
           Hauteur de l'étagère (supérieure) :
-                  type: Longueur
-                  groupe : PG_GEOMETRY
-                  exemple : faux
-                 
-    les types:
-          24D"x36H":
-                  Hauteur de l'étagère (supérieure) : 3'-0"
-  en_us: >-
-    Export family configurations to yaml file.
+  ru: >-
+    Экспортирует конфигурацию семейства в yaml файл.
 
-    Family configuration file is a yaml file,
+    Конфигурационный файл семейства является yaml файлом,
 
-    providing info about the parameters and types defined in the family.
+    предоставляет информацию о параметрах и типах, определенных в семействе.
 
-    The structure of this config file is as shown below:
+    Структура конфигурационного файла показана ниже:
+  chinese_s: "将族配置导出到 yaml 文件。
+
+    族配置文件是一个 yaml 文件，
+
+    提供有关族中定义的参数和类型的信息。
+
+    此配置文件的结构如下所示：
 
     parameters:
-          <parameter-name>:
-                  type: <Autodesk.Revit.DB.ParameterType>
-                  category: <Autodesk.Revit.DB.BuiltInParameterGroup>
-                  instance: <true|false>
-                  reporting: <true|false>
-                  formula: <str>
-                  default: <str>
+
+    \      <parameter-name>:
+
+    \              type: <Autodesk.Revit.DB.ParameterType>
+
+    \              category: <Autodesk.Revit.DB.BuiltInParameterGroup>
+
+    \              instance: <true|false>
+
+    \              reporting: <true|false>
+
+    \              formula: <str>
+
+    \              default: <str>
+
 
     types:
-          <type-name>:
-                  <parameter-name>: <value>
-                  <parameter-name>: <value>
-                  ...
+
+    \      <type-name>:
+
+    \              <parameter-name>: <value>
+
+    \              <parameter-name>: <value>
+
+    \              ...
+
 
     Example:
 
     parameters:
-          Shelf Height (Upper):
-                  type: Length
-                  group: PG_GEOMETRY
-                  instance: false
-                  
+
+    \      Shelf Height (Upper):
+
+    \              type: Length
+
+    \              group: PG_GEOMETRY
+
+    \              instance: false
+
+    \             \ 
+
     types:
-          24D"x36H":
-                  Shelf Height (Upper): 3'-0"
+
+    \      24D\"x36H\":
+
+    \              Shelf Height (Upper): 3'-0\""
+  es_es: >-
+    Exportar configuraciones de familia a archivo yaml.
+
+    El archivo de configuración de familia es un archivo yaml,
+
+    que proporciona información sobre los parámetros y tipos definidos en la familia.
+
+    La estructura de este archivo de configuración es la siguiente:
   de_de: >-
     Exportiert die Familien Konfiguration in eine yaml Datei.
 
-    Die Familien Konfiguration ist eine yaml Datei, die Informationen
-    über die Parameter und Typen enthält, die in der Familie definiert wurden. 
+    Die Familien Konfiguration ist eine yaml Datei, die Informationen über die Parameter und Typen enthält, die in der Familie definiert wurden. 
 
     Die Formatierung der Konfigurationsdatei sieht folgendermaßen aus:
-
-    parameters:
-          <parameter-name>:
-                  type: <Autodesk.Revit.DB.ParameterType>
-                  category: <Autodesk.Revit.DB.BuiltInParameterGroup>
-                  instance: <true|false>
-                  reporting: <true|false>
-                  formula: <str>
-                  default: <str>
-
-    types:
-          <type-name>:
-                  <parameter-name>: <value>
-                  <parameter-name>: <value>
-                  ...
-
-    Beispiel:
-
-    parameters:
-          Shelf Height (Upper):
-                  type: Length
-                  group: PG_GEOMETRY
-                  instance: false
-                  
-    types:
-          24D"x36H":
-                  Shelf Height (Upper): 3'-0"
-  chinese_s: "将族配置导出到 yaml 文件。\n族配置文件是一个 yaml 文件，\n提供有关族中定义的参数和类型的信息。\n此配置文件的结构如下所示：\nparameters:\n      <parameter-name>:\n              type: <Autodesk.Revit.DB.ParameterType>\n              category: <Autodesk.Revit.DB.BuiltInParameterGroup>\n              instance: <true|false>\n              reporting: <true|false>\n              formula: <str>\n              default: <str>\n\ntypes:\n      <type-name>:\n              <parameter-name>: <value>\n              <parameter-name>: <value>\n              ...\n\nExample:\nparameters:\n      Shelf Height (Upper):\n              type: Length\n              group: PG_GEOMETRY\n              instance: false\n              \ntypes:\n      24D\"x36H\":\n              Shelf Height (Upper): 3'-0\""
 author: '{{author}}'
 context: doc-family

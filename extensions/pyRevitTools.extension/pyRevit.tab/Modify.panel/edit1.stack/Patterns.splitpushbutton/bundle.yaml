@@ -1,9 +1,10 @@
 title:
-  ru: Штриховки
   en_us: Patterns
   fr_fr: Hachures
-  de_de: Muster
+  ru: Штриховки
   chinese_s: 填充图案
+  es_es: Patrones
+  de_de: Muster
 layout:
   - Make Pattern
   - Batch Import PAT Files

@@ -6,6 +6,6 @@ title:
   es_es: Alternar
   de_de: Umschalter
 layout:
-  - toggles1
-  - toggles2
-  - toggles3
+- toggles1
+- toggles2
+- toggles3

@@ -6,8 +6,8 @@ title:
   es_es: Paquetes y etiquetas
   de_de: Pakete & Tags
 layout:
-  - Manage Packages
-  - Manage Tags
-  - Tag
-  - tagstack
-  - TagsConfig
+- Manage Packages
+- Manage Tags
+- Tag
+- tagstack
+- TagsConfig

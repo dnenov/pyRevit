@@ -6,7 +6,7 @@ title:
   es_es: Proyecto
   de_de: Projekt
 layout:
-  - Preflight Checks
-  - ptools2
-  - ptools
-  - Wipe
+- Preflight Checks
+- ptools2
+- ptools
+- Wipe

@@ -6,12 +6,12 @@ title:
   es_es: pyRevit
   de_de: pyRevit
 layout:
-  - tools
-  - ">>>>>"
-  - About
-  - Update
-  - Extensions
-  - prlinks
-  - rpwlinks
-  - links
-  - Settings
+- tools
+- ">>>>>"
+- About
+- Update
+- Extensions
+- prlinks
+- rpwlinks
+- links
+- Settings

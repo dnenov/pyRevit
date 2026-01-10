@@ -6,9 +6,9 @@ title:
   es_es: Conjunto de dibujos
   de_de: Zeichnungssatz
 layout:
-  - Sheets
-  - Revision
-  - Keynotes
-  - views
-  - '-----'
-  - Print Sheets
+- Sheets
+- Revision
+- Keynotes
+- views
+- '-----'
+- Print Sheets

@@ -6,9 +6,9 @@ title:
   es_es: Colores del panel de prueba
   de_de: Test-Panel-Farben
 layout:
-  - ButtonA
-  - ">>>"
-  - ButtonB
+- ButtonA
+- ">>>"
+- ButtonB
 
 background:
   title: '#E2A000'

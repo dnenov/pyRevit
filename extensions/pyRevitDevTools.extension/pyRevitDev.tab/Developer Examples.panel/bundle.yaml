@@ -6,7 +6,7 @@ title:
   es_es: Ejemplos de desarrollador
   de_de: Entwicklerbeispiele
 layout:
-  - CLR
-  - Inspect IExporter
-  - DirectContext3D
-  - Settings Window
+- CLR
+- Inspect IExporter
+- DirectContext3D
+- Settings Window

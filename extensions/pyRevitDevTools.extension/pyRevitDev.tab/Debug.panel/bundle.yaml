@@ -6,15 +6,15 @@ title:
   es_es: Depuración
   de_de: Debuggen
 layout:
-  - Logs
-  - -----
-  - Unit Tests
-  - Engine Tests
-  - Bundle Tests
-  - Context Tests
-  - Misc Tests[title:Third-Party\nUnit Tests]
-  - Debug Dialog Config
-  - -----
-  - Test ComboBox
+- Logs
+- -----
+- Unit Tests
+- Engine Tests
+- Bundle Tests
+- Context Tests
+- Misc Tests[title:Third-Party\nUnit Tests]
+- Debug Dialog Config
+- -----
+- Test ComboBox
 
 template_test: Bundle liquid templating works (https://www.youtube.com/watch?v=)

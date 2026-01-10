@@ -6,6 +6,6 @@ title:
   es_es: Fondo del panel de prueba
   de_de: Test-Panel-Hintergrund
 layout:
-  - ButtonA
+- ButtonA
 
 background: '#BB005591'

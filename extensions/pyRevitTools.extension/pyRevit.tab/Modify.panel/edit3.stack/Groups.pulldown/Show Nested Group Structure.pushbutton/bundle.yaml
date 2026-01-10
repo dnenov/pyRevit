@@ -3,13 +3,13 @@ title:
   fr_fr: Montre la structure des groupes imbriqués
   ru: Показать структуру вложенных групп
   chinese_s: 显示嵌套组结构
-  es_es: Show nested group structure
+  es_es: Mostrar estructura de grupos anidados
   de_de: Zeige die verschachtelte Gruppenstruktur an
 tooltip:
   en_us: List the nested group structure around the selected group or element
   fr_fr: Répertoriez la structure du groupe imbriqué autour du groupe ou de l'élément sélectionné
   ru: Показывает структуру вложенных групп выделенной группы или элемента.
   chinese_s: 列出围绕选定组或图元的嵌套组结构
-  es_es: List the nested group structure around the selected group or element
+  es_es: Lista la estructura de grupos anidados alrededor del grupo o elemento seleccionado
   de_de: Es wird die verschachtelte Gruppenstruktur der ausgewählten Gruppen oder des ausgewählten Elements angezeigt
 context: selection

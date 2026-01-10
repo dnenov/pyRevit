@@ -3,7 +3,7 @@ title:
   fr_fr: Sélectionner les groupes supérieurs
   ru: Выбрать самую верхнюю группу
   chinese_s: 选择最高层级的组
-  es_es: Select topmost groups
+  es_es: Seleccionar grupos superiores
   de_de: Oberste übergeordnete Gruppe auswählen
 tooltip:
   en_us: >-
@@ -28,12 +28,12 @@ tooltip:
     Включить несгруппированные элементы.
   chinese_s: "选择包含选定图元的组实例。默认情况下，选择集中会排除未编组的图元。\nShift+单击：\n包含未编组的"
   es_es: >-
-    Selects group instances, which contain selected elements
-    By default excludes not-grouped elements from selection
+    Selecciona instancias de grupos, que contienen elementos seleccionados
+    Por defecto excluye elementos no agrupados de la selección
 
-    Shift+Click:
+    Shift+Clic:
 
-    Include not-grouped elements
+    Incluir elementos no agrupados
   de_de: >-
     Wählt Gruppeninstanzen aus, die die ausgewähltne Elemente enthalten
     Schließt standardmäßig nicht gruppierte Elemente von der Auswahl aus

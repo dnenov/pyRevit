@@ -3,7 +3,7 @@ title:
   fr_fr: Inverser la sélection
   ru: Инвертировать выделение
   chinese_s: 反选
-  es_es: Invert Selection
+  es_es: Invertir selección
   de_de: Aktuelle Auswahl invertieren
 tooltip:
   en_us: >-
@@ -26,11 +26,11 @@ tooltip:
     Выделить члены группы вместо элементов родительской группы.
   chinese_s: "反转活动视图中的选择\nShift+单击：\n选择组成员而非父组图元"
   es_es: >-
-    Inverts selection in active view
+    Invierte la selección en la vista activa
 
-    Shift-Click:
+    Shift-Clic:
 
-    Select group members instead of parent group elements
+    Seleccionar miembros del grupo en lugar de elementos del grupo padre
   de_de: >-
     Die aktuelle Auswahl in der aktiven Ansicht wird invertiert
 context: selection

@@ -3,7 +3,7 @@ title:
   fr_fr: Changer les styles de lignes
   ru: Конвертировать стили линий
   chinese_s: 转换线样式
-  es_es: Convert line styles
+  es_es: Convertir estilos de línea
   de_de: Linienstile konvertieren
 tooltip:
   en_us: >-
@@ -26,12 +26,12 @@ tooltip:
     ОДНАКО, линии, которые являются частью группы, не будут затронуты. См. также  инструмент "Встряхнуть заполненные области".
   chinese_s: 这是一个转换线样式的工具。运行工具，选择一条具有待替换样式的线，然后选择一条具有目标类型的线。脚本将修正模型中的线样式，但属于组一部分的线不会受影响。另请参见“刷新填充区域”工具
   es_es: >-
-    This is a tool to convert line styles. Run the tool,
-    select a line with the style to be replaced, and then
-    select a line with the interfacetypes style
-    The script will correct the line styles in the model
-    HOWEVER the lines that are part of a group will not be affected
-    Also see the "Shake Filled Regions" tool
+    Esta es una herramienta para convertir estilos de línea. Ejecute la herramienta,
+    seleccione una línea con el estilo a reemplazar, y luego
+    seleccione una línea con el estilo de tipos de interfaz
+    El script corregirá los estilos de línea en el modelo
+    SIN EMBARGO, las líneas que son parte de un grupo no se verán afectadas
+    Ver también la herramienta "Regenerar regiones rellenas"
   de_de: >-
     Beim Ausführen dieses Werkzeugs öffnet sich ein Dialogfenster mit zwei
     Spalten, die jeweils die im aktiven Projekt verfügbaren Linienstile anzeigen.  Auf der Linken Seite sind die Linienstile die in einen Linienstil auf der rechten

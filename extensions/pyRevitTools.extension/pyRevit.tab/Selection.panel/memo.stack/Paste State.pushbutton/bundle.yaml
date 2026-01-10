@@ -3,7 +3,7 @@ title:
   fr_fr: Coller l'état
   ru: Вставить
   chinese_s: 粘贴状态
-  es_es: Paste State
+  es_es: Pegar estado
   de_de: Zustand einfügen
 tooltip:
   en_us: >-
@@ -32,13 +32,13 @@ tooltip:
     Показать дополнительные настройки.
   chinese_s: "将复制的状态应用到活动视图\n此工具需与“复制状态”工具配合使用\nShift+单击：\n显示附加选项"
   es_es: >-
-    Applies the copied state to the active view
+    Aplica el estado copiado a la vista activa
 
-    This works in conjunction with the Copy State tool
+    Esto funciona en conjunto con la herramienta Copiar estado
 
-    Shift-Click:
+    Shift-Clic:
 
-    Show additional options
+    Mostrar opciones adicionales
   de_de: >-
     Fügt den zuvor gespeicherten Zustand einer Ansicht,  in die aktive Ansicht ein. Dieses Werkzeug wird in
     Kombination mit dem pyRevit Werkzeug "Zustand kopieren"

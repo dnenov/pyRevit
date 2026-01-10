@@ -3,7 +3,7 @@ title:
   fr_fr: Supprimer les paramètres des familles
   ru: Стереть параметры семейства
   chinese_s: 清除族参数
-  es_es: Wipe Family Parameters
+  es_es: Limpiar parámetros de familia
   de_de: Familien Parameter löschen
 tooltip:
   en_us: >-
@@ -24,15 +24,13 @@ tooltip:
     в размерах как метки и так же сбрасывает значение для других
 
     параметров в ноль или null (none).
-  chinese_s: "此脚本将移除所有未在\n标注中用作标签的自定义参数，同时将其他参数的值\n重置为零或空值"
+  chinese_s: "此脚本将移除所有未在
+
+    标注中用作标签的自定义参数，同时将其他参数的值
+
+    重置为零或空值"
   es_es: >-
-    This script removes all custom parameters that has not been used
-
-    in dimensions as labels and also resets the value for the other
-
-    parameters to zero or null
+    Este script elimina todos los parámetros personalizados que no se han utilizado en dimensiones como etiquetas y también restablece el valor de los otros parámetros a cero o nulo
   de_de: >-
-    Dieses Skript entfernt alle benutzerdefinierten Parameter,  die nicht in Bemaßungen als Beschriftungen verwendet wurden
-    und setzt auch den Wert für die anderen Parameter auf 0 oder Null.
-    Dieses Skript wird im Familieneditor ausgeführt!
+    Dieses Skript entfernt alle benutzerdefinierten Parameter,  die nicht in Bemaßungen als Beschriftungen verwendet wurden und setzt auch den Wert für die anderen Parameter auf 0 oder Null. Dieses Skript wird im Familieneditor ausgeführt!
 context: doc-family

@@ -3,7 +3,7 @@ title:
   fr_fr: Copier l'état
   ru: Копировать
   chinese_s: 复制状态
-  es_es: Copy State
+  es_es: Copiar estado
   de_de: Zustand kopieren
 tooltip:
   en_us: >-
@@ -26,11 +26,9 @@ tooltip:
     Запустите данный инструмент для просмотра как это работает.
   chinese_s: 将活动视图的所需参数状态（例如可见性/图形设置或缩放状态）复制到内存中。运行它以查看其工作原理
   es_es: >-
-    Copies the state of desired parameter of the active
-
-    view to memory. e.g. Visibility Graphics settings or
-
-    Zoom state. Run it and see how it works
+    Copia el estado del parámetro deseado de la vista
+    activa a la memoria. Por ejemplo, configuración de Visibilidad/Gráficos o
+    estado de Zoom. Ejecútelo y vea cómo funciona
   de_de: >-
     Kopiert den Zustand von bestimmten Einstellungen der  aktiven Ansicht in den Speicher. Zur Auswahl stehen  1) View Zoom/Pan State (Zoom- u. Pan-Status der Ansicht)
     2) Visibility Graphics (Sichtbarkeit/Grafik Einstellungen der Ansicht)

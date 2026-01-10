@@ -13,9 +13,9 @@ title:
     раб. набор
   chinese_s: "设置\n工作集"
   es_es: >-
-    Set
+    Establecer
 
-    Workset
+    Área de trabajo
   de_de: >-
     Set
 
@@ -41,11 +41,11 @@ tooltip:
     Может также настроить рабочую плоскость по уровню спецификации элемента и фазу текущего вида.
   chinese_s: "根据选择来设置活动工作集\nShift + 单击：\n可配置为同时将工作平面设置为图元的标高，并匹配当前视图的阶段。"
   es_es: >-
-    Sets the active workset from the selection.
+    Establece el área de trabajo activa desde la selección.
 
-    Shift + Click
+    Shift + Clic
 
-    Can be configured to also set Workplane to the elements schedule level, Phase of current View.
+    Se puede configurar para también establecer el Plano de trabajo al nivel del programa de elementos, Fase de la vista actual.
   de_de: >-
     In einem Auswahldialog kann der aktive Bearbeitungsbereich (Workset) festgelegt werden.
 

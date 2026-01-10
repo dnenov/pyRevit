@@ -3,7 +3,7 @@ title:
   fr_fr: MEffacer
   ru: ПОчистить
   chinese_s: M清除
-  es_es: MClear
+  es_es: MLimpiar
   de_de: Auswahl im Speicher löschen
 tooltip:
   en_us: >-
@@ -20,9 +20,9 @@ tooltip:
     Работает как кнопка MC в калькуляторе. Память зависит от каждого проекта. Каждый проект имеет свою память, которая записывается в %appdata%/pyRevit директорию как *.pym файлы.
   chinese_s: "从内存中清除选择\n功能类似于计算器上的 MC 按钮。此为项目相关的内存。每个项目都有自己的选择内存，保存在 %appdata%/pyRevit 文件夹中，格式为 *.pym 文件"
   es_es: >-
-    Clears selection from memory
+    Limpia la selección de la memoria
 
-    Works like the MC button in a calculator. This is a project-dependent memory. Every project has its own selection memory saved in %appdata%/pyRevit folder as *.pym files
+    Funciona como el botón MC en una calculadora. Esta es una memoria dependiente del proyecto. Cada proyecto tiene su propia memoria de selección guardada en la carpeta %appdata%/pyRevit como archivos *.pym
   de_de: >-
     Löscht die Auswahl im Speicher
     Funktioniert wie die MC Taste auf dem Taschenrechner.  Dies ist ein Projekt-abhängiger Speicher.  Jedes Projekt hat seinen eigenen Auswahlspeicher,  der im Ordner %appdata%/pyRevit als *.pym Datei gespeichert wird.

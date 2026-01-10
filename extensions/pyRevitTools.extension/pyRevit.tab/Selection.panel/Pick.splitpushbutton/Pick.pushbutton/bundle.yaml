@@ -3,7 +3,7 @@ title:
   fr_fr: Sélectionner
   ru: Выбрать
   chinese_s: 选择
-  es_es: Pick
+  es_es: Elegir
   de_de: El.n.Kat.ausw.
 tooltip:
   en_us: >-
@@ -26,11 +26,11 @@ tooltip:
     Выбрать избранное из всех доступных категорий.
   chinese_s: "激活可选择特定类型图元的选择工具\nShift+单击：\n从所有可用类别中选取收藏的图元"
   es_es: >-
-    Activates selection tool that picks a specific type of element
+    Activa la herramienta de selección que elige un tipo específico de elemento
 
-    Shift-Click:
+    Shift-Clic:
 
-    Pick favorites from all available categories
+    Elegir favoritos de todas las categorías disponibles
   de_de: >-
     Aktiviert ein besonderes Auswahlwerkzeug,  das nur einen bestimmten Typ von Elementen auswählt. 
 

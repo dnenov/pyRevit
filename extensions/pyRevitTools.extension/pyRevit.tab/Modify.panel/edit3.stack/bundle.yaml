@@ -6,6 +6,6 @@ title:
   es_es: Sobrescribir
   de_de: Überschreiben
 layout:
-- Edit
-- Override
-- Groups
+  - Edit
+  - Override
+  - Groups

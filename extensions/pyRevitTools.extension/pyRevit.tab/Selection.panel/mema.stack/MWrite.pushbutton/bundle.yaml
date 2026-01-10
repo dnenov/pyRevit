@@ -4,7 +4,7 @@ title:
   fr_fr: MEcrire
   ru: ПЗаписать
   chinese_s: M写入
-  es_es: MWrite
+  es_es: MEscribir
   de_de: Sp.mit.El.überschr.
 tooltip:
   en_us: >-
@@ -21,9 +21,9 @@ tooltip:
     Работает как кнопки MC и M+ в калькуляторе. Память зависит от каждого проекта. Каждый проект имеет свою память, которая записывается в %appdata%/pyRevit директорию как *.pym файлы.
   chinese_s: "清除内存并追加当前选择\n功能类似于计算器上的 MC 和 M+ 按钮组合。此为项目相关的内存。每个项目都有自己的选择内存，保存在 %appdata%/pyRevit 文件夹中，格式为 *.pym 文件"
   es_es: >-
-    Clear memory and Append current selection
+    Limpiar memoria y agregar selección actual
 
-    Works like the MC and M+ button in a calculator. This is a project-dependent memory. Every project has its own selection memory saved in %appdata%/pyRevit folder as *.pym files
+    Funciona como los botones MC y M+ en una calculadora. Esta es una memoria dependiente del proyecto. Cada proyecto tiene su propia memoria de selección guardada en la carpeta %appdata%/pyRevit como archivos *.pym
   de_de: >-
     Löscht den Speicher und schreibt die aktuelle Auswahl in den Speicher
     Funktioniert wie die MC und M+ Taste auf dem Taschenrechner.  Dies ist ein Projekt-abhängiger Speicher.  Jedes Projekt hat seinen eigenen Auswahlspeicher,  der im Ordner %appdata%/pyRevit als *.pym Datei gespeichert wird.

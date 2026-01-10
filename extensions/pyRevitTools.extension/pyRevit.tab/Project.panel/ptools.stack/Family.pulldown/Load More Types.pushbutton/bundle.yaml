@@ -3,12 +3,12 @@ title:
   fr_fr: Charger des types supplémentaires
   ru: Загрузить больше типов
   chinese_s: 加载更多类型
-  es_es: Load More Types
+  es_es: Cargar más tipos
   de_de: Weitere Typen Laden
 tooltip:
   en_us: Loads other types from selected family instance
   fr_fr: Charge d'autres types à partir de l'instance de famille sélectionnée
   ru: Загружает другие типы из выделенных экземпляров семейств.
   chinese_s: 从选定的族实例加载其他类型
-  es_es: Loads other types from selected family instance
+  es_es: Carga otros tipos desde la instancia de familia seleccionada
   de_de: Es werden weitere Typen des ausgewählten Familienexemplars geladen

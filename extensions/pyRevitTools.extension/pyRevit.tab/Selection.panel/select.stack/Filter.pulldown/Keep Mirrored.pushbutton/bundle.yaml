@@ -3,7 +3,7 @@ title:
   fr_fr: Conserve symétrisés
   ru: Удержать отзеркаленные
   chinese_s: 保留已镜像图元
-  es_es: Keep Mirrored
+  es_es: Mantener reflejados
   de_de: Nur gespiegelte Elemente in aktueller Auswahl belassen
 tooltip:
   en_us: >-
@@ -26,11 +26,11 @@ tooltip:
     Удержать только не отзеркаленные.
   chinese_s: "在当前选择中仅保留已镜像的图元\nShift+单击：\n仅保留未镜像的图元"
   es_es: >-
-    Keep only mirrored elements in current selection
+    Mantener solo elementos reflejados en la selección actual
 
-    Shift-Click:
+    Shift-Clic:
 
-    Keep only not-Mirrored
+    Mantener solo no reflejados
   de_de: >-
     Die aktuelle Elementauswahl wird so vermindert,  dass nur gespiegelte Elemente in der Auswahl verbleiben.  Die Elemente werden also nicht gelöscht,  sondern nur aus der aktuellen Auswahl entfernt.
 

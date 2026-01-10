@@ -3,7 +3,7 @@ title:
   fr_fr: Suivant
   ru: Следующий
   chinese_s: 下一个
-  es_es: Next
+  es_es: Siguiente
   de_de: Nächstes Element im Speicher wählen
 tooltip:
   en_us: >-
@@ -25,11 +25,11 @@ tooltip:
     Shift+Click +10
   chinese_s: "在选择内存中选择下一个图元。\n单击：+1\nShift+单击：+10"
   es_es: >-
-    Select next element in selection memory.
+    Seleccionar siguiente elemento en la memoria de selección.
 
-    Click +1
+    Clic +1
 
-    Shift+Click +10
+    Shift+Clic +10
   de_de: >-
     Wählt das nächste Element im Speicher aus
 

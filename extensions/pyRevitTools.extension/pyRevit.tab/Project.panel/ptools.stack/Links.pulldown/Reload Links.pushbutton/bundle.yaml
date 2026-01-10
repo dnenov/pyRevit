@@ -3,7 +3,7 @@ title:
   fr_fr: Recharger les liens
   ru: Перезагрузить связи
   chinese_s: 重新加载链接
-  es_es: Reload Links
+  es_es: Recargar enlaces
   de_de: Verknüpfungen neu laden
 tooltip:
   en_us: >-
@@ -18,11 +18,13 @@ tooltip:
     Перезагружает выбранные Revit, CAD и DWG связи.
 
     Может перезагружать ссылки "локально" для моделей с совместным доступом.
-  chinese_s: "重新加载选定的 Revit、CAD 和 DWG 链接\n对于工作共享模型，可以“本地”重新加载链接"
-  es_es: >-
-    Reloads choosen Revit, CAD and DWG Links
+  chinese_s: "重新加载选定的 Revit、CAD 和 DWG 链接
 
-    Can reload links "locally" for workshared models
+    对于工作共享模型，可以“本地”重新加载链接"
+  es_es: >-
+    Recarga los enlaces Revit, CAD y DWG elegidos
+
+    Puede recargar enlaces "localmente" para modelos compartidos
   de_de: >-
     Lädt die ausgewählten Revit, CAD und DWG Verknüpfungen neu
 

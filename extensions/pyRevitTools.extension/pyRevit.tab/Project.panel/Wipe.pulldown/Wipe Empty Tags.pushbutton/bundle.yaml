@@ -3,7 +3,7 @@ title:
   fr_fr: Enlever les étiquettes vides
   ru: Удалить пустые марки
   chinese_s: 移除空标记
-  es_es: Remove Empty Tags
+  es_es: Eliminar etiquetas vacías
   de_de: Lösche alle leeren Beschriftungen
 tooltip:
   en_us: >-
@@ -26,11 +26,11 @@ tooltip:
     Удалить марки на выделенных видах.
   chinese_s: "移除当前视图中的空标记\nShift+单击：\n移除选定视图中的标记"
   es_es: >-
-    Removes empty tags in current view
+    Elimina etiquetas vacías en la vista actual
 
-    Shift+Click:
+    Shift+Clic:
 
-    Remove tags in selected views
+    Eliminar etiquetas en vistas seleccionadas
   de_de: >-
     Es werden alle leeren Beschriftungen in der aktuellen Ansicht gelöscht
 

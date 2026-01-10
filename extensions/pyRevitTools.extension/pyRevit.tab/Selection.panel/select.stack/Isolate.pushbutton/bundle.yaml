@@ -3,7 +3,7 @@ title:
   fr_fr: Isoler
   ru: Изолировать
   chinese_s: 隔离
-  es_es: Isolate
+  es_es: Aislar
   de_de: Isolieren
 tooltip:
   en_us: >-
@@ -20,9 +20,9 @@ tooltip:
     и переводит вид в режим изоляции элементов.
   chinese_s: 在当前视图中隔离特定图元，并将视图置于“隔离图元”模式
   es_es: >-
-    Isolates specific elements in current view and
+    Aísla elementos específicos en la vista actual y
 
-    put the view in isolate element mode
+    pone la vista en modo de aislamiento de elementos
   de_de: >-
     Isloiert spezifische Elemente in der aktuellen Ansicht  und stellt die Ansicht in den Isloationsmodus um.  Es werden folgende Kategorien als Schnellauswahl angeboten:
     1) Flächenbegrenzungen

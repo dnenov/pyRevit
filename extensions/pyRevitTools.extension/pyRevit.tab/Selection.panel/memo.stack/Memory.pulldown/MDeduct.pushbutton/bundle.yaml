@@ -3,7 +3,7 @@ title:
   fr_fr: MDéduire
   ru: ПУдалить
   chinese_s: M减去
-  es_es: MDeduct
+  es_es: MDeducir
   de_de: Aktuelle Auswahl vom Speicher abziehen
 tooltip:
   en_us: >-
@@ -20,9 +20,9 @@ tooltip:
     Работает как кнопка M- в калькуляторе. Память зависит от каждого проекта. Каждый проект имеет свою память, которая записывается в %appdata%/pyRevit директорию как *.pym файлы.
   chinese_s: "从内存中减去当前选择，同时保留其余部分\n功能类似于计算器上的 M- 按钮。此为项目相关的内存。每个项目都有自己的选择内存，保存在 %appdata%/pyRevit 文件夹中，格式为 *.pym 文件"
   es_es: >-
-    Deducts selection from memory keeping the rest
+    Deduce la selección de la memoria manteniendo el resto
 
-    Works like the M- button in a calculator. This is a project-dependent memory. Every project has its own selection memory saved in %appdata%/pyRevit folder as *.pym files
+    Funciona como el botón M- en una calculadora. Esta es una memoria dependiente del proyecto. Cada proyecto tiene su propia memoria de selección guardada en la carpeta %appdata%/pyRevit como archivos *.pym
   de_de: >-
     Zieht die aktuelle Auswahl vom Speicher ab. Der Rest verbleibt im Speicher
     Funktioniert wie die M- Taste auf dem Taschenrechner.  Dies ist ein Projekt-abhängiger Speicher.  Jedes Projekt hat seinen eigenen Auswahlspeicher,  der im Ordner %appdata%/pyRevit als *.pym Datei gespeichert wird.

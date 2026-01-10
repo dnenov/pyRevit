@@ -1818,7 +1818,6 @@ class FormSaveLoadScheme(Forms.Form):
 
 def get_active_view(ac_doc):
     uidoc = HOST_APP.uiapp.ActiveUIDocument
-    wndw = getattr(SubscribeView, "_wndw", None)
     selected_view = ac_doc.ActiveView
     if (
         selected_view.ViewType == DB.ViewType.ProjectBrowser

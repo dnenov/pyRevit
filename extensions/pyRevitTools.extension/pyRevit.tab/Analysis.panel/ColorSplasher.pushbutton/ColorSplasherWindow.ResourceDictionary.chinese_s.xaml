@@ -93,4 +93,11 @@
     <!-- Legend Name Prefix -->
     <system:String x:Key="ColorSplasher.LegendNamePrefix">Color Splasher - </system:String>
 
+    <!-- Select All / Select None Buttons -->
+    <system:String x:Key="ColorSplasher.Buttons.SelectAll">全选</system:String>
+    <system:String x:Key="ColorSplasher.Buttons.SelectNone">全不选</system:String>
+
+   <!-- Select All / Select None Tooltips -->
+   <system:String x:Key="ColorSplasher.Tooltips.SelectAll">选择所有项</system:String>
+   <system:String x:Key="ColorSplasher.Tooltips.SelectNone">取消所有选择</system:String>
 </ResourceDictionary>

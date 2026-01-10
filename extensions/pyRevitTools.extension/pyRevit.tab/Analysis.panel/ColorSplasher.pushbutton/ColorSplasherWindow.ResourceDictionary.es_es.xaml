@@ -92,4 +92,14 @@
     <!-- Legend Name Prefix -->
     <system:String x:Key="ColorSplasher.LegendNamePrefix">Color Splasher - </system:String>
 
+    <!-- Buttons -->
+    <system:String x:Key="ColorSplasher.Buttons.SelectAll">Seleccionar todo</system:String>
+    <system:String x:Key="ColorSplasher.Buttons.SelectNone">Deseleccionar todo</system:String>
+
+    <!-- Tooltips -->
+    <system:String x:Key="ColorSplasher.Tooltips.SelectAll">Seleccionar todos los valores</system:String>
+    <system:String x:Key="ColorSplasher.Tooltips.SelectNone">Deseleccionar todos los valores</system:String>
+
+    <!-- Messages -->
+    <system:String x:Key="ColorSplasher.Messages.ShiftClickToSelect">Mayús+clic para seleccionar un rango de valores.</system:String>
 </ResourceDictionary>

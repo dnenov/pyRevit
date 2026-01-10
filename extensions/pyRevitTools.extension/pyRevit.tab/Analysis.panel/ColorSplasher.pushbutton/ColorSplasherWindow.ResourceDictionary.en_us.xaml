@@ -22,6 +22,8 @@
     <system:String x:Key="ColorSplasher.Buttons.Reset">Reset</system:String>
     <system:String x:Key="ColorSplasher.Buttons.CreateLegend">Create Legend</system:String>
     <system:String x:Key="ColorSplasher.Buttons.CreateViewFilters">Create View Filters</system:String>
+    <system:String x:Key="ColorSplasher.Buttons.SelectAll">Select All</system:String>
+    <system:String x:Key="ColorSplasher.Buttons.SelectNone">Select None</system:String>
 
     <!-- Checkboxes -->
     <system:String x:Key="ColorSplasher.Checkboxes.ApplyLineColor">Apply Line Color</system:String>
@@ -44,6 +46,8 @@
     <system:String x:Key="ColorSplasher.Tooltips.ApplyForegroundPattern">When enabled, applies the color to surface and cut foreground pattern colors.</system:String>
     <system:String x:Key="ColorSplasher.Tooltips.ApplyBackgroundPattern">When enabled, applies the color to surface and cut background pattern colors. Requires Revit 2019 or newer.</system:String>
     <system:String x:Key="ColorSplasher.Tooltips.SearchParameters">Type to search and filter parameters.</system:String>
+    <system:String x:Key="ColorSplasher.Tooltips.SelectAll">Select all elements from all parameter values.</system:String>
+    <system:String x:Key="ColorSplasher.Tooltips.SelectNone">Clear the current selection in Revit.</system:String>
 
     <!-- Messages -->
     <system:String x:Key="ColorSplasher.Messages.SelectCategoryHere">Select a Category Here!</system:String>
@@ -64,6 +68,7 @@
     <!-- Placeholders -->
     <system:String x:Key="ColorSplasher.Placeholders.SearchParameters">Search</system:String>
     <system:String x:Key="ColorSplasher.Placeholders.SelectCategoryAndParameter">Select a category and a parameter to see parameter values</system:String>
+    <system:String x:Key="ColorSplasher.Messages.ShiftClickToSelect">Shift+Click to select elements</system:String>
 
     <!-- Save/Load Dialog -->
     <system:String x:Key="ColorSplasher.SaveLoadDialog.Title">Save / Load Color Scheme</system:String>

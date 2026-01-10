@@ -907,6 +907,10 @@ class ColorSplasherWindow(forms.WPFWindow):
         
         # Setup list_box2 for custom drawing (will be handled in check_item)
         self.list_box2.SelectionChanged += self.list_selected_index_changed
+        # Add MouseDown to capture Shift key state at click time
+        self.list_box2.MouseDown += self.list_box2_mouse_down
+        # Initialize shift state tracking
+        self._shift_pressed_on_click = False
         
         # Initialize list_box2 with empty table
         self.list_box2.ItemsSource = self._table_data_3.DefaultView
@@ -977,6 +981,69 @@ class ColorSplasherWindow(forms.WPFWindow):
     def button_click_reset(self, sender, e):
         self.reset_ev.Raise()
 
+    def button_click_select_all(self, sender, e):
+        """Select all elements from all parameter values"""
+        try:
+            if self.list_box2.Items.Count <= 0:
+                return
+            
+            # Get the UIDocument
+            uidoc = HOST_APP.uiapp.ActiveUIDocument
+            if uidoc is None:
+                uidoc = __revit__.ActiveUIDocument
+            
+            # Collect all element IDs from all parameter values
+            all_element_ids = List[DB.ElementId]()
+            from System.Data import DataRowView
+            
+            for i in range(self.list_box2.Items.Count):
+                try:
+                    item = self.list_box2.Items[i]
+                    if isinstance(item, DataRowView):
+                        row = item.Row
+                    elif hasattr(item, 'Row'):
+                        row = item.Row
+                    else:
+                        if hasattr(self, '_table_data_3') and self._table_data_3 is not None:
+                            row = self._table_data_3.Rows[i]
+                        else:
+                            continue
+                    
+                    value_item = row["Value"]
+                    if hasattr(value_item, 'ele_id') and value_item.ele_id is not None:
+                        # Add all element IDs from this value to the collection
+                        for ele_id in value_item.ele_id:
+                            all_element_ids.Add(ele_id)
+                except Exception as ex:
+                    logger.debug("Error accessing listbox item %d in select_all: %s", i, str(ex))
+                    continue
+            
+            if all_element_ids.Count > 0:
+                # Set the selection
+                uidoc.Selection.SetElementIds(all_element_ids)
+                # Refresh the active view to update the selection highlight
+                uidoc.RefreshActiveView()
+                logger.debug("Selected %d elements via Select All", all_element_ids.Count)
+        except Exception as ex:
+            logger.debug("Error in button_click_select_all: %s", str(ex))
+
+    def button_click_select_none(self, sender, e):
+        """Clear the current selection in Revit"""
+        try:
+            # Get the UIDocument
+            uidoc = HOST_APP.uiapp.ActiveUIDocument
+            if uidoc is None:
+                uidoc = __revit__.ActiveUIDocument
+            
+            # Set selection to empty list
+            empty_list = List[DB.ElementId]()
+            uidoc.Selection.SetElementIds(empty_list)
+            # Refresh the active view
+            uidoc.RefreshActiveView()
+            logger.debug("Cleared selection via Select None")
+        except Exception as ex:
+            logger.debug("Error in button_click_select_none: %s", str(ex))
+
     def button_click_random_colors(self, sender, e):
         """Trigger random color assignment by reselecting parameter"""
         try:
@@ -1026,10 +1093,41 @@ class ColorSplasherWindow(forms.WPFWindow):
                 vl_par = [x.value for x in list_values]
                 for key_, value_ in zip(vl_par, list_values):
                     self._table_data_3.Rows.Add(key_, value_)
-                self.list_box2.ItemsSource = self._table_data_3.DefaultView
+                # Clear first to force refresh
+                self.list_box2.ItemsSource = None
+                # Get DefaultView - this is what WPF ListBox needs
+                default_view = self._table_data_3.DefaultView
+                # Set ItemsSource directly (we're already on UI thread)
+                self.list_box2.ItemsSource = default_view
                 self.list_box2.SelectedIndex = -1
-                self._update_listbox_colors()
                 self._update_placeholder_visibility()
+                
+                # Force UI update
+                self.list_box2.UpdateLayout()
+                
+                # Update colors after items are loaded
+                # Use Loaded event or a timer to ensure ItemContainerGenerator is ready
+                try:
+                    from System.Windows.Threading import DispatcherTimer, DispatcherPriority
+                    timer = DispatcherTimer(DispatcherPriority.Loaded)
+                    timer.Interval = System.TimeSpan.FromMilliseconds(150)
+                    def update_colors(s, ev):
+                        try:
+                            logger.debug("Updating listbox colors after gradient, Items.Count: %d", self.list_box2.Items.Count)
+                            self._update_listbox_colors()
+                        except Exception as ex:
+                            logger.debug("Error in update_colors timer: %s", str(ex))
+                        finally:
+                            timer.Stop()
+                    timer.Tick += update_colors
+                    timer.Start()
+                except Exception as ex:
+                    logger.debug("Error setting up color update timer: %s", str(ex))
+                    # Fallback: try to update directly
+                    try:
+                        self._update_listbox_colors()
+                    except Exception:
+                        pass
         except Exception:
             external_event_trace()
         self.list_box2.SelectionChanged += self.list_selected_index_changed
@@ -1070,11 +1168,77 @@ class ColorSplasherWindow(forms.WPFWindow):
         self.IsOpen = 0
         self.uns_event.Raise()
 
+    def list_box2_mouse_down(self, sender, e):
+        """Capture Shift key state when mouse is pressed on list items"""
+        from System.Windows.Input import MouseButtonEventArgs, ModifierKeys, Keyboard, Key
+        if isinstance(e, MouseButtonEventArgs):
+            # Check shift state from event and also from keyboard state
+            shift_from_event = (e.KeyboardDevice.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift
+            shift_from_keyboard = (Keyboard.IsKeyDown(Key.LeftShift) or Keyboard.IsKeyDown(Key.RightShift))
+            # Store shift state for use in selection changed handler
+            self._shift_pressed_on_click = shift_from_event or shift_from_keyboard
+        else:
+            self._shift_pressed_on_click = False
+    
     def list_selected_index_changed(self, sender, e):
-        """Handle ListBox selection change for color picking"""
+        """Handle ListBox selection change for color picking or element selection"""
         if sender.SelectedIndex == -1:
             return
+        
+        # Check if Shift key was pressed during the click
+        # Check current keyboard state directly (most reliable method)
+        from System.Windows.Input import Keyboard, Key
+        shift_pressed = (Keyboard.IsKeyDown(Key.LeftShift) or Keyboard.IsKeyDown(Key.RightShift))
+        
+        # Also check stored value from MouseDown as additional confirmation
+        if not shift_pressed and hasattr(self, '_shift_pressed_on_click') and self._shift_pressed_on_click:
+            shift_pressed = True
+        
+        if shift_pressed:
+            # Select elements based on the selected index
+            try:
+                # Get selected item from DataTable
+                selected_item = sender.SelectedItem
+                if selected_item is not None:
+                    # Access DataRowView in WPF
+                    from System.Data import DataRowView
+                    if isinstance(selected_item, DataRowView):
+                        row = selected_item.Row
+                    elif hasattr(selected_item, 'Row'):
+                        row = selected_item.Row
+                    else:
+                        # Fallback for direct DataTable access
+                        if hasattr(self, '_table_data_3') and self._table_data_3 is not None:
+                            row = self._table_data_3.Rows[sender.SelectedIndex]
+                        else:
+                            sender.SelectedIndex = -1
+                            return
+                    value_item = row["Value"]
+                    # Check if value_item has ele_id and it's not empty
+                    if hasattr(value_item, 'ele_id') and value_item.ele_id is not None and value_item.ele_id.Count > 0:
+                        # Get the UIDocument - use HOST_APP for more reliable access
+                        uidoc = HOST_APP.uiapp.ActiveUIDocument
+                        if uidoc is None:
+                            uidoc = __revit__.ActiveUIDocument
+                        # ele_id is already a List[DB.ElementId], use it directly
+                        element_ids = value_item.ele_id
+                        # Set the selection
+                        uidoc.Selection.SetElementIds(element_ids)
+                        # Refresh the active view to update the selection highlight
+                        uidoc.RefreshActiveView()
+                        logger.debug("Selected %d elements", element_ids.Count)
+                    else:
+                        logger.debug("No elements found for selected value - ele_id count: %s", 
+                                   value_item.ele_id.Count if hasattr(value_item, 'ele_id') and value_item.ele_id is not None else "None")
+                sender.SelectedIndex = -1
+            except Exception as ex:
+                logger.debug("Error selecting elements: %s", str(ex))
+                sender.SelectedIndex = -1
+            finally:
+                # Reset shift state after handling
+                self._shift_pressed_on_click = False
         else:
+            # Original behavior: open color dialog
             clr_dlg = Forms.ColorDialog()
             clr_dlg.AllowFullOpen = True
             if clr_dlg.ShowDialog() == Forms.DialogResult.OK:
@@ -1092,6 +1256,7 @@ class ColorSplasherWindow(forms.WPFWindow):
                         if hasattr(self, '_table_data_3') and self._table_data_3 is not None:
                             row = self._table_data_3.Rows[sender.SelectedIndex]
                         else:
+                            sender.SelectedIndex = -1
                             return
                     value_item = row["Value"]
                     value_item.n1 = clr_dlg.Color.R
@@ -1103,6 +1268,8 @@ class ColorSplasherWindow(forms.WPFWindow):
                     # Update ListBox display
                     self._update_listbox_colors()
             sender.SelectedIndex = -1
+            # Reset shift state after handling
+            self._shift_pressed_on_click = False
 
     def _update_listbox_colors(self):
         """Update ListBox item backgrounds to show colors (WPF version of custom drawing)"""

@@ -22,6 +22,8 @@
     <system:String x:Key="ColorSplasher.Buttons.Reset">Réinitialiser</system:String>
     <system:String x:Key="ColorSplasher.Buttons.CreateLegend">Créer une Légende</system:String>
     <system:String x:Key="ColorSplasher.Buttons.CreateViewFilters">Créer des Filtres de Vue</system:String>
+    <system:String x:Key="ColorSplasher.Buttons.SelectAll">Tout Sélectionner</system:String>
+    <system:String x:Key="ColorSplasher.Buttons.SelectNone">Tout Désélectionner</system:String>
 
     <!-- Checkboxes -->
     <system:String x:Key="ColorSplasher.Checkboxes.ApplyLineColor">Appliquer la Couleur de Ligne</system:String>
@@ -44,6 +46,8 @@
     <system:String x:Key="ColorSplasher.Tooltips.ApplyForegroundPattern">Lorsqu'il est activé, applique la couleur aux couleurs de motif de premier plan de surface et de coupe.</system:String>
     <system:String x:Key="ColorSplasher.Tooltips.ApplyBackgroundPattern">Lorsqu'il est activé, applique la couleur aux couleurs de motif d'arrière-plan de surface et de coupe. Nécessite Revit 2019 ou plus récent.</system:String>
     <system:String x:Key="ColorSplasher.Tooltips.SearchParameters">Tapez pour rechercher et filtrer les paramètres.</system:String>
+    <system:String x:Key="ColorSplasher.Tooltips.SelectAll">Sélectionner tous les éléments de toutes les valeurs de paramètres.</system:String>
+    <system:String x:Key="ColorSplasher.Tooltips.SelectNone">Effacer la sélection actuelle dans Revit.</system:String>
 
     <!-- Messages -->
     <system:String x:Key="ColorSplasher.Messages.SelectCategoryHere">Sélectionnez une Catégorie Ici !</system:String>
@@ -64,6 +68,7 @@
     <!-- Placeholders -->
     <system:String x:Key="ColorSplasher.Placeholders.SearchParameters">Rechercher</system:String>
     <system:String x:Key="ColorSplasher.Placeholders.SelectCategoryAndParameter">Sélectionnez une catégorie et un paramètre pour voir les valeurs des paramètres</system:String>
+    <system:String x:Key="ColorSplasher.Messages.ShiftClickToSelect">Maj+Cliquer pour sélectionner les éléments</system:String>
 
     <!-- Save/Load Dialog -->
     <system:String x:Key="ColorSplasher.SaveLoadDialog.Title">Enregistrer / Charger le Schéma de Couleurs</system:String>

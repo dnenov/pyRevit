@@ -22,6 +22,8 @@
     <system:String x:Key="ColorSplasher.Buttons.Reset">Сбросить</system:String>
     <system:String x:Key="ColorSplasher.Buttons.CreateLegend">Создать Легенду</system:String>
     <system:String x:Key="ColorSplasher.Buttons.CreateViewFilters">Создать Фильтры Вида</system:String>
+    <system:String x:Key="ColorSplasher.Buttons.SelectAll">Выбрать Все</system:String>
+    <system:String x:Key="ColorSplasher.Buttons.SelectNone">Снять Выбор</system:String>
 
     <!-- Checkboxes -->
     <system:String x:Key="ColorSplasher.Checkboxes.ApplyLineColor">Применить Цвет Линии</system:String>
@@ -44,6 +46,8 @@
     <system:String x:Key="ColorSplasher.Tooltips.ApplyForegroundPattern">При включении применяет цвет к цветам узора переднего плана поверхности и разреза.</system:String>
     <system:String x:Key="ColorSplasher.Tooltips.ApplyBackgroundPattern">При включении применяет цвет к цветам узора фона поверхности и разреза. Требуется Revit 2019 или новее.</system:String>
     <system:String x:Key="ColorSplasher.Tooltips.SearchParameters">Введите текст для поиска и фильтрации параметров.</system:String>
+    <system:String x:Key="ColorSplasher.Tooltips.SelectAll">Выбрать все элементы из всех значений параметров.</system:String>
+    <system:String x:Key="ColorSplasher.Tooltips.SelectNone">Очистить текущий выбор в Revit.</system:String>
 
     <!-- Messages -->
     <system:String x:Key="ColorSplasher.Messages.SelectCategoryHere">Выберите Категорию Здесь!</system:String>
@@ -64,6 +68,7 @@
     <!-- Placeholders -->
     <system:String x:Key="ColorSplasher.Placeholders.SearchParameters">Поиск</system:String>
     <system:String x:Key="ColorSplasher.Placeholders.SelectCategoryAndParameter">Выберите категорию и параметр, чтобы увидеть значения параметров</system:String>
+    <system:String x:Key="ColorSplasher.Messages.ShiftClickToSelect">Shift+Клик для выбора элементов</system:String>
 
     <!-- Save/Load Dialog -->
     <system:String x:Key="ColorSplasher.SaveLoadDialog.Title">Сохранить / Загрузить Цветовую Схему</system:String>

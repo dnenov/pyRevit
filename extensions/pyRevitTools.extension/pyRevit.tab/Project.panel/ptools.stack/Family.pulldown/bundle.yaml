@@ -1,9 +1,10 @@
 title:
-  ru: Семейство
-  fr_fr: Famille
   en_us: Family
-  de_de: Familie
+  fr_fr: Famille
+  ru: Семейство
   chinese_s: 族
+  es_es: Familia
+  de_de: Familie
 layout:
   - Family QuickCheck
   - '-----'

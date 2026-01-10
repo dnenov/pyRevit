@@ -1,15 +1,15 @@
 title:
   en_us: Find All Loaded Assemblies
+  fr_fr: Rechercher tous les DLL chargés
   ru: Найти все загруженные сборки
   chinese_s: 查找所有加载的程序集
-  fr_fr: Rechercher tous les DLL chargés
-  de_de: Suche alle geladene DLL Bibliotheken
   es_es: Buscar todos los ensamblados cargados
+  de_de: Suche alle geladene DLL Bibliotheken
 tooltip:
+  en_us: List all currently loaded assemblies
+  fr_fr: Lister tous les DLL chargés
   ru: Показывает все загруженные в данный момент сборки.
   chinese_s: 列出所有当前加载的程序集
-  fr_fr: Lister tous les DLL chargés
-  en_us: List all currently loaded assemblies
-  de_de: Listet alle geladenen DLL Bibliotheken in der Konsole auf
   es_es: Lista todos los ensamblados cargados en la consola
+  de_de: Listet alle geladenen DLL Bibliotheken in der Konsole auf
 context: zero-doc

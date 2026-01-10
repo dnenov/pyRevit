@@ -1,14 +1,14 @@
 title:
   en_us: List Elements
-  ru: Показать элементы
   fr_fr: Répertorier les éléments
-  de_de: Elementliste anzeigen
+  ru: Показать элементы
   chinese_s: 列出元素
   es_es: Listar elementos
+  de_de: Elementliste anzeigen
 tooltip:
   en_us: Lists specific elements from the model database
-  ru: Показать определенные элементы из базы данных модели.
   fr_fr: Répertorie les éléments spécifiques de la base de données du modèle
-  de_de: Erstellt eine Liste mit allen vorhandenen Elementen in der Modelldatenbank und zeigt die gefundenen Elemente in der Konsole zuammen mit zusätzliche Informationen an. Der gewünschte Elementtyp wird im Dialog ausgewählt. 
+  ru: Показать определенные элементы из базы данных модели.
   chinese_s: 列出模型数据库中的特定元素
   es_es: Lista elementos específicos de la base de datos del modelo
+  de_de: Erstellt eine Liste mit allen vorhandenen Elementen in der Modelldatenbank und zeigt die gefundenen Elemente in der Konsole zuammen mit zusätzliche Informationen an. Der gewünschte Elementtyp wird im Dialog ausgewählt.

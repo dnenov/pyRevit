@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Autodesk.Revit.Attributes;
 using pyRevitExtensionParser;
@@ -16,6 +17,18 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
     /// </summary>
     public class RoslynCommandTypeGenerator
     {
+        // Cache the pyRevit root derived from DLL location
+        // DLL is at: bin/netcore/engines/IPY342 or bin/netfx/engines/IPY342
+        // So we go 4 levels up to reach pyRevit root
+        private static readonly string _pyRevitRoot = GetPyRevitRoot();
+        
+        private static string GetPyRevitRoot()
+        {
+            var dllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            // Go up 4 levels: IPY342 -> engines -> netcore/netfx -> bin -> pyRevit root
+            return Path.GetFullPath(Path.Combine(dllDir, "..", "..", "..", ".."));
+        }
+        
         public string GenerateExtensionCode(ParsedExtension extension, string revitVersion, IEnumerable<ParsedExtension> libraryExtensions = null)
         {
             var sb = new StringBuilder();
@@ -65,8 +78,13 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
                 bool isCleanEngine = cmd.Engine?.Clean ?? false;
                 if (!isCleanEngine)
                 {
-                    searchPathsList.Add(Path.Combine(extension.Directory, "..", "..", "pyrevitlib"));
-                    searchPathsList.Add(Path.Combine(extension.Directory, "..", "..", "site-packages"));
+                    var pyRevitLibDir = Path.Combine(_pyRevitRoot, Constants.PYREVIT_LIB_DIR);
+                    if (Directory.Exists(pyRevitLibDir))
+                        searchPathsList.Add(pyRevitLibDir);
+                    
+                    var sitePackagesDir = Path.Combine(_pyRevitRoot, Constants.SITE_PACKAGES_DIR);
+                    if (Directory.Exists(sitePackagesDir))
+                        searchPathsList.Add(sitePackagesDir);
                 }
                 
                 string searchPaths = string.Join(";", searchPathsList);

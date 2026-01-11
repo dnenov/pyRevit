@@ -357,6 +357,17 @@ namespace pyRevitExtensionParser
 
             roots.Add(defaultPath);
 
+            // Add third-party extensions default directory (%APPDATA%\pyRevit\Extensions)
+            var thirdPartyExtensionsPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "pyRevit",
+                "Extensions");
+            
+            if (Directory.Exists(thirdPartyExtensionsPath))
+            {
+                roots.Add(thirdPartyExtensionsPath);
+            }
+
             var configPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "pyRevit",

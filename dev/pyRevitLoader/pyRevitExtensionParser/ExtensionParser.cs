@@ -59,6 +59,25 @@ namespace pyRevitExtensionParser
         private static bool _localeInitialized = false;
         
         /// <summary>
+        /// Clears all static caches to force re-parsing of extensions.
+        /// This should be called before reloading pyRevit to ensure newly installed
+        /// or enabled extensions are discovered.
+        /// </summary>
+        public static void ClearAllCaches()
+        {
+            _fileExistsCache.Clear();
+            _directoryFilesCache.Clear();
+            _iconCache.Clear();
+            _cachedExtensionRoots = null;
+            _cachedConfig = null;
+            _pythonScriptCache.Clear();
+            _localeInitialized = false;
+            
+            // Also clear the BundleParser cache
+            BundleParser.BundleYamlParser.ClearCache();
+        }
+        
+        /// <summary>
         /// Initializes the DefaultLocale from user configuration if not already set.
         /// Should be called before parsing extensions to ensure locale-aware localization.
         /// </summary>

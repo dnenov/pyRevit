@@ -28,6 +28,16 @@ namespace pyRevitAssemblyBuilder.SessionManager
         {
             _cachedExtensions = null;
         }
+        
+        /// <summary>
+        /// Clears all parser caches including the static caches in ExtensionParser.
+        /// This ensures newly installed or enabled extensions are discovered on reload.
+        /// </summary>
+        public void ClearParserCaches()
+        {
+            _cachedExtensions = null;
+            ExtensionParser.ClearAllCaches();
+        }
 
         /// <summary>
         /// Gets all installed extensions that are not disabled.

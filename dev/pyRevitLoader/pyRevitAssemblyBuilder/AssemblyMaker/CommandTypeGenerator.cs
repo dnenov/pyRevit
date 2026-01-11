@@ -73,19 +73,11 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
                     }
                 }
                 
-                // Only add core pyRevit paths if NOT using clean engine
-                // When clean: true, the user wants an isolated environment
-                bool isCleanEngine = cmd.Engine?.Clean ?? false;
-                if (!isCleanEngine)
-                {
-                    var pyRevitLibDir = Path.Combine(_pyRevitRoot, Constants.PYREVIT_LIB_DIR);
-                    if (Directory.Exists(pyRevitLibDir))
-                        searchPathsList.Add(pyRevitLibDir);
-                    
-                    var sitePackagesDir = Path.Combine(_pyRevitRoot, Constants.SITE_PACKAGES_DIR);
-                    if (Directory.Exists(sitePackagesDir))
-                        searchPathsList.Add(sitePackagesDir);
-                }
+                var pyRevitLibDir = Path.Combine(_pyRevitRoot, Constants.PYREVIT_LIB_DIR);
+                searchPathsList.Add(pyRevitLibDir);
+                
+                var sitePackagesDir = Path.Combine(_pyRevitRoot, Constants.SITE_PACKAGES_DIR);
+                searchPathsList.Add(sitePackagesDir);
                 
                 string searchPaths = string.Join(";", searchPathsList);
                 string tooltip = cmd.Tooltip ?? string.Empty;
@@ -123,7 +115,7 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
                 sb.AppendLine($"        \"{Escape(extName)}\",");
                 sb.AppendLine($"        \"{cmd.UniqueId}\",");
                 sb.AppendLine($"        \"{Escape(ctrlId)}\",");
-                sb.AppendLine($"        \"{context}\",");
+                sb.AppendLine($"        \"{Escape(context)}\",");
                 sb.AppendLine($"        \"{Escape(engineCfgs)}\"");
                 sb.AppendLine("    )");
                 sb.AppendLine("    {");
@@ -136,7 +128,7 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
                 {
                     sb.AppendLine($"public class {safeClassName}_avail : ScriptCommandExtendedAvail");
                     sb.AppendLine("{");
-                    sb.AppendLine($"    public {safeClassName}_avail() : base(\"{context}\")");
+                    sb.AppendLine($"    public {safeClassName}_avail() : base(\"{Escape(context)}\")");
                     sb.AppendLine("    {");
                     sb.AppendLine("    }");
                     sb.AppendLine("}");

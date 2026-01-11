@@ -80,6 +80,12 @@ namespace pyRevitAssemblyBuilder.SessionManager
             var totalStopwatch = Stopwatch.StartNew();
             var stepStopwatch = new Stopwatch();
             
+            // Clear all caches to ensure newly installed/enabled extensions are discovered
+            // This is critical for reload scenarios where extensions may have been added or toggled
+            stepStopwatch.Restart();
+            _extensionManager?.ClearParserCaches();
+            _logger.Debug($"[PERF] ClearParserCaches: {stepStopwatch.ElapsedMilliseconds}ms");
+            
             // Initialize the ScriptExecutor before executing any scripts
             stepStopwatch.Restart();
             InitializeScriptExecutor();

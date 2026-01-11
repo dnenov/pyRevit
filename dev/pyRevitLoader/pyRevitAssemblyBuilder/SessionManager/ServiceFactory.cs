@@ -167,8 +167,9 @@ namespace pyRevitAssemblyBuilder.SessionManager
             var smartButtonScriptInitializer = new SmartButtonScriptInitializer(uiApplication, logger);
             var linkButtonBuilder = new LinkButtonBuilder(logger, buttonPostProcessor);
             var pulldownButtonBuilder = new PulldownButtonBuilder(logger, buttonPostProcessor, linkButtonBuilder, smartButtonScriptInitializer);
+            var splitButtonBuilder = new SplitButtonBuilder(logger, buttonPostProcessor, linkButtonBuilder);
             
-            return new StackBuilder(logger, buttonPostProcessor, linkButtonBuilder, pulldownButtonBuilder, smartButtonScriptInitializer);
+            return new StackBuilder(logger, buttonPostProcessor, linkButtonBuilder, pulldownButtonBuilder, splitButtonBuilder, smartButtonScriptInitializer);
         }
 
         /// <summary>

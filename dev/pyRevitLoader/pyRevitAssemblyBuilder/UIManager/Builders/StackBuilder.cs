@@ -21,6 +21,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
         private readonly IButtonPostProcessor _buttonPostProcessor;
         private readonly Buttons.LinkButtonBuilder _linkButtonBuilder;
         private readonly Buttons.PulldownButtonBuilder _pulldownButtonBuilder;
+        private readonly Buttons.SplitButtonBuilder _splitButtonBuilder;
         private readonly SmartButtonScriptInitializer? _smartButtonScriptInitializer;
 
         /// <summary>
@@ -30,18 +31,21 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
         /// <param name="buttonPostProcessor">The button post-processor.</param>
         /// <param name="linkButtonBuilder">The link button builder.</param>
         /// <param name="pulldownButtonBuilder">The pulldown button builder.</param>
+        /// <param name="splitButtonBuilder">The split button builder.</param>
         /// <param name="smartButtonScriptInitializer">Optional SmartButton script initializer.</param>
         public StackBuilder(
             ILogger logger,
             IButtonPostProcessor buttonPostProcessor,
             Buttons.LinkButtonBuilder linkButtonBuilder,
             Buttons.PulldownButtonBuilder pulldownButtonBuilder,
+            Buttons.SplitButtonBuilder splitButtonBuilder,
             SmartButtonScriptInitializer? smartButtonScriptInitializer = null)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _buttonPostProcessor = buttonPostProcessor ?? throw new ArgumentNullException(nameof(buttonPostProcessor));
             _linkButtonBuilder = linkButtonBuilder ?? throw new ArgumentNullException(nameof(linkButtonBuilder));
             _pulldownButtonBuilder = pulldownButtonBuilder ?? throw new ArgumentNullException(nameof(pulldownButtonBuilder));
+            _splitButtonBuilder = splitButtonBuilder ?? throw new ArgumentNullException(nameof(splitButtonBuilder));
             _smartButtonScriptInitializer = smartButtonScriptInitializer;
         }
 
@@ -92,6 +96,16 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
                     // Use DisplayName for the button's internal name to match control ID format
                     var pdData = new PulldownButtonData(child.DisplayName, pulldownText);
                     itemDataList.Add(pdData);
+                    originalItems.Add(child);
+                }
+                else if (child.Type == CommandComponentType.SplitButton || 
+                         child.Type == CommandComponentType.SplitPushButton)
+                {
+                    // Use localized title which handles fallback to DisplayName
+                    var splitButtonText = ExtensionParser.GetComponentTitle(child);
+                    // Use DisplayName for the button's internal name to match control ID format
+                    var splitData = new SplitButtonData(child.DisplayName, splitButtonText);
+                    itemDataList.Add(splitData);
                     originalItems.Add(child);
                 }
             }
@@ -149,6 +163,24 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
 
                     // Add children to pulldown
                     _pulldownButtonBuilder.AddChildrenToPulldown(pdBtn, origComponent, assemblyInfo);
+                }
+
+                if (ribbonItem is SplitButton splitBtn)
+                {
+                    try
+                    {
+                        // Apply post-processing to the split button itself in stack
+                        _buttonPostProcessor.Process(splitBtn, origComponent);
+
+                        // Add children to split button
+                        _splitButtonBuilder.AddChildrenToSplitButton(splitBtn, origComponent, assemblyInfo);
+                        
+                        _logger.Debug($"Successfully processed split button '{origComponent.DisplayName}' in stack (index {i}).");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"Failed to process split button '{origComponent.DisplayName}' in stack (index {i}). Exception: {ex.Message}");
+                    }
                 }
             }
         }

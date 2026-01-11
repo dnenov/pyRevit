@@ -148,6 +148,10 @@ namespace PyRevitLabs.PyRevit.Runtime {
         public ScriptEngineType EngineType {
             get {
                 // determine engine necessary to run this script
+                var engineTypeFromConfig = GetEngineTypeFromConfigs();
+                if (engineTypeFromConfig != null)
+                    return engineTypeFromConfig.Value;
+
 
                 if (PyRevitScript.IsType(ScriptSourceFile, PyRevitScriptTypes.Python)) {
                     string firstLine = "";
@@ -200,6 +204,42 @@ namespace PyRevitLabs.PyRevit.Runtime {
                 // ScriptSourceFile with be "" and runtime can not determine
                 // the engine type
                 return ScriptEngineType.Unknown;
+            }
+        }
+
+        private ScriptEngineType? GetEngineTypeFromConfigs() {
+            // Parse engine configs JSON to extract explicit engine type
+            // Format: {"type":"CPython",...} or {"type":"IronPython",...}
+            try {
+                if (string.IsNullOrEmpty(ScriptRuntimeConfigs?.EngineConfigs))
+                    return null;
+
+                // Simple JSON parsing - look for "type":"value" pattern
+                var typeMatch = System.Text.RegularExpressions.Regex.Match(
+                    ScriptRuntimeConfigs.EngineConfigs,
+                    @"""type""\s*:\s*""([^""]+)""",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+                if (!typeMatch.Success || typeMatch.Groups.Count < 2)
+                    return null;
+
+                string engineTypeName = typeMatch.Groups[1].Value;
+
+                // Map string to ScriptEngineType enum
+                if (engineTypeName.Equals("CPython", StringComparison.OrdinalIgnoreCase) ||
+                    engineTypeName.Equals("cpython", StringComparison.OrdinalIgnoreCase))
+                    return ScriptEngineType.CPython;
+
+                if (engineTypeName.Equals("IronPython", StringComparison.OrdinalIgnoreCase) ||
+                    engineTypeName.Equals("ironpython", StringComparison.OrdinalIgnoreCase))
+                    return ScriptEngineType.IronPython;
+
+                // Add more engine types as needed
+                return null;
+            }
+            catch {
+                // If JSON parsing fails, return null and let default logic handle it
+                return null;
             }
         }
 

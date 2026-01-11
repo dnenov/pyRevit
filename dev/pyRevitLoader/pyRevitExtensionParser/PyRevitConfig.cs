@@ -312,6 +312,16 @@ namespace pyRevitExtensionParser
     public class EngineConfig
     {
         /// <summary>
+        /// Gets or sets the script engine type to use (e.g., "IronPython", "CPython").
+        /// </summary>
+        /// <remarks>
+        /// <para>Specifies which Python runtime to use for executing scripts.</para>
+        /// <para>Valid values: "IronPython" (default), "CPython"</para>
+        /// <para>If not specified, defaults to IronPython.</para>
+        /// </remarks>
+        public string Type { get; set; }
+
+        /// <summary>
         /// Gets or sets whether to use a clean engine scope for execution.
         /// </summary>
         /// <remarks>

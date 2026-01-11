@@ -192,6 +192,10 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
             // Core engine settings (apply to all script types)
             configs["clean"] = cmd.Engine?.Clean ?? false;
             
+            // Add engine type if specified (CPython, IronPython, etc.)
+            if (!string.IsNullOrEmpty(cmd.Engine?.Type))
+                configs["type"] = cmd.Engine.Type;
+            
             if (isDynamoScript)
             {
                 // For Dynamo scripts, use appropriate settings

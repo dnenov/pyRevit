@@ -698,6 +698,9 @@ namespace pyRevitExtensionParser
 
             switch (key)
             {
+                case "type":
+                    parsed.Engine.Type = StripQuotes(rawValue);
+                    break;
                 case "clean":
                     parsed.Engine.Clean = rawValue.Equals("true", StringComparison.InvariantCultureIgnoreCase);
                     break;

@@ -176,6 +176,10 @@ namespace pyRevitLabs.PyRevit {
         public const string BundleScriptGrasshopperXPostfix = ".ghx";
         public const string BundleScriptRevitFamilyPostfix = ".rfa";
 
+        // loader settings
+        public const string ConfigsNewLoaderKey = "new_loader";
+        public const bool ConfigsNewLoaderDefault = true;
+
         // theme
         public static SolidColorBrush PyRevitAccentBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0xf3, 0x9c, 0x12));
         public static SolidColorBrush PyRevitBackgroundBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x2c, 0x3e, 0x50));

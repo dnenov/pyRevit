@@ -6,8 +6,5 @@ title:
   es_es: Análisis
   de_de: Analyse
 layout:
-  - analysis1
-  - analysis2
-  - analysis3
-  - '-----'
-  - 3D
+  - ColorSplasher
+  - Tools

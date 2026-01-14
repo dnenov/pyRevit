@@ -467,7 +467,7 @@ def show_settings(settings_schema, section=None, title="Settings", width=450):
              "default": "", "file_ext": "rvt", "files_filter": "Revit Files (*.rvt)|*.rvt"},
         ]
 
-        if show_settings(settings_schema, section="MyToolSection", title="My Tool Settings", ):
+        if show_settings(settings_schema, section="MyToolSection", title="My Tool Settings"):
             print("Settings saved!")
         ```
     """

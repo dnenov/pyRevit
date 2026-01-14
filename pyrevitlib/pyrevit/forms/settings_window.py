@@ -446,7 +446,7 @@ def show_settings(settings_schema, section=None, title="Settings", width=450):
             - init_dir (str): For "file" type, initial directory
             - multi_file (bool): For "file" type, allow multiple file selection
         section (str): Config section name (default: None)
-        title (str): Window title (default: "Settings)
+        title (str): Window title (default: "Settings")
         width (int): Window width in pixels (default: 450)
 
     Returns:

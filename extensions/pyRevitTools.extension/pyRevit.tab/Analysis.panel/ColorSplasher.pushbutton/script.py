@@ -1220,7 +1220,10 @@ class ColorSplasherWindow(forms.WPFWindow):
 
     def list_selected_index_changed(self, sender, e):
         """Handle ListBox selection change for color picking or element selection."""
+        # Reset shift flag if clicking outside (SelectedIndex == -1)
         if sender.SelectedIndex == -1:
+            if hasattr(self, "_shift_pressed_on_click"):
+                self._shift_pressed_on_click = False
             return
 
         from System.Windows.Input import Keyboard, Key
@@ -1243,20 +1246,36 @@ class ColorSplasherWindow(forms.WPFWindow):
                     # Access DataRowView in WPF
                     from System.Data import DataRowView
 
+                    row = None
                     if isinstance(selected_item, DataRowView):
                         row = selected_item.Row
                     elif hasattr(selected_item, "Row"):
                         row = selected_item.Row
                     else:
-                        # Fallback for direct DataTable access
+                        # Fallback for direct DataTable access with bounds checking
                         if (
                             hasattr(self, "_table_data_3")
                             and self._table_data_3 is not None
+                            and sender.SelectedIndex >= 0
+                            and sender.SelectedIndex < self._table_data_3.Rows.Count
                         ):
                             row = self._table_data_3.Rows[sender.SelectedIndex]
-                        else:
+                    
+                    if row is None:
+                        # Temporarily unsubscribe to prevent recursive calls
+                        try:
+                            self.list_box2.SelectionChanged -= self.list_selected_index_changed
                             sender.SelectedIndex = -1
-                            return
+                        except Exception:
+                            pass
+                        finally:
+                            try:
+                                self.list_box2.SelectionChanged += self.list_selected_index_changed
+                            except Exception:
+                                pass
+                        self._shift_pressed_on_click = False
+                        return
+                    
                     value_item = row["Value"]
                     if (
                         hasattr(value_item, "ele_id")
@@ -1272,10 +1291,31 @@ class ColorSplasherWindow(forms.WPFWindow):
                         logger.debug("Selected %d elements", element_ids.Count)
                     else:
                         logger.debug("No elements found for selected value")
-                sender.SelectedIndex = -1
+                
+                # Temporarily unsubscribe to prevent recursive calls
+                try:
+                    self.list_box2.SelectionChanged -= self.list_selected_index_changed
+                    sender.SelectedIndex = -1
+                except Exception:
+                    pass
+                finally:
+                    try:
+                        self.list_box2.SelectionChanged += self.list_selected_index_changed
+                    except Exception:
+                        pass
             except Exception as ex:
                 logger.debug("Error selecting elements: %s", str(ex))
-                sender.SelectedIndex = -1
+                # Temporarily unsubscribe to prevent recursive calls
+                try:
+                    self.list_box2.SelectionChanged -= self.list_selected_index_changed
+                    sender.SelectedIndex = -1
+                except Exception:
+                    pass
+                finally:
+                    try:
+                        self.list_box2.SelectionChanged += self.list_selected_index_changed
+                    except Exception:
+                        pass
             finally:
                 self._shift_pressed_on_click = False
         else:
@@ -1288,7 +1328,18 @@ class ColorSplasherWindow(forms.WPFWindow):
                         selected_item, sender.SelectedIndex
                     )
                     if row is None:
-                        sender.SelectedIndex = -1
+                        # Temporarily unsubscribe to prevent recursive calls
+                        try:
+                            self.list_box2.SelectionChanged -= self.list_selected_index_changed
+                            sender.SelectedIndex = -1
+                        except Exception:
+                            pass
+                        finally:
+                            try:
+                                self.list_box2.SelectionChanged += self.list_selected_index_changed
+                            except Exception:
+                                pass
+                        self._shift_pressed_on_click = False
                         return
                     value_item = row["Value"]
                     value_item.n1 = clr_dlg.Color.R
@@ -1298,7 +1349,17 @@ class ColorSplasherWindow(forms.WPFWindow):
                         clr_dlg.Color.R, clr_dlg.Color.G, clr_dlg.Color.B
                     )
                     self._update_listbox_colors()
-            sender.SelectedIndex = -1
+            # Temporarily unsubscribe to prevent recursive calls
+            try:
+                self.list_box2.SelectionChanged -= self.list_selected_index_changed
+                sender.SelectedIndex = -1
+            except Exception:
+                pass
+            finally:
+                try:
+                    self.list_box2.SelectionChanged += self.list_selected_index_changed
+                except Exception:
+                    pass
             self._shift_pressed_on_click = False
 
     def _update_listbox_colors_async(self):

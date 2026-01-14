@@ -63,6 +63,7 @@
         多个输出数据。
     </system:String>
 
+    <system:String x:Key="CoreSettings.CloseOtherConsoles.Toggle">最小化打开的控制台数量：</system:String>
     <system:String x:Key="CoreSettings.CloseOtherConsoles.Current">当前命令控制台</system:String>
     <system:String x:Key="CoreSettings.CloseOtherConsoles.Current.Description">
         关闭与当前正在运行的命令关联的所有控制台窗口。

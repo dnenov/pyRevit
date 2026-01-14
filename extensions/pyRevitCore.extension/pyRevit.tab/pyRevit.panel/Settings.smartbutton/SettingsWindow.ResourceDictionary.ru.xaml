@@ -69,6 +69,7 @@
         не требуется сравнивать данные из нескольких окон вывода.
     </system:String>
 
+    <system:String x:Key="CoreSettings.CloseOtherConsoles.Toggle">Сократить число открытых консолей:</system:String>
     <system:String x:Key="CoreSettings.CloseOtherConsoles.Current">Консоли текущей команды</system:String>
     <system:String x:Key="CoreSettings.CloseOtherConsoles.Current.Description">
         Закрыть все окна консоли, связанные с текущей выполняемой командой.

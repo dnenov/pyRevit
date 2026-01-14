@@ -214,7 +214,7 @@
                                     <TextBlock TextWrapping="WrapWithOverflow" Margin="0,5,0,0" Text="{DynamicResource CoreSettings.CloseOtherConsoles.Description}"/>
                                     <WrapPanel Margin="0,15,0,0">
                                         <ToggleButton Style="{StaticResource AnimatedSwitch}" Height="24" x:Name="minimize_consoles_cb" IsChecked="False"/>
-                                        <TextBlock Margin="30,4,0,0" Text="Minimize the number of open consoles:" />
+                                        <TextBlock Margin="30,4,0,0" Text="{DynamicResource CoreSettings.CloseOtherConsoles.Toggle}"/>
                                     </WrapPanel>
                                 </StackPanel>
 

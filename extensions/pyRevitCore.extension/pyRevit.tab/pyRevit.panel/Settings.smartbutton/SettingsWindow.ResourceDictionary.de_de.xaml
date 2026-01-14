@@ -64,6 +64,7 @@
         mehrere Ausgabedaten vergleichen.
     </system:String>
 
+    <system:String x:Key="CoreSettings.CloseOtherConsoles.Toggle">Anzahl der offenen Konsolen minimieren:</system:String>
     <system:String x:Key="CoreSettings.CloseOtherConsoles.Current">Konsolen des aktuellen Befehls</system:String>
     <system:String x:Key="CoreSettings.CloseOtherConsoles.Current.Description">
         Alle Konsolenfenster schließen, die mit dem aktuell ausgeführten Befehl verknüpft sind.

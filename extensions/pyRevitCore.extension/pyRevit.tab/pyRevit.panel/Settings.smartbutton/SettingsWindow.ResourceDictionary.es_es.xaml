@@ -64,6 +64,7 @@
         múltiples datos de salida.
     </system:String>
 
+    <system:String x:Key="CoreSettings.CloseOtherConsoles.Toggle">Minimizar el número de consolas abiertas:</system:String>
     <system:String x:Key="CoreSettings.CloseOtherConsoles.Current">Consolas del comando actual</system:String>
     <system:String x:Key="CoreSettings.CloseOtherConsoles.Current.Description">
         Cerrar todas las ventanas de consola asociadas con el comando en ejecución actual.

@@ -461,7 +461,7 @@ def pick_point(message=''):
 
     doc = HOST_APP.doc
     active_view = doc.ActiveView
-    if active_view.SketchPlane == None:
+    if active_view.SketchPlane is None:
         with Transaction(transaction_text):
             sketchPlane = DB.SketchPlane.Create(
                 doc,

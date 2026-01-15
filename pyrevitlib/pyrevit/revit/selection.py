@@ -456,14 +456,14 @@ def pick_point(message=''):
     revit_language = str(revit_language_enum)
     # Translation dictionaries using simple language names as keys
     translations = {
-        "English": "Assigning a workplane to the current view",
+        "English_USA": "Assigning a workplane to the current view",
         "French": "Attribution d'un plan de travail à la vue actuelle",
         "German": "Zuweisen einer Arbeitsebene zur aktuellen Ansicht",
         "Spanish": "Asignar un plano de trabajo a la vista actual",
         "Russian": "Назначение рабочей плоскости текущему виду",
     }
     # Default to English if language not found
-    transaction_text = translations.get(revit_language, translations["English"])
+    transaction_text = translations.get(revit_language, translations["English_USA"])
 
     doc = HOST_APP.doc
     active_view = doc.ActiveView

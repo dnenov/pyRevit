@@ -8,6 +8,7 @@ using Autodesk.Revit.ApplicationServices;
 
 using pyRevitLabs.Common;
 using pyRevitLabs.PyRevit;
+using pyRevitLabs.Json.Linq;
 
 namespace PyRevitLabs.PyRevit.Runtime {
     public enum ScriptRuntimeType {
@@ -214,16 +215,12 @@ namespace PyRevitLabs.PyRevit.Runtime {
                 if (string.IsNullOrEmpty(ScriptRuntimeConfigs?.EngineConfigs))
                     return null;
 
-                // Simple JSON parsing - look for "type":"value" pattern
-                var typeMatch = System.Text.RegularExpressions.Regex.Match(
-                    ScriptRuntimeConfigs.EngineConfigs,
-                    @"""type""\s*:\s*""([^""]+)""",
-                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                // Parse JSON using pyRevitLabs.Json (Newtonsoft.Json fork)
+                var json = JObject.Parse(ScriptRuntimeConfigs.EngineConfigs);
+                var engineTypeName = json["type"]?.Value<string>();
 
-                if (!typeMatch.Success || typeMatch.Groups.Count < 2)
+                if (string.IsNullOrEmpty(engineTypeName))
                     return null;
-
-                string engineTypeName = typeMatch.Groups[1].Value;
 
                 // Map string to ScriptEngineType enum
                 if (engineTypeName.Equals("CPython", StringComparison.OrdinalIgnoreCase) ||

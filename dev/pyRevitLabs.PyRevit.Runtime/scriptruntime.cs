@@ -9,6 +9,7 @@ using Autodesk.Revit.ApplicationServices;
 using pyRevitLabs.Common;
 using pyRevitLabs.PyRevit;
 using pyRevitLabs.Json.Linq;
+using pyRevitLabs.NLog;
 
 namespace PyRevitLabs.PyRevit.Runtime {
     public enum ScriptRuntimeType {
@@ -18,6 +19,7 @@ namespace PyRevitLabs.PyRevit.Runtime {
 
     public class ScriptRuntimeConfigs : IDisposable {
         private object _eventSender = null;
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public ControlledApplication ControlledApp { get; set; }
         public Application App { get; set; }
@@ -66,6 +68,8 @@ namespace PyRevitLabs.PyRevit.Runtime {
     }
 
     public class ScriptRuntime : IDisposable {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         // app handles
         private UIApplication _uiApp = null;
         private Application _app = null;
@@ -223,19 +227,16 @@ namespace PyRevitLabs.PyRevit.Runtime {
                     return null;
 
                 // Map string to ScriptEngineType enum
-                if (engineTypeName.Equals("CPython", StringComparison.OrdinalIgnoreCase) ||
-                    engineTypeName.Equals("cpython", StringComparison.OrdinalIgnoreCase))
+                if (engineTypeName.Equals("CPython", StringComparison.OrdinalIgnoreCase)) 
                     return ScriptEngineType.CPython;
 
-                if (engineTypeName.Equals("IronPython", StringComparison.OrdinalIgnoreCase) ||
-                    engineTypeName.Equals("ironpython", StringComparison.OrdinalIgnoreCase))
+                if (engineTypeName.Equals("IronPython", StringComparison.OrdinalIgnoreCase))
                     return ScriptEngineType.IronPython;
 
-                // Add more engine types as needed
                 return null;
             }
-            catch {
-                // If JSON parsing fails, return null and let default logic handle it
+            catch (Exception ex) {
+                logger.Error(ex, "Failed to parse engine configs JSON: {0}", ScriptRuntimeConfigs.EngineConfigs);
                 return null;
             }
         }

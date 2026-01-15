@@ -187,8 +187,43 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                         Logger.Debug($"Failed to add separator to split button. Exception: {ex.Message}");
                     }
                 }
+                else if (sub.Type == CommandComponentType.SmartButton)
+                {
+                    try
+                    {
+                        var pushButtonData = CreatePushButtonData(sub, assemblyInfo!);
+                        var subBtn = splitBtn.AddPushButton(pushButtonData);
+                        if (subBtn != null)
+                        {
+                            ButtonPostProcessor.Process(subBtn, sub, component);
+
+                            // Execute __selfinit__ for SmartButton in split button
+                            if (_smartButtonScriptInitializer != null)
+                            {
+                                var shouldActivate = _smartButtonScriptInitializer.ExecuteSelfInit(sub, subBtn);
+                                if (!shouldActivate)
+                                {
+                                    subBtn.Enabled = false;
+                                    Logger.Debug($"SmartButton '{sub.DisplayName}' in split button deactivated by __selfinit__.");
+                                }
+                            }
+
+                            // Track first button to set as current
+                            firstButton ??= subBtn;
+                            childCount++;
+                            Logger.Debug($"Added SmartButton '{sub.DisplayName}' to split button '{component.DisplayName}' (child #{childCount}).");
+                        }
+                        else
+                        {
+                            Logger.Warning($"AddPushButton returned null for SmartButton '{sub.DisplayName}' in split button '{component.DisplayName}'.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Failed to add SmartButton '{sub.DisplayName}' to split button '{component.DisplayName}'. Exception: {ex.Message}");
+                    }
+                }
                 else if (sub.Type == CommandComponentType.PushButton ||
-                         sub.Type == CommandComponentType.SmartButton ||
                          sub.Type == CommandComponentType.UrlButton ||
                          sub.Type == CommandComponentType.InvokeButton ||
                          sub.Type == CommandComponentType.ContentButton)

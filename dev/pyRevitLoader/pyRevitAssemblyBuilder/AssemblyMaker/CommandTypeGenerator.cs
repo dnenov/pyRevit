@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,14 +18,35 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
     public class RoslynCommandTypeGenerator
     {
         // Cache the pyRevit root derived from DLL location
-        // DLL is at: bin/netcore/engines/IPY342 or bin/netfx/engines/IPY342
-        // So we go 4 levels up to reach pyRevit root
+        // Uses marker-based detection (pyRevitfile or pyrevitlib directory)
+        // for robustness against directory structure changes.
         private static readonly string _pyRevitRoot = GetPyRevitRoot();
         
+        /// <summary>
+        /// Finds the pyRevit root directory by searching upward for marker files/directories.
+        /// Falls back to the original 4-level traversal if markers are not found.
+        /// </summary>
         private static string GetPyRevitRoot()
         {
+            var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            // Search upward for pyRevit root using established markers
+            while (!string.IsNullOrEmpty(currentDir))
+            {
+                var markerPath = Path.Combine(currentDir, Constants.PYREVIT_MARKER_FILE);
+                var libDirPath = Path.Combine(currentDir, Constants.PYREVIT_LIB_DIR);
+                
+                if (File.Exists(markerPath) || Directory.Exists(libDirPath))
+                    return currentDir;
+                
+                // Move to parent directory
+                var parentDir = Path.GetDirectoryName(currentDir);
+                if (parentDir == currentDir)
+                    break; // Reached filesystem root
+                currentDir = parentDir;
+            }
+            
+            // Fallback to hardcoded traversal if markers not found
             var dllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            // Go up 4 levels: IPY342 -> engines -> netcore/netfx -> bin -> pyRevit root
             return Path.GetFullPath(Path.Combine(dllDir, "..", "..", "..", ".."));
         }
         
@@ -73,11 +94,15 @@ namespace pyRevitAssemblyBuilder.AssemblyMaker
                     }
                 }
                 
-                var pyRevitLibDir = Path.Combine(_pyRevitRoot, Constants.PYREVIT_LIB_DIR);
-                searchPathsList.Add(pyRevitLibDir);
-                
-                var sitePackagesDir = Path.Combine(_pyRevitRoot, Constants.SITE_PACKAGES_DIR);
-                searchPathsList.Add(sitePackagesDir);
+                // Add pyrevitlib/ and site-packages/ paths if pyRevitRoot is valid
+                if (!string.IsNullOrEmpty(_pyRevitRoot))
+                {
+                    var pyRevitLibDir = Path.Combine(_pyRevitRoot, Constants.PYREVIT_LIB_DIR);
+                    searchPathsList.Add(pyRevitLibDir);
+
+                    var sitePackagesDir = Path.Combine(_pyRevitRoot, Constants.SITE_PACKAGES_DIR);
+                    searchPathsList.Add(sitePackagesDir);
+                }
                 
                 string searchPaths = string.Join(";", searchPathsList);
                 string tooltip = cmd.Tooltip ?? string.Empty;

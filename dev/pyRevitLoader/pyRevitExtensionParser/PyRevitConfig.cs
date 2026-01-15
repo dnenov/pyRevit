@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -317,9 +317,16 @@ namespace pyRevitExtensionParser
         /// <remarks>
         /// <para>Specifies which Python runtime to use for executing scripts.</para>
         /// <para>Valid values: "IronPython" (default), "CPython"</para>
-        /// <para>If not specified, defaults to IronPython.</para>
+        /// <para>Other values may be supported in the future but are not guaranteed.</para>
+        /// <para>Setting this property to null or empty will reset to the default ("IronPython").</para>
         /// </remarks>
-        public string Type { get; set; }
+        private string _type;
+
+        public string Type
+        {
+            get => string.IsNullOrEmpty(_type) ? "IronPython" : _type;
+            set => _type = value;
+        }
 
         /// <summary>
         /// Gets or sets whether to use a clean engine scope for execution.

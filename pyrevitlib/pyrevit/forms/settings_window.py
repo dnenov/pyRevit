@@ -432,7 +432,6 @@ def show_settings(settings_schema, section=None, title="Settings", width=450):
     """Show settings window and return True if saved.
 
     Args:
-        config: pyRevit config object from script.get_config()
         settings_schema: List of setting definitions. Each setting is a dict with:
             - name (str): Setting key name for config
             - type (str): "bool", "choice", "int", "float", "string", "color", "folder", or "file"
@@ -446,16 +445,16 @@ def show_settings(settings_schema, section=None, title="Settings", width=450):
             - files_filter (str): For "file" type, files filter (e.g., "Revit Files (*.rvt)|*.rvt")
             - init_dir (str): For "file" type, initial directory
             - multi_file (bool): For "file" type, allow multiple file selection
-        title (str): Window title
+        section (str): Config section name (default: None)
+        title (str): Window title (default: "Settings")
         width (int): Window width in pixels (default: 450)
-        section (str): Config section name for reset functionality
 
     Returns:
         bool: True if settings were saved, False if canceled
 
     Example:
         ```python
-        settings = [
+        settings_schema = [
             {"name": "scope", "type": "choice", "label": "Scope",
              "options": ["Visibility", "Active State"], "default": "Visibility"},
             {"name": "set_workset", "type": "bool", "label": "Set Workset", "default": True},
@@ -468,7 +467,7 @@ def show_settings(settings_schema, section=None, title="Settings", width=450):
              "default": "", "file_ext": "rvt", "files_filter": "Revit Files (*.rvt)|*.rvt"},
         ]
 
-        if show_settings(config, settings, title="My Tool Settings", section="MyToolSection"):
+        if show_settings(settings_schema, section="MyToolSection", title="My Tool Settings"):
             print("Settings saved!")
         ```
     """

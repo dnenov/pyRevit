@@ -302,8 +302,12 @@ class SettingsWindow(forms.WPFWindow):
 
         try:
             val = conversion_func(value)
-            min_val = conversion_func(setting.get("min"))
-            max_val = conversion_func(setting.get("max"))
+
+            min_raw = setting.get("min")
+            max_raw = setting.get("max")
+
+            min_val = conversion_func(min_raw) if min_raw is not None else None
+            max_val = conversion_func(max_raw) if max_raw is not None else None
 
             if min_val is not None and val < min_val:
                 return (

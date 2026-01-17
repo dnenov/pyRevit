@@ -462,39 +462,38 @@ def export_xls(src_elements, selected_params, field_mapping=None):
     for row_idx, el in enumerate(src_elements, start=1):
         worksheet.write(row_idx, 0, str(get_elementid_value(el.Id)), locked)
 
-        for col_idx, valid_param in enumerate(valid_params):
-            param_name = valid_param.name
-            param = el.LookupParameter(param_name)
+        for col_idx, param in enumerate(valid_params):
+            param_name = param.name
+            param_el = el.LookupParameter(param_name)
             val = "<does not exist>"
             cell_format = locked
-            if param:
+            if param_el:
                 val = ""
-                if param.HasValue:
+                if param_el.HasValue:
                     try:
-                        if param.StorageType == DB.StorageType.Double:
+                        if param_el.StorageType == DB.StorageType.Double:
                             forge_type_id = param.forge_type_id
                             field = field_mapping.get(param_name)
 
                             if forge_type_id and DB.UnitUtils.IsMeasurableSpec(
                                 forge_type_id
                             ):
-                                # Use helper function to get proper conversion
                                 val, _, _, _ = get_unit_label_and_value(
-                                    param, forge_type_id, field, project_units
+                                    param_el, forge_type_id, field, project_units
                                 )
                             else:
-                                val = param.AsDouble()
-                        elif param.StorageType == DB.StorageType.String:
-                            val = param.AsString()
-                        elif param.StorageType == DB.StorageType.Integer:
-                            if get_elementid_value(param.Id) == int(DB.BuiltInParameter.ELEM_PARTITION_PARAM):
+                                val = param_el.AsDouble()
+                        elif param_el.StorageType == DB.StorageType.String:
+                            val = param_el.AsString()
+                        elif param_el.StorageType == DB.StorageType.Integer:
+                            if get_elementid_value(param_el.Id) == int(DB.BuiltInParameter.ELEM_PARTITION_PARAM):
                                 val = str(revit.query.get_element_workset(el).Name)
                             elif is_yesno_parameter(param.definition):
-                                val = "Yes" if param.AsInteger() else "No"
+                                val = "Yes" if param_el.AsInteger() else "No"
                             else:
-                                val = str(param.AsInteger())
-                        elif param.StorageType == DB.StorageType.ElementId:
-                            val = param.AsValueString()
+                                val = str(param_el.AsInteger())
+                        elif param_el.StorageType == DB.StorageType.ElementId:
+                            val = param_el.AsValueString()
                         else:
                             val = "<unsupported>"
                     except Exception as e:
@@ -506,7 +505,7 @@ def export_xls(src_elements, selected_params, field_mapping=None):
                         val = "<Error>"
 
                 # Cell is unlocked only if parameter exists, has value, and is not read-only
-                if not valid_param.isreadonly:
+                if not param.isreadonly:
                     cell_format = unlocked
             # If param doesn't exist or has no value, cell remains locked
 

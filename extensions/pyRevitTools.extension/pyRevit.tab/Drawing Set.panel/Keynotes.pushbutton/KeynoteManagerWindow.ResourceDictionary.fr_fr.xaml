@@ -48,8 +48,8 @@
     <system:String x:Key="EnableHistory">Activer l'Historique</system:String>
     <system:String x:Key="EnableHistoryInfo">Activer le suivi de l'historique sur les notes clé.</system:String>
     
-    <GridLength x:Key="RightPanelWidth">140</GridLength>
-    <GridLength x:Key="RefreshKeynotesWidth">70</GridLength>
+    <GridLength x:Key="RightPanelWidth">190</GridLength>
+    <GridLength x:Key="RefreshKeynotesWidth">90</GridLength>
     
     
     <system:String x:Key="AllCategories">-- TOUTES LES CATÉGORIES --</system:String>

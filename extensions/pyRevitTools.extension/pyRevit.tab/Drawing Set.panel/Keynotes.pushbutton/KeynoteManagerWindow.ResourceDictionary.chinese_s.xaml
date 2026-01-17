@@ -48,7 +48,7 @@
     <system:String x:Key="EnableHistory">启用历史</system:String>
     <system:String x:Key="EnableHistoryInfo">启用关键注释的历史跟踪。</system:String>
     
-    <GridLength x:Key="RightPanelWidth">140</GridLength>
+    <GridLength x:Key="RightPanelWidth">190</GridLength>
     <GridLength x:Key="RefreshKeynotesWidth">70</GridLength>
     
     

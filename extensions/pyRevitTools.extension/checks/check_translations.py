@@ -56,7 +56,8 @@ def _load_resource_string(resource_file, key):
         string_elem = root.find(".//system:String[@x:Key='{}']".format(key), ns)
         if string_elem is not None:
             return string_elem.text
-    except:
+    except Exception as e:
+        print("Error loading resource string: {}".format(e))
         pass
     return None
 

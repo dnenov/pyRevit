@@ -448,38 +448,104 @@ def pick_point(message=''):
 
     Side Effects:
         If the active view does not have a ``SketchPlane`` assigned, this
-        function will automatically create a work plane (aligned with the
+        function will automatically create a temporary work plane (aligned with the
         active view) and assign it to the view before prompting for the point.
+        The work plane is removed after picking to avoid modifying the document.
     """
     revit_language_enum = HOST_APP.language
     revit_language = str(revit_language_enum)
-    # Translation dictionaries using simple language names as keys
     translations = {
         "English_USA": "Assigning a workplane to the current view",
         "French": "Attribution d'un plan de travail à la vue actuelle",
-        "German": "Zuweisen einer Arbeitsebene zur aktuellen Ansicht",
-        "Spanish": "Asignar un plano de trabajo a la vista actual",
         "Russian": "Назначение рабочей плоскости текущему виду",
+        "Chinese_Simplified": "将工作平面分配给当前视图",
+        "Spanish": "Asignar un plano de trabajo a la vista actual",
+        "German": "Zuweisen einer Arbeitsebene zur aktuellen Ansicht",
     }
-    # Default to English if language not found
     transaction_text = translations.get(revit_language, translations["English_USA"])
 
     doc = HOST_APP.doc
     active_view = doc.ActiveView
+    sketch_plane = None
+    txn = None
+    
     try:
         if active_view.SketchPlane is None:
-            with revit.Transaction(transaction_text, doc=doc):
+            # Create transaction manually so we can control commit/rollback timing
+            txn = DB.Transaction(doc, transaction_text)
+            txn.Start()
+            try:
                 sketch_plane = DB.SketchPlane.Create(
                     doc,
                     DB.Plane.CreateByNormalAndOrigin(
                         active_view.ViewDirection,
                         active_view.Origin
-                    )  # the created plane coincides with the view's orientation and origin
+                    )
                 )
                 active_view.SketchPlane = sketch_plane
-
-        return HOST_APP.uidoc.Selection.PickPoint(message)
+                txn.Commit()
+            except Exception:
+                txn.RollBack()
+                raise
+            finally:
+                txn.Dispose()
+                txn = None
+        try:
+            result = HOST_APP.uidoc.Selection.PickPoint(message)
+        except RevitExceptions.OperationCanceledException:
+            mlogger.debug("Operation canceled by user")
+            result = None
+        if sketch_plane is not None:
+            cleanup_txn = None
+            try:
+                if active_view and active_view.IsValidObject:
+                    if sketch_plane.Id != DB.ElementId.InvalidElementId:
+                        try:
+                            doc.GetElement(sketch_plane.Id)
+                        except Exception:
+                            sketch_plane = None
+                    
+                    if sketch_plane is not None:
+                        sketch_plane_id = sketch_plane.Id
+                        if sketch_plane_id != DB.ElementId.InvalidElementId:
+                            cleanup_txn = DB.Transaction(doc, transaction_text)
+                            cleanup_txn.Start()
+                            try:
+                                doc.Delete(sketch_plane_id)
+                                cleanup_txn.Commit()
+                            except Exception as cleanup_err:
+                                cleanup_txn.RollBack()
+                                mlogger.warning("Failed to cleanup temporary SketchPlane: %s", cleanup_err)
+                            finally:
+                                cleanup_txn.Dispose()
+            except Exception as cleanup_err:
+                mlogger.warning("Failed to cleanup temporary SketchPlane: %s", cleanup_err)
+        
+        return result
     except Exception:
+        if txn is not None and txn.HasStarted():
+            try:
+                txn.RollBack()
+            except Exception:
+                pass
+            finally:
+                txn.Dispose()
+        if sketch_plane is not None:
+            try:
+                if active_view and active_view.IsValidObject:
+                    sketch_plane_id = sketch_plane.Id
+                    if sketch_plane_id != DB.ElementId.InvalidElementId:
+                        cleanup_txn = DB.Transaction(doc, transaction_text)
+                        cleanup_txn.Start()
+                        try:
+                            doc.Delete(sketch_plane_id)
+                            cleanup_txn.Commit()
+                        except Exception:
+                            cleanup_txn.RollBack()
+                        finally:
+                            cleanup_txn.Dispose()
+            except Exception:
+                pass
         return None
 
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Elements selection utilities."""
 from pyrevit import HOST_APP, DOCS, PyRevitException
-from pyrevit import framework, revit, DB, UI
+from pyrevit import framework, DB, UI
 from pyrevit.coreutils.logger import get_logger
 
 from pyrevit.revit import ensure
@@ -437,6 +437,7 @@ def pick_linkeds(message=''):
 
 
 def pick_point(message=''):
+    # type: (str) -> DB.XYZ | None
     """Pick a point from the user interface.
 
     Args:
@@ -452,101 +453,47 @@ def pick_point(message=''):
         active view) and assign it to the view before prompting for the point.
         The work plane is removed after picking to avoid modifying the document.
     """
-    revit_language_enum = HOST_APP.language
-    revit_language = str(revit_language_enum)
-    translations = {
-        "English_USA": "Assigning a workplane to the current view",
-        "French": "Attribution d'un plan de travail à la vue actuelle",
-        "Russian": "Назначение рабочей плоскости текущему виду",
-        "Chinese_Simplified": "将工作平面分配给当前视图",
-        "Spanish": "Asignar un plano de trabajo a la vista actual",
-        "German": "Zuweisen einer Arbeitsebene zur aktuellen Ansicht",
-    }
-    transaction_text = translations.get(revit_language, translations["English_USA"])
-
     doc = HOST_APP.doc
     active_view = doc.ActiveView
-    sketch_plane = None
-    txn = None
-    
+    result = None
+
     try:
         if active_view.SketchPlane is None:
-            # Create transaction manually so we can control commit/rollback timing
-            txn = DB.Transaction(doc, transaction_text)
-            txn.Start()
-            try:
-                sketch_plane = DB.SketchPlane.Create(
-                    doc,
-                    DB.Plane.CreateByNormalAndOrigin(
-                        active_view.ViewDirection,
-                        active_view.Origin
+            tg = DB.TransactionGroup(doc, "Assigning a workplane to the current view")
+            tg.Start()
+
+            with DB.Transaction(doc, "Create temporary workplane") as t:
+                t.Start()
+                try:
+                    sketch_plane = DB.SketchPlane.Create(
+                        doc,
+                        DB.Plane.CreateByNormalAndOrigin(
+                            active_view.ViewDirection,
+                            active_view.Origin
+                        )
                     )
-                )
-                active_view.SketchPlane = sketch_plane
-                txn.Commit()
-            except Exception:
-                txn.RollBack()
-                raise
-            finally:
-                txn.Dispose()
-                txn = None
-        try:
+                    active_view.SketchPlane = sketch_plane
+                    t.Commit()
+                except Exception as ex:
+                    mlogger.error("Failed to create temporary sketch plane: %s", ex)
+                    t.RollBack()
+                    tg.RollBack()
+                    return None
+
             result = HOST_APP.uidoc.Selection.PickPoint(message)
-        except RevitExceptions.OperationCanceledException:
-            mlogger.debug("Operation canceled by user")
-            result = None
-        if sketch_plane is not None:
-            cleanup_txn = None
-            try:
-                if active_view and active_view.IsValidObject:
-                    if sketch_plane.Id != DB.ElementId.InvalidElementId:
-                        try:
-                            doc.GetElement(sketch_plane.Id)
-                        except Exception:
-                            sketch_plane = None
-                    
-                    if sketch_plane is not None:
-                        sketch_plane_id = sketch_plane.Id
-                        if sketch_plane_id != DB.ElementId.InvalidElementId:
-                            cleanup_txn = DB.Transaction(doc, transaction_text)
-                            cleanup_txn.Start()
-                            try:
-                                doc.Delete(sketch_plane_id)
-                                cleanup_txn.Commit()
-                            except Exception as cleanup_err:
-                                cleanup_txn.RollBack()
-                                mlogger.warning("Failed to cleanup temporary SketchPlane: %s", cleanup_err)
-                            finally:
-                                cleanup_txn.Dispose()
-            except Exception as cleanup_err:
-                mlogger.warning("Failed to cleanup temporary SketchPlane: %s", cleanup_err)
-        
-        return result
-    except Exception:
-        if txn is not None and txn.HasStarted():
-            try:
-                txn.RollBack()
-            except Exception:
-                pass
-            finally:
-                txn.Dispose()
-        if sketch_plane is not None:
-            try:
-                if active_view and active_view.IsValidObject:
-                    sketch_plane_id = sketch_plane.Id
-                    if sketch_plane_id != DB.ElementId.InvalidElementId:
-                        cleanup_txn = DB.Transaction(doc, transaction_text)
-                        cleanup_txn.Start()
-                        try:
-                            doc.Delete(sketch_plane_id)
-                            cleanup_txn.Commit()
-                        except Exception:
-                            cleanup_txn.RollBack()
-                        finally:
-                            cleanup_txn.Dispose()
-            except Exception:
-                pass
+
+            tg.RollBack()
+        else:
+            result = HOST_APP.uidoc.Selection.PickPoint(message)
+
+    except RevitExceptions.OperationCanceledException:
+        mlogger.debug("Operation canceled by user")
         return None
+    except Exception as ex:
+        mlogger.error("An error occurred during point picking: %s", ex)
+        return None
+
+    return result
 
 
 def pick_rectangle(message='', pick_filter=None):

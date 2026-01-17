@@ -27,7 +27,7 @@
     <system:String x:Key="AlertMeasurementCancelled">Mesure annulée en raison d'une opération invalide. Veuillez réessayer.</system:String>
     <system:String x:Key="AlertMeasurementErrorTitle">Erreur de Mesure</system:String>
     <system:String x:Key="AlertUnexpectedError">Une erreur inattendue s'est produite lors de la mesure. Consultez le journal pour plus de détails.</system:String>
-    <system:String x:Key="ToastMeasurementsCopied">Mesures copiées dans le Presse-papiers !</system:String>
+    <system:String x:Key="ToastMeasurementsCopied">Les mesures sont dans le Presse-papiers !</system:String>
     <system:String x:Key="ToastMeasure3DTitle">Mesure 3D</system:String>
     <system:String x:Key="ProjectUnitLengthUnits">Unités de Longueur (ajuster dans les Unités du Projet) : \n</system:String>
     <system:String x:Key="ProjectUnitSlopeUnits">Unités de Pente (ajuster dans les Unités du Projet) : \n</system:String>

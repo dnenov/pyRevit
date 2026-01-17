@@ -76,7 +76,7 @@ def checkModel(doc, output):
     output.close_others()
     output.print_md("# {}".format(get_check_translation("LevelsDataLister")))
     count = levels_count()
-    output.print_md("## {}: {}".format(get_check_translation("NumberOfLevels"), count))
+    output.print_md("## {0}: {1}".format(get_check_translation("NumberOfLevels"), count))
     names = levels_names() # [1,2,3,4]
     types = levels_elevation() # [bubble, bubble, bubble, bubble]
     pinned = levels_pinned() # [True, False, True, False]

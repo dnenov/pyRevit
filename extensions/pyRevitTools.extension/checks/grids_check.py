@@ -69,7 +69,7 @@ def checkModel(doc, output):
     output.close_others()
     output.print_md("# {}".format(get_check_translation("GridsDataLister")))
     count = grids_count()
-    output.print_md("## {}: {0}".format(get_check_translation("NumberOfGrids"), count))
+    output.print_md("## {0}: {1}".format(get_check_translation("NumberOfGrids"), count))
     names = grids_names() # [1,2,3,4]
     types = grids_types() # [bubble, bubble, bubble, bubble]
     pinned = grids_pinned() # [True, False, True, False]

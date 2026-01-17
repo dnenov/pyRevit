@@ -20,8 +20,6 @@ if _current_dir not in sys.path:
 from pyrevit.preflight import PreflightTestCase
 from check_translations import DocstringMeta
 
-# Load wall list from JSON file
-import os
 import json
 
 def pick_json():

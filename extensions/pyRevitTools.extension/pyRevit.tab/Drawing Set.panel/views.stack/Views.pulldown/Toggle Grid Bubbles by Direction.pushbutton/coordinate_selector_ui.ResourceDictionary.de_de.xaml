@@ -21,6 +21,14 @@
     <system:String x:Key="HowThisWorks">Wie das funktioniert</system:String>
     <system:String x:Key="HowThisWorksDescription">Steuert, wie genau sich Raster mit dem gewählten Koordinatensystem ausrichten müssen. Niedrige Werte = nur gerade Raster. Hohe Werte = schließt schräge Raster ein.</system:String>
     
+    <system:String x:Key="AngleDescription1">Sehr streng - nur perfekt ausgerichtete Raster</system:String>
+    <system:String x:Key="AngleDescription5">Eng - gut für präzise Rasterlayouts</system:String>
+    <system:String x:Key="AngleDescription10">Mäßig - gut für die meisten Fälle</system:String>
+    <system:String x:Key="AngleDescription15">Entspannt - schließt leicht schräge Raster ein</system:String>
+    <system:String x:Key="AngleDescription25">Tolerant - schließt mehr schräge Raster ein</system:String>
+    <system:String x:Key="AngleDescription35">Sehr tolerant - schließt die meisten Ausrichtungen ein</system:String>
+    <system:String x:Key="AngleDescription40">Maximale Toleranz - schließt stark schräge Raster ein</system:String>
+    
     <system:String x:Key="Cancel">Abbrechen</system:String>
     <system:String x:Key="Continue">Fortfahren</system:String>
 </ResourceDictionary>

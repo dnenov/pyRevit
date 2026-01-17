@@ -21,6 +21,14 @@
     <system:String x:Key="HowThisWorks">How this works</system:String>
     <system:String x:Key="HowThisWorksDescription">Controls how closely grids must align with the chosen coordinate system. Lower values = only straight grids. Higher values = includes angled grids.</system:String>
     
+    <system:String x:Key="AngleDescription1">Very strict - only perfectly aligned grids</system:String>
+    <system:String x:Key="AngleDescription5">Tight - good for precise grid layouts</system:String>
+    <system:String x:Key="AngleDescription10">Moderate - good for most cases</system:String>
+    <system:String x:Key="AngleDescription15">Relaxed - includes slightly angled grids</system:String>
+    <system:String x:Key="AngleDescription25">Permissive - includes more angled grids</system:String>
+    <system:String x:Key="AngleDescription35">Very permissive - includes most orientations</system:String>
+    <system:String x:Key="AngleDescription40">Maximum tolerance - includes heavily angled grids</system:String>
+    
     <system:String x:Key="Cancel">Cancel</system:String>
     <system:String x:Key="Continue">Continue</system:String>
 </ResourceDictionary>

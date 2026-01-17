@@ -21,6 +21,14 @@
     <system:String x:Key="HowThisWorks">Как это работает</system:String>
     <system:String x:Key="HowThisWorksDescription">Управляет тем, насколько точно сетки должны выравниваться с выбранной системой координат. Низкие значения = только прямые сетки. Высокие значения = включает угловые сетки.</system:String>
     
+    <system:String x:Key="AngleDescription1">Очень строгий - только идеально выровненные сетки</system:String>
+    <system:String x:Key="AngleDescription5">Плотный - хорошо для точных компоновок сетки</system:String>
+    <system:String x:Key="AngleDescription10">Умеренный - хорошо для большинства случаев</system:String>
+    <system:String x:Key="AngleDescription15">Расслабленный - включает слегка угловые сетки</system:String>
+    <system:String x:Key="AngleDescription25">Допустимый - включает больше угловых сеток</system:String>
+    <system:String x:Key="AngleDescription35">Очень допустимый - включает большинство ориентаций</system:String>
+    <system:String x:Key="AngleDescription40">Максимальный допуск - включает сильно угловые сетки</system:String>
+    
     <system:String x:Key="Cancel">Отмена</system:String>
     <system:String x:Key="Continue">Продолжить</system:String>
 </ResourceDictionary>

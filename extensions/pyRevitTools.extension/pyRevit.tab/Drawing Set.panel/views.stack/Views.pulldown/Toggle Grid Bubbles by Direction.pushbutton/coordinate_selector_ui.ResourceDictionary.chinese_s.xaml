@@ -21,6 +21,14 @@
     <system:String x:Key="HowThisWorks">工作原理</system:String>
     <system:String x:Key="HowThisWorksDescription">控制网格必须与所选坐标系对齐的紧密程度。较低值 = 仅直线网格。较高值 = 包括角度网格。</system:String>
     
+    <system:String x:Key="AngleDescription1">非常严格 - 仅完全对齐的网格</system:String>
+    <system:String x:Key="AngleDescription5">紧密 - 适用于精确的网格布局</system:String>
+    <system:String x:Key="AngleDescription10">中等 - 适用于大多数情况</system:String>
+    <system:String x:Key="AngleDescription15">宽松 - 包括略微倾斜的网格</system:String>
+    <system:String x:Key="AngleDescription25">宽松 - 包括更多倾斜的网格</system:String>
+    <system:String x:Key="AngleDescription35">非常宽松 - 包括大多数方向</system:String>
+    <system:String x:Key="AngleDescription40">最大容差 - 包括严重倾斜的网格</system:String>
+    
     <system:String x:Key="Cancel">取消</system:String>
     <system:String x:Key="Continue">继续</system:String>
 </ResourceDictionary>

@@ -24,7 +24,7 @@ to remain.
 import re
 import os.path as op
 import codecs
-import os, datetime, locale
+import os, datetime, locale, ConfigParser
 from collections import namedtuple
 
 from pyrevit import HOST_APP
@@ -678,6 +678,56 @@ class PrintSheetsWindow(forms.WPFWindow):
 
         self._setup_docs_list()
         self._setup_naming_formats()
+
+        self._apply_projectinfo_naming_format_default()
+
+        self._all_sheets_list = list(self.sheets_lb.ItemsSource) if self.sheets_lb.ItemsSource else []
+
+
+    def copy_naming_format(self, sender, args):
+        try:
+            naming_format = sender.DataContext
+            if not naming_format:
+                return
+            
+            script.clipboard_copy(naming_format.name)
+
+        except Exception as e:
+            logger.error("Failed to copy naming format: %s", e)
+            
+
+    def _apply_projectinfo_naming_format_default(self):
+        pi = self.selected_doc.ProjectInformation
+        param = pi.LookupParameter("Naming Format") if pi else None
+        param_value = param.AsString() if param else None
+
+        selected_item = next(
+            (nf for nf in self.namingformat_cb.ItemsSource if nf.name == param_value),
+            None
+        )
+
+        if not selected_item and self.namingformat_cb.ItemsSource:
+            selected_item = self.namingformat_cb.ItemsSource[0]
+
+        self.namingformat_cb.SelectedItem = selected_item
+
+
+    def sheet_search_changed(self, sender, args):
+        search_text = self.sheetsearch_tb.Text.strip().lower()
+        if not self._all_sheets_list:
+            return
+
+        if not search_text:
+            self.sheets_lb.ItemsSource = self._all_sheets_list
+        else:
+            filtered = []
+            for sheet in self._all_sheets_list:
+                number = sheet.number.lower() if sheet.number else ''
+                name = sheet.name.lower() if sheet.name else ''
+                if search_text in number or search_text in name:
+                    filtered.append(sheet)
+            self.sheets_lb.ItemsSource = filtered
+
 
     # doc and schedule
     @property
@@ -1614,6 +1664,7 @@ class PrintSheetsWindow(forms.WPFWindow):
             script.clipboard_copy('\n'.join(filenames))
 
     def print_sheets(self, sender, args):
+        self.save_current_settings()
         if self.sheet_list:
             selected_only = False
             if self.selected_sheets:

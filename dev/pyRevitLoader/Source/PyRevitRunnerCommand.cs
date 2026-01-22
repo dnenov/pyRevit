@@ -42,7 +42,9 @@ namespace PyRevitRunner {
                 // add pyrevit library path and script directory path to search paths
                 ModuleSearchPaths.Add(GetPyRevitLibsPath());
                 ModuleSearchPaths.Add(GetSitePkgsPath());
-                ModuleSearchPaths.Add(Path.GetDirectoryName(ScriptSourceFile));
+                var scriptDirectory = Path.GetDirectoryName(ScriptSourceFile);
+                if (!string.IsNullOrEmpty(scriptDirectory))
+                    ModuleSearchPaths.Add(scriptDirectory);
 
                 EnsureLogFile(LogFile);
                 SeedEnvDictionary(Application);
@@ -132,7 +134,7 @@ namespace PyRevitRunner {
                 CommandUniqueId = Guid.NewGuid().ToString(),
                 CommandControlId = commandName,
                 CommandName = commandName,
-                CommandBundle = commandBundle ?? string.Empty,
+                CommandBundle = commandBundle,
                 CommandExtension = string.Empty,
                 CommandContext = string.Empty,
                 HelpSource = string.Empty,
@@ -146,7 +148,11 @@ namespace PyRevitRunner {
                 try {
                     configs = JObject.Parse(engineConfigsRaw);
                 }
-                catch {
+                catch (Exception ex) {
+                    // Best-effort: invalid JSON falls back to defaults.
+                    System.Diagnostics.Debug.WriteLine(
+                        string.Format("[PyRevitRunner] Failed to parse EngineConfigs JSON: {0}", ex)
+                    );
                     configs = new JObject();
                 }
             }
@@ -165,7 +171,11 @@ namespace PyRevitRunner {
                     Directory.CreateDirectory(logDir);
                 File.WriteAllText(logFilePath, string.Empty);
             }
-            catch {
+            catch (Exception ex) {
+                // Best-effort: log file setup should not fail the runner.
+                System.Diagnostics.Debug.WriteLine(
+                    string.Format("[PyRevitRunner] Failed to initialize log file '{0}': {1}", logFilePath, ex)
+                );
             }
         }
 
@@ -176,7 +186,11 @@ namespace PyRevitRunner {
             try {
                 File.AppendAllText(logFilePath, ex.ToString());
             }
-            catch {
+            catch (Exception ex) {
+                // Best-effort: do not throw while writing the runner error log.
+                System.Diagnostics.Debug.WriteLine(
+                    string.Format("[PyRevitRunner] Failed to append runner error to '{0}': {1}", logFilePath, ex)
+                );
             }
         }
 

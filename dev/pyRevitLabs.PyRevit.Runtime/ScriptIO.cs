@@ -11,6 +11,7 @@ namespace PyRevitLabs.PyRevit.Runtime {
         private WeakReference<ScriptRuntime> _runtime;
         private WeakReference<ScriptConsole> _gui;
         private string _outputBuffer;
+        private readonly object _logLock = new object();
         private bool _inputReceived = false;
         private bool _errored = false;
         private ScriptEngineType _erroredEngine;
@@ -49,13 +50,21 @@ namespace PyRevitLabs.PyRevit.Runtime {
             if (string.IsNullOrEmpty(logFilePath))
                 return;
 
-            try {
-                var logDir = Path.GetDirectoryName(logFilePath);
-                if (!string.IsNullOrEmpty(logDir))
-                    Directory.CreateDirectory(logDir);
-                File.AppendAllText(logFilePath, outputText, OutputEncoding);
-            }
-            catch {
+            lock (_logLock) {
+                try {
+                    var logDir = Path.GetDirectoryName(logFilePath);
+                    if (!string.IsNullOrEmpty(logDir))
+                        Directory.CreateDirectory(logDir);
+                    File.AppendAllText(logFilePath, outputText, OutputEncoding);
+                }
+                catch (Exception ex) {
+                    // Best-effort logging: do not throw from IO during output writes.
+                    if (PrintDebugInfo) {
+                        System.Diagnostics.Debug.WriteLine(
+                            string.Format("[ScriptIO] Failed to append to log file '{0}': {1}", logFilePath, ex)
+                        );
+                    }
+                }
             }
         }
 

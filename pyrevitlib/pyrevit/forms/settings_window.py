@@ -25,6 +25,7 @@ Usage:
 """
 
 from pyrevit import script, forms
+from pyrevit.framework import Color, SolidColorBrush
 
 
 class SettingsWindow(forms.WPFWindow):
@@ -147,7 +148,29 @@ class SettingsWindow(forms.WPFWindow):
                 xaml_parts.append('<Label Content="{0}"/>'.format(label))
                 xaml_parts.append('<ComboBox x:Name="{0}"/>'.format(name))
 
-            elif setting_type in ["color", "folder", "file"]:
+            elif setting_type == "color":
+                xaml_parts.append('<Label Content="{0}"/>'.format(label))
+                xaml_parts.append('<Grid Margin="0,0,0,4">')
+                xaml_parts.append("<Grid.ColumnDefinitions>")
+                xaml_parts.append('<ColumnDefinition Width="30"/>')
+                xaml_parts.append('<ColumnDefinition Width="5"/>')
+                xaml_parts.append('<ColumnDefinition Width="*"/>')
+                xaml_parts.append('<ColumnDefinition Width="Auto"/>')
+                xaml_parts.append("</Grid.ColumnDefinitions>")
+                xaml_parts.append(
+                    '<Border x:Name="{0}_preview" Grid.Column="0" '
+                    'BorderBrush="Gray" BorderThickness="1" CornerRadius="2">'.format(name)
+                )
+                xaml_parts.append('<Rectangle Fill="White" Height="22"/>')
+                xaml_parts.append('</Border>')
+                xaml_parts.append('<TextBox x:Name="{0}" Grid.Column="2"/>'.format(name))
+                xaml_parts.append(
+                    '<Button x:Name="{0}_button" Grid.Column="3" Content="..." '
+                    'Style="{{StaticResource BrowseButton}}"/>'.format(name)
+                )
+                xaml_parts.append("</Grid>")
+
+            elif setting_type in ["folder", "file"]:
                 xaml_parts.append('<Label Content="{0}"/>'.format(label))
                 xaml_parts.append('<Grid Margin="0,0,0,4">')
                 xaml_parts.append("<Grid.ColumnDefinitions>")
@@ -215,6 +238,12 @@ class SettingsWindow(forms.WPFWindow):
             elif setting_type in ["int", "float", "string", "color", "folder", "file"]:
                 control.Text = str(current_value) if current_value is not None else ""
 
+                # Update color preview
+                if setting_type == "color":
+                    self._update_color_preview(name, control.Text)
+                    # Add text changed event to update preview dynamically
+                    control.TextChanged += lambda s, e, n=name: self._on_color_text_changed(n)
+
                 # Wire up browse buttons for color, folder, and file types
                 if setting_type in ["color", "folder", "file"]:
                     button = getattr(self, name + "_button", None)
@@ -243,6 +272,73 @@ class SettingsWindow(forms.WPFWindow):
 
         if selected_color:
             control.Text = selected_color
+            self._update_color_preview(control_name, selected_color)
+
+    def _parse_color(self, hex_color):
+        """Parse hex color string to WPF Color.
+
+        Args:
+            hex_color: Hex color string (e.g., "#FFFF0000" or "#FF0000")
+
+        Returns:
+            Color object or None if invalid
+        """
+        if not hex_color:
+            return None
+
+        try:
+            hex_color = hex_color.strip()
+            if hex_color.startswith("#"):
+                hex_color = hex_color[1:]
+
+            # Handle both #AARRGGBB and #RRGGBB formats
+            if len(hex_color) == 8:
+                a = int(hex_color[0:2], 16)
+                r = int(hex_color[2:4], 16)
+                g = int(hex_color[4:6], 16)
+                b = int(hex_color[6:8], 16)
+            elif len(hex_color) == 6:
+                a = 255
+                r = int(hex_color[0:2], 16)
+                g = int(hex_color[2:4], 16)
+                b = int(hex_color[4:6], 16)
+            else:
+                return None
+
+            return Color.FromArgb(a, r, g, b)
+        except Exception:
+            return None
+
+    def _update_color_preview(self, control_name, hex_color):
+        """Update the color preview rectangle.
+
+        Args:
+            control_name: Name of the color control
+            hex_color: Hex color string
+        """
+        preview = getattr(self, control_name + "_preview", None)
+        if not preview:
+            return
+
+        color = self._parse_color(hex_color)
+        if color:
+            # Get the Rectangle inside the Border
+            if preview.Child:
+                preview.Child.Fill = SolidColorBrush(color)
+        else:
+            # Reset to white if invalid color
+            if preview.Child:
+                preview.Child.Fill = SolidColorBrush(Color.FromArgb(255, 255, 255, 255))
+
+    def _on_color_text_changed(self, control_name):
+        """Handle color text box changes to update preview.
+
+        Args:
+            control_name: Name of the control
+        """
+        control = self.controls.get(control_name)
+        if control:
+            self._update_color_preview(control_name, control.Text)
 
     def _pick_folder(self, control_name):
         """Show folder picker and update control.

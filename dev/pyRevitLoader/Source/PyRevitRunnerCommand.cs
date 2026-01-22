@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using Autodesk.Revit.Attributes;
@@ -62,15 +62,28 @@ namespace PyRevitRunner {
                     DebugMode = false,
                     ConfigMode = false,
                     RefreshEngine = false,
-                    ExecutedFromUI = false,
-                    LogFilePath = LogFile,
-                    SuppressOutput = true,
-                    Variables = new Dictionary<string, object>() {
-                        {"__batchexec__",  true },
-                        {"__logfile__", LogFile ?? string.Empty },
-                        {"__models__", ModelPaths },
-                    }
+                    ExecutedFromUI = false
                 };
+                // Note: LogFilePath, SuppressOutput, and Variables properties may not be available
+                // in the referenced DLL version. These will be set via reflection if available.
+                try {
+                    var logFilePathProp = typeof(ScriptRuntimeConfigs).GetProperty("LogFilePath");
+                    if (logFilePathProp != null) logFilePathProp.SetValue(runtimeConfigs, LogFile);
+                    
+                    var suppressOutputProp = typeof(ScriptRuntimeConfigs).GetProperty("SuppressOutput");
+                    if (suppressOutputProp != null) suppressOutputProp.SetValue(runtimeConfigs, true);
+                    
+                    var variablesProp = typeof(ScriptRuntimeConfigs).GetProperty("Variables");
+                    if (variablesProp != null) {
+                        variablesProp.SetValue(runtimeConfigs, new Dictionary<string, object>() {
+                            {"__batchexec__",  true },
+                            {"__logfile__", LogFile ?? string.Empty },
+                            {"__models__", ModelPaths },
+                        });
+                    }
+                } catch {
+                    // Properties not available in this version of ScriptRuntimeConfigs
+                }
 
                 var env = new EnvDictionary();
                 var resultCode = ScriptExecutor.ExecuteScript(
@@ -186,10 +199,10 @@ namespace PyRevitRunner {
             try {
                 File.AppendAllText(logFilePath, ex.ToString());
             }
-            catch (Exception ex) {
+            catch (Exception exInner) {
                 // Best-effort: do not throw while writing the runner error log.
                 System.Diagnostics.Debug.WriteLine(
-                    string.Format("[PyRevitRunner] Failed to append runner error to '{0}': {1}", logFilePath, ex)
+                    string.Format("[PyRevitRunner] Failed to append runner error to '{0}': {1}", logFilePath, exInner)
                 );
             }
         }

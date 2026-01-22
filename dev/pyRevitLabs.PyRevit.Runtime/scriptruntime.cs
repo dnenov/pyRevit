@@ -32,8 +32,8 @@ namespace PyRevitLabs.PyRevit.Runtime {
         public List<string> SearchPaths { get; set; }
         public List<string> Arguments { get; set; }
         public IDictionary<string, object> Variables { get; set; }
-        public string LogFilePath;
-        public bool SuppressOutput;
+        public string LogFilePath { get; set; }
+        public bool SuppressOutput { get; set; }
 
         public object EventSender {
             get { return _eventSender; }

@@ -246,6 +246,12 @@ namespace PyRevitLabs.PyRevit.Runtime {
             // set event arguments for engine
             builtin.SetVariable("__eventsender__", runtime.ScriptRuntimeConfigs.EventSender);
             builtin.SetVariable("__eventargs__", runtime.ScriptRuntimeConfigs.EventArgs);
+
+            if (runtime.ScriptRuntimeConfigs?.Variables != null) {
+                foreach (var variable in runtime.ScriptRuntimeConfigs.Variables) {
+                    builtin.SetVariable(variable.Key, variable.Value);
+                }
+            }
         }
 
         private void SetupSearchPaths(ref ScriptRuntime runtime) {

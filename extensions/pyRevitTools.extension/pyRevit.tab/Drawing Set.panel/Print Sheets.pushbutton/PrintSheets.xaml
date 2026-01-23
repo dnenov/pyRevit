@@ -274,13 +274,13 @@
             </DataGrid.Resources>
 
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{DynamicResource PrintIndex}" Binding="{Binding print_index}" MinWidth="70" Width="70" IsReadOnly="True" CellStyle="{StaticResource IndexColumnStyle}"/>
-                <DataGridTextColumn Header="{DynamicResource SheetNumber}" Binding="{Binding number}" MinWidth="100" Width="100" IsReadOnly="True" CellStyle="{StaticResource DefaultColumnStyle}"/>
-                <DataGridTextColumn Header="{DynamicResource SheetName}" Binding="{Binding name}" MinWidth="400" Width="400" IsReadOnly="True" CellStyle="{StaticResource DefaultColumnStyle}"/>
-                <DataGridTemplateColumn Header="{DynamicResource SheetRevision}" MinWidth="50" Width="1*" IsReadOnly="True"
+                <DataGridTextColumn Header="{StaticResource PrintIndex}" Binding="{Binding print_index}" MinWidth="70" Width="70" IsReadOnly="True" CellStyle="{StaticResource IndexColumnStyle}"/>
+                <DataGridTextColumn Header="{StaticResource SheetNumber}" Binding="{Binding number}" MinWidth="100" Width="100" IsReadOnly="True" CellStyle="{StaticResource DefaultColumnStyle}"/>
+                <DataGridTextColumn Header="{StaticResource SheetName}" Binding="{Binding name}" MinWidth="400" Width="400" IsReadOnly="True" CellStyle="{StaticResource DefaultColumnStyle}"/>
+                <DataGridTemplateColumn Header="{StaticResource SheetRevision}" MinWidth="50" Width="1*" IsReadOnly="True"
                                         CellTemplate="{StaticResource RevisionCell}" SortMemberPath="revision_date_sortable" />
-                <DataGridTemplateColumn x:Name="psettingcol" Header="{DynamicResource PrintSetting}" MinWidth="50" Width="*" IsReadOnly="True" CellTemplate="{StaticResource PrintSettingCell}" Visibility="Collapsed"/>
-                <DataGridTextColumn x:Name="pfilename" Header="{DynamicResource FileName}" FontFamily="Consolas" Binding="{Binding print_filename}" MinWidth="50" Width="2*" IsReadOnly="True" CellStyle="{StaticResource DefaultColumnStyle}" Visibility="Collapsed"/>
+                <DataGridTemplateColumn x:Name="psettingcol" Header="{StaticResource PrintSetting}" MinWidth="50" Width="*" IsReadOnly="True" CellTemplate="{StaticResource PrintSettingCell}" Visibility="Collapsed"/>
+                <DataGridTextColumn x:Name="pfilename" Header="{StaticResource FileName}" FontFamily="Consolas" Binding="{Binding print_filename}" MinWidth="50" Width="2*" IsReadOnly="True" CellStyle="{StaticResource DefaultColumnStyle}" Visibility="Collapsed"/>
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>

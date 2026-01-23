@@ -51,7 +51,8 @@ namespace PyRevitRunner {
 
                 // 2
                 // Executing the script via runtime dispatcher
-                ScriptExecutor.Initialize();
+                if (!ScriptExecutor.IsInitialized)
+                    ScriptExecutor.Initialize();
                 var scriptData = BuildScriptData(ScriptSourceFile);
                 var runtimeConfigs = new ScriptRuntimeConfigs {
                     CommandData = commandData,

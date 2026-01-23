@@ -64,8 +64,6 @@ namespace PyRevitRunner {
                     RefreshEngine = false,
                     ExecutedFromUI = false
                 };
-                // Note: LogFilePath, SuppressOutput, and Variables properties may not be available
-                // in the referenced DLL version. These will be set via reflection if available.
                 try {
                     var logFilePathProp = typeof(ScriptRuntimeConfigs).GetProperty("LogFilePath");
                     if (logFilePathProp != null) logFilePathProp.SetValue(runtimeConfigs, LogFile);

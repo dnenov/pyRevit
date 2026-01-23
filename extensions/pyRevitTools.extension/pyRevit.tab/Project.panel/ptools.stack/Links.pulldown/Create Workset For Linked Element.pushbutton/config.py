@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from pyrevit import script, forms
 from script import main
 my_config = script.get_config()
@@ -38,11 +39,11 @@ if results:
     my_config.set_option("custom_prefix_for_rvt", selected_items.get("Custom Prefix for RVT", False))
     my_config.set_option("custom_prefix_for_dwg", selected_items.get("Custom Prefix for DWG", False))
     if selected_items.get("Custom Prefix for RVT", False):
-        custom_prefix_value = my_config.get_option("custom_prefix_rvt_value", "ZL_RVT_")
+        custom_prefix_value = my_config.get_option("custom_prefix_rvt_value", "RVT_")
         custom_prefix_value = forms.ask_for_string(default=custom_prefix_value, prompt="Pick a Prefix for RVTs")
         my_config.set_option("custom_prefix_rvt_value", custom_prefix_value)
     if selected_items.get("Custom Prefix for DWG", False):
-        custom_prefix_value = my_config.get_option("custom_prefix_dwg_value", "ZL_DWG_")
+        custom_prefix_value = my_config.get_option("custom_prefix_dwg_value", "DWG_")
         custom_prefix_value = forms.ask_for_string(default=custom_prefix_value, prompt="Pick a Prefix for DWGs")
         my_config.set_option("custom_prefix_dwg_value", custom_prefix_value)
 

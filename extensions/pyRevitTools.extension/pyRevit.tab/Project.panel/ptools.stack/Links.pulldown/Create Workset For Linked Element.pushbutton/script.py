@@ -9,20 +9,40 @@ from pyrevit.userconfig import user_config
 from pyrevit import HOST_APP
 
 
-def get_translations(script_folder, script_type):
-    # type: (str, str) -> dict[str, dict[str, str | list]]
-    """Loads translations for a specific script type from a JSON file."""
+def get_translations(script_folder, script_type, locale):
+    # type: (str, str, str) -> dict[str, str | list]
+    """
+    Get translation for a specific script type from a JSON file.
+
+    Examples:
+    ```python
+    get_translations(script.get_script_path(), "script", "en_us")
+    ```
+
+    Args:
+        script_folder (str): The folder containing the JSON file.
+        script_type (str): The type of script for which translations are loaded.
+            - "script"
+            - "config"
+        locale (str): The locale for which translations are loaded ("en_us" etc.).
+
+    Returns:
+        dict[str, str | list]: A dictionary containing the translation.
+    """
     json_path = os.path.join(script_folder, 'translations.json')
-    with io.open(json_path, 'r', encoding='utf-8') as file:
-        all_translations = json.load(file)
-    return all_translations[script_type]
+    with io.open(json_path, 'r', encoding='utf-8') as f:
+        translations = json.load(f)
+    script_translations = translations.get(script_type, {})
+    return script_translations.get(locale, script_translations.get("en_us", {}))
 
 
 doc = HOST_APP.doc
 logger = script.get_logger()
-pyrevit_locale = user_config.user_locale  # type: str
-translations = get_translations(script.get_script_path(), "script")
-translations_dict = translations.get(pyrevit_locale, translations["en_us"])
+translations_dict = get_translations(
+    script.get_script_path(),
+    "script",
+    user_config.user_locale
+)
 
 
 def main():
@@ -49,26 +69,26 @@ def main():
 
     if len(selection) > 0:
         enable_worksharing = alert(
-            translations_dict["enable_worksharing"],
-            options=translations_dict["enable_worksharing_options"],
+            translations_dict["Worksharing.Enable.Message"],
+            options=translations_dict["Worksharing.Enable.Options"],
             warn_icon=False
         )  # type: str
         if not enable_worksharing:
             script.exit()
         if (
-            enable_worksharing == translations_dict["enable_worksharing_options"][0]
+            enable_worksharing == translations_dict["Worksharing.Enable.Options"][0]
             and not doc.IsWorkshared
             and doc.CanEnableWorksharing
         ):
             doc.EnableWorksharing("Shared Levels and Grids", "Workset1")
         else:
             alert(
-                translations_dict["enable_worksharing_no"],
-                title=translations_dict["enable_worksharing_no_title"],
+                translations_dict["Worksharing.Enable.Error"],
+                title=translations_dict["Worksharing.Enable.Error.Title"],
                 exitscript=True
             )
         
-        with revit.Transaction(translations_dict["transaction_name"]):
+        with revit.Transaction(translations_dict["Transaction.Name"]):
             for el in selection:
                 linked_model_name = ""
                 if isinstance(el, DB.RevitLinkInstance):
@@ -141,9 +161,9 @@ def main():
                         )
     else:
         if set_all:
-            alert(translations_dict["set_all_no_links"])
+            alert(translations_dict["Alert.NoLinksFound.Message"])
         else:
-            alert(translations_dict["set_all_select_at_least_one"])
+            alert(translations_dict["Alert.SelectOne.Message"])
 
 
 if __name__ == "__main__":

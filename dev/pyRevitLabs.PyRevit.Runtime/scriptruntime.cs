@@ -31,6 +31,9 @@ namespace PyRevitLabs.PyRevit.Runtime {
 
         public List<string> SearchPaths { get; set; }
         public List<string> Arguments { get; set; }
+        public IDictionary<string, object> Variables { get; set; }
+        public string LogFilePath { get; set; }
+        public bool SuppressOutput { get; set; }
 
         public object EventSender {
             get { return _eventSender; }
@@ -62,6 +65,9 @@ namespace PyRevitLabs.PyRevit.Runtime {
             SelectedElements = null;
             SearchPaths = null;
             Arguments = null;
+            Variables = null;
+            LogFilePath = null;
+            SuppressOutput = false;
             EventSender = null;
             EventArgs = null;
         }

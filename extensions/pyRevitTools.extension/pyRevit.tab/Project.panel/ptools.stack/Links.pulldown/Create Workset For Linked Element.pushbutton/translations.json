@@ -77,8 +77,8 @@
       "custom_prefix_dwg_value": "Choisissez un préfixe pour les DWG"
     },
     "ru": {
-      "set_type_ws": "Назначить рабочий набор для типа",
-      "set_all": "Собрать все связи",
+      "set_type_ws": "Назначить рабочий набор и для типоразмера связи",
+      "set_all": "Применить ко всем связям",
       "custom_prefix_for_rvt": "Пользовательский префикс для RVT-связей",
       "custom_prefix_for_dwg": "Пользовательский префикс для DWG-связей",
       "results_title": "Выберите параметры",

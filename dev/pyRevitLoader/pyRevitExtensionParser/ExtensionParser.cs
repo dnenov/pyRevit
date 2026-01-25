@@ -1142,10 +1142,62 @@ namespace pyRevitExtensionParser
             var parts = line.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 2)
             {
-                var value = parts[1].Trim().Trim('\'', '"');
+                var value = ExtractPythonStringContent(parts[1]);
                 // Process Python escape sequences to match runtime behavior
                 return ProcessPythonEscapeSequences(value);
             }
+            return null;
+        }
+
+        /// <summary>
+        /// Extracts the content of a Python string literal, properly handling quotes, escape sequences, and trailing comments.
+        /// For example: '"Hello World"   # comment' returns 'Hello World'
+        /// </summary>
+        private static string ExtractPythonStringContent(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+
+            var trimmedValue = value.TrimStart();
+            
+            // Find the first quote (either single or double)
+            int startIndex = -1;
+            char quoteChar = '\0';
+            
+            for (int i = 0; i < trimmedValue.Length; i++)
+            {
+                if (trimmedValue[i] == '"' || trimmedValue[i] == '\'')
+                {
+                    startIndex = i;
+                    quoteChar = trimmedValue[i];
+                    break;
+                }
+            }
+
+            if (startIndex == -1)
+                return null;
+
+            // Find the closing quote, handling escaped quotes
+            int endIndex = startIndex + 1;
+            while (endIndex < trimmedValue.Length)
+            {
+                if (trimmedValue[endIndex] == '\\' && endIndex + 1 < trimmedValue.Length)
+                {
+                    // Skip the escaped character
+                    endIndex += 2;
+                    continue;
+                }
+                
+                if (trimmedValue[endIndex] == quoteChar)
+                {
+                    // Found the closing quote
+                    return trimmedValue.Substring(startIndex + 1, endIndex - startIndex - 1);
+                }
+                
+                endIndex++;
+            }
+
+            // No closing quote found, return null
             return null;
         }
 

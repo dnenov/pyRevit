@@ -179,6 +179,55 @@ print('test')");
             TestContext.Out.WriteLine($"Tooltip: '{testButton.Tooltip}'");
         }
 
+        [Test]
+        public void TestButtonTitleWithTrailingComment()
+        {
+            // Test that trailing comments are properly ignored when parsing __title__
+            var tempDir = Path.Combine(TestTempDir, "TestTrailingComment.extension");
+            var tabDir = Path.Combine(tempDir, "TestTab.tab");
+            var panelDir = Path.Combine(tabDir, "TestPanel.panel");
+            var buttonDir = Path.Combine(panelDir, "TestCommentButton.pushbutton");
+            
+            Directory.CreateDirectory(buttonDir);
+            
+            var scriptPath = Path.Combine(buttonDir, "script.py");
+            // Test with trailing comment after the title string - this is the reported bug case
+            var scriptContent = new StringBuilder();
+            scriptContent.AppendLine("__title__ = \"Place Views on Sheets\"   # Name of the button displayed in Revit");
+            scriptContent.AppendLine("__author__ = \"Test Author\" # This should also be parsed correctly");
+            scriptContent.AppendLine("__doc__ = 'Description here'  # Another comment");
+            scriptContent.AppendLine("print('test')");
+            File.WriteAllText(scriptPath, scriptContent.ToString());
+            
+            // Parse the extension
+            var extensions = ParseInstalledExtensions(new[] { tempDir });
+            var extension = extensions.FirstOrDefault();
+            
+            Assert.IsNotNull(extension, "Extension should be parsed");
+            
+            var testButton = FindComponentRecursively(extension, "TestCommentButton");
+            Assert.IsNotNull(testButton, "TestCommentButton should be found");
+            
+            // Verify title does NOT contain the trailing comment
+            Assert.That(testButton.Title, Is.EqualTo("Place Views on Sheets"), 
+                "Title should NOT contain trailing comment text");
+            Assert.That(testButton.Title, Does.Not.Contain("#"), "Title should not contain comment marker");
+            Assert.That(testButton.Title, Does.Not.Contain("Name of the button"), 
+                "Title should not contain comment text");
+            
+            // Verify author is parsed correctly (no trailing comment)
+            Assert.That(testButton.Author, Is.EqualTo("Test Author"), 
+                "Author should NOT contain trailing comment text");
+            
+            // Verify tooltip is parsed correctly (no trailing comment)
+            Assert.That(testButton.Tooltip, Is.EqualTo("Description here"), 
+                "Tooltip should NOT contain trailing comment text");
+            
+            TestContext.Out.WriteLine($"Title correctly parsed: '{testButton.Title}'");
+            TestContext.Out.WriteLine($"Author correctly parsed: '{testButton.Author}'");
+            TestContext.Out.WriteLine($"Tooltip correctly parsed: '{testButton.Tooltip}'");
+        }
+
         // Helper method to find components recursively
         private ParsedComponent? FindComponentRecursively(ParsedComponent? parent, string componentName)
         {

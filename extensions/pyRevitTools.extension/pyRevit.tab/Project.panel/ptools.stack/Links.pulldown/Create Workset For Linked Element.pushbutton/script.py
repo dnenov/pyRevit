@@ -31,34 +31,47 @@ def main():
         )
 
     if len(selection) > 0:
-        if not doc.IsWorkshared and doc.CanEnableWorksharing:
+        enable_worksharing = alert(
+            "The document doesn't have worksharing enabled. Enable it?",
+            options=["Yes", "No"],
+            warn_icon=False
+        )  # type: str
+        if not enable_worksharing:
+            script.exit()
+        if enable_worksharing == "Yes" and not doc.IsWorkshared and doc.CanEnableWorksharing:
             doc.EnableWorksharing("Shared Levels and Grids", "Workset1")
-
-        for el in selection:
-            linked_model_name = ""
-            if isinstance(el, DB.RevitLinkInstance):
-                prefix_for_rvt_value = "ZL_RVT_"
-                if custom_prefix_for_rvt:
-                    prefix_for_rvt_value = my_config.get_option(
-                        "custom_prefix_rvt_value", prefix_for_rvt_value
+        else:
+            alert(
+                "The script cannot run in a document without worksharing.",
+                title="The script has stopped",
+                exitscript=True
+            )
+        
+        with revit.Transaction("Create Workset(s) for linked model(s)"):
+            for el in selection:
+                linked_model_name = ""
+                if isinstance(el, DB.RevitLinkInstance):
+                    prefix_for_rvt_value = "RVT_"
+                    if custom_prefix_for_rvt:
+                        prefix_for_rvt_value = my_config.get_option(
+                            "custom_prefix_rvt_value", prefix_for_rvt_value
+                        )
+                    linked_model_name = (
+                        prefix_for_rvt_value + el.Name.split(":")[0].split(".rvt")[0]
                     )
-                linked_model_name = (
-                    prefix_for_rvt_value + el.Name.split(":")[0].split(".rvt")[0]
-                )
-            elif isinstance(el, DB.ImportInstance):
-                prefix_for_dwg_value = "ZL_DWG_"
-                if custom_prefix_for_dwg:
-                    prefix_for_dwg_value = my_config.get_option(
-                        "custom_prefix_dwg_value", prefix_for_dwg_value
+                elif isinstance(el, DB.ImportInstance):
+                    prefix_for_dwg_value = "DWG_"
+                    if custom_prefix_for_dwg:
+                        prefix_for_dwg_value = my_config.get_option(
+                            "custom_prefix_dwg_value", prefix_for_dwg_value
+                        )
+                    linked_model_name = (
+                        prefix_for_dwg_value
+                        + el.get_Parameter(DB.BuiltInParameter.IMPORT_SYMBOL_NAME)
+                        .AsString()
+                        .split(".dwg")[0]
                     )
-                linked_model_name = (
-                    prefix_for_dwg_value
-                    + el.get_Parameter(DB.BuiltInParameter.IMPORT_SYMBOL_NAME)
-                    .AsString()
-                    .split(".dwg")[0]
-                )
-            if linked_model_name:
-                with revit.Transaction("Create Workset for linked model"):
+                if linked_model_name:
                     try:
                         user_worksets = (
                             DB.FilteredWorksetCollector(doc)

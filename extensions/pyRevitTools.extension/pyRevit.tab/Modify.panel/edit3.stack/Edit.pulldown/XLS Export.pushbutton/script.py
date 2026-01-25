@@ -6,6 +6,7 @@ from collections import namedtuple
 from pyrevit import script, forms, coreutils, revit, traceback, DB, HOST_APP
 from pyrevit.revit import get_parameter_data_type, is_yesno_parameter
 from pyrevit.compat import get_elementid_value_func
+from pyrevit.userconfig import user_config
 
 get_elementid_value = get_elementid_value_func()
 
@@ -13,6 +14,27 @@ para_item_xml = os.path.join(forms.XAML_FILES_DIR, "ParameterItemStyle.xaml")
 para_itemplate = forms.utils.load_ctrl_template(para_item_xml)
 ele_item_xml = script.get_bundle_file("ElementItemStyle.xaml")
 ele_itemplate = forms.utils.load_ctrl_template(ele_item_xml)
+
+
+class ElementSelectFromList(forms.SelectFromList):
+    """Custom SelectFromList that merges ElementItemStyle resource dictionaries."""
+    
+    def _setup(self, **kwargs):
+        # Merge ElementItemStyle resource dictionaries
+        ele_item_resfile = ele_item_xml.replace(
+            ".xaml", ".ResourceDictionary.{}.xaml".format(user_config.user_locale)
+        )
+        ele_item_resfile_en = ele_item_xml.replace(
+            ".xaml", ".ResourceDictionary.en_us.xaml"
+        )
+        
+        if os.path.isfile(ele_item_resfile):
+            self.merge_resource_dict(ele_item_resfile)
+        elif os.path.isfile(ele_item_resfile_en):
+            self.merge_resource_dict(ele_item_resfile_en)
+        
+        # Call parent _setup
+        super(ElementSelectFromList, self)._setup(**kwargs)
 
 script.get_output().close_others()
 logger = script.get_logger()
@@ -122,7 +144,7 @@ def select_elements(elements):
 
     context = grouped_selection
 
-    selected_defs = forms.SelectFromList.show(
+    selected_defs = ElementSelectFromList.show(
         context,
         title="Select Elements to Export",
         width=500,

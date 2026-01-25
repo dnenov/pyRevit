@@ -19,6 +19,12 @@
         <Compile Include="..\Source\ScriptExecutor.cs" Link="Source\ScriptExecutor.cs"/>
     </ItemGroup>
 
+    <ItemGroup Condition="'$(UseRunner)' == 'true'">
+        <Reference Include="pyRevitLabs.Json" HintPath="$(PyRevitDevLibsDir)\pyRevitLabs.Json.dll" Private="false" />
+        <Reference Include="pyRevitLabs.PyRevit" HintPath="$(PyRevitBinDir)\pyRevitLabs.PyRevit.dll" Private="false" />
+        <Reference Include="pyRevitLabs.PyRevit.Runtime.$(RevitVersion)" HintPath="$(PyRevitEnginesDir)\$(IronPythonVersion)\pyRevitLabs.PyRevit.Runtime.$(RevitVersion).dll" Private="false" />
+    </ItemGroup>
+
     <ItemGroup Condition="'$(UseIronPython)' != 'false' AND $(IronPythonVersion.Contains('PR'))">
         <Reference Include="IronPython" HintPath="$(PyRevitEnginesDir)\$(IronPythonVersion)\pyRevitLabs.IronPython.dll"/>
         <Reference Include="IronPython.Modules" HintPath="$(PyRevitEnginesDir)\$(IronPythonVersion)\pyRevitLabs.IronPython.Modules.dll"/>

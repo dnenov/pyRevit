@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
 using pyRevitLabs.Common;
@@ -53,10 +54,35 @@ namespace pyRevitLabs.TargetApps.Revit {
 </RevitAddIns>
 ";
         public static string GetRevitAddonsFolder(int revitYear, bool allUsers = false) {
-            var rootFolder =
-                allUsers ? System.Environment.SpecialFolder.CommonApplicationData : System.Environment.SpecialFolder.ApplicationData;
-            return Path.Combine(System.Environment.GetFolderPath(rootFolder),
-                                "Autodesk", "Revit", "Addins", revitYear.ToString());
+            // For Revit 2027+, all-users addins must use the new secure location
+            if (allUsers && revitYear >= 2027) {
+                // Try to get the Revit installation path
+                var revitProducts = RevitProduct.ListInstalledProducts();
+                var targetRevit = revitProducts.FirstOrDefault(r => r.ProductYear == revitYear);
+                
+                if (targetRevit != null && !string.IsNullOrEmpty(targetRevit.InstallLocation)) {
+                    return Path.Combine(targetRevit.InstallLocation, "Addins", revitYear.ToString());
+                }
+                else {
+                    // Fallback to default expected path
+                    var defaultPath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                        "Autodesk",
+                        $"Revit {revitYear}",
+                        "Addins",
+                        revitYear.ToString()
+                    );
+                    logger.Debug("Revit {0} not found in registry, using default path: {1}", revitYear, defaultPath);
+                    return defaultPath;
+                }
+            }
+            else {
+                // Existing logic for user-level or Revit ≤2026
+                var rootFolder =
+                    allUsers ? System.Environment.SpecialFolder.CommonApplicationData : System.Environment.SpecialFolder.ApplicationData;
+                return Path.Combine(System.Environment.GetFolderPath(rootFolder),
+                                    "Autodesk", "Revit", "Addins", revitYear.ToString());
+            }
         }
 
         public static string GetRevitAddonsFilePath(int revitYear, string addinFileName, bool allusers = false) {
@@ -113,32 +139,51 @@ namespace pyRevitLabs.TargetApps.Revit {
         }
 
         public static RevitAddonManifest GetManifest(int revitYear, string addinName, bool allUsers) {
-            string addinPath = GetRevitAddonsFolder(revitYear, allUsers: allUsers);
-            if (CommonUtils.VerifyPath(addinPath)) {
-                foreach (string file in Directory.GetFiles(addinPath)) {
-                    if (file.ToLower().EndsWith(".addin")) {
-                        try {
-                            logger.Debug(string.Format("Reading Revit \"{0}\" manifest file \"{1}\"",
-                                                       revitYear, file));
-                            var revitManifest = new RevitAddonManifest(file);
-                            if (revitManifest.Name.ToLower() == addinName.ToLower())
-                                return revitManifest;
-                        }
-                        catch (Exception ex) {
-                            logger.Debug(string.Format("Not pyRevit \"{0}\" manifest file \"{1}\" | {2}",
-                                    revitYear,
-                                    file,
-                                    ex.Message)
-                                );
+            // Helper method to search for manifest in a given path
+            RevitAddonManifest SearchManifestInPath(string searchPath) {
+                if (CommonUtils.VerifyPath(searchPath)) {
+                    foreach (string file in Directory.GetFiles(searchPath)) {
+                        if (file.ToLower().EndsWith(".addin")) {
+                            try {
+                                logger.Debug(string.Format("Reading Revit \"{0}\" manifest file \"{1}\"",
+                                                           revitYear, file));
+                                var revitManifest = new RevitAddonManifest(file);
+                                if (revitManifest.Name.ToLower() == addinName.ToLower())
+                                    return revitManifest;
+                            }
+                            catch (Exception ex) {
+                                logger.Debug(string.Format("Not pyRevit \"{0}\" manifest file \"{1}\" | {2}",
+                                        revitYear,
+                                        file,
+                                        ex.Message)
+                                    );
+                            }
                         }
                     }
                 }
-
+                else {
+                    logger.Debug("Addons path \"{0}\" does not exist", searchPath);
+                }
                 return null;
             }
-            else {
-                logger.Debug("Addons path \"{0}\" does not exist", addinPath);
+
+            // First, search in the new location (if applicable)
+            string addinPath = GetRevitAddonsFolder(revitYear, allUsers: allUsers);
+            var manifest = SearchManifestInPath(addinPath);
+            if (manifest != null)
+                return manifest;
+
+            // For Revit 2027+ all-users installations, also check the old location for migration scenarios
+            if (allUsers && revitYear >= 2027) {
+                var oldPath = Path.Combine(
+                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData),
+                    "Autodesk", "Revit", "Addins", revitYear.ToString());
+                logger.Debug("Also checking old all-users location for Revit {0}: {1}", revitYear, oldPath);
+                manifest = SearchManifestInPath(oldPath);
+                if (manifest != null)
+                    return manifest;
             }
+
             return null;
         }
 

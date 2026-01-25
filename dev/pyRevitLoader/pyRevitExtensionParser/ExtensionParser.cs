@@ -62,6 +62,11 @@ namespace pyRevitExtensionParser
         private static bool _localeInitialized = false;
         
         /// <summary>
+        /// Cached locale value for cache invalidation when locale changes
+        /// </summary>
+        private static string _cachedLocale = null;
+        
+        /// <summary>
         /// Clears all static caches to force re-parsing of extensions.
         /// This should be called before reloading pyRevit to ensure newly installed
         /// or enabled extensions are discovered.
@@ -83,18 +88,26 @@ namespace pyRevitExtensionParser
         /// <summary>
         /// Initializes the DefaultLocale from user configuration if not already set.
         /// Should be called before parsing extensions to ensure locale-aware localization.
+        /// If locale has changed since last initialization, all caches are cleared.
         /// </summary>
         private static void InitializeLocaleFromConfig()
         {
-            if (_localeInitialized)
-                return;
-                
             var config = GetConfig();
             var userLocale = config.UserLocale;
+            
+            // Check if locale has changed since last initialization
+            // If locale changed, we need to invalidate all caches to force re-parsing
+            if (_localeInitialized && userLocale != _cachedLocale)
+            {
+                logger.Debug("Locale changed from '{0}' to '{1}'. Clearing caches...", _cachedLocale, userLocale);
+                ClearAllCaches();
+            }
+            
             if (!string.IsNullOrEmpty(userLocale))
             {
                 DefaultLocale = userLocale;
             }
+            _cachedLocale = userLocale;
             _localeInitialized = true;
         }
         
@@ -1008,7 +1021,11 @@ namespace pyRevitExtensionParser
                 
             var result = new PythonScriptConstants();
 
-            foreach (var line in File.ReadLines(scriptPath))
+            // Read all lines to handle multiline strings properly
+            var allLines = File.ReadAllLines(scriptPath);
+            var lineIndex = 0;
+            
+            foreach (var line in allLines)
             {
                 var trimmedLine = line.TrimStart();
                 
@@ -1024,7 +1041,16 @@ namespace pyRevitExtensionParser
                     }
                     else
                     {
-                        result.Title = ExtractPythonConstantValue(trimmedLine);
+                        // Check if it's a multiline triple-quoted string
+                        if (trimmedLine.Contains("\"\"\""))
+                        {
+                            var remainingLines = allLines.Skip(lineIndex + 1).ToList();
+                            result.Title = ExtractPythonMultilineString(trimmedLine, remainingLines);
+                        }
+                        else
+                        {
+                            result.Title = ExtractPythonConstantValue(trimmedLine);
+                        }
                     }
                 }
                 else if (trimmedLine.StartsWith("__authors__"))
@@ -1056,7 +1082,16 @@ namespace pyRevitExtensionParser
                     }
                     else
                     {
-                        result.Doc = ExtractPythonConstantValue(trimmedLine);
+                        // Check if it's a multiline triple-quoted string
+                        if (trimmedLine.Contains("\"\"\""))
+                        {
+                            var remainingLines = allLines.Skip(lineIndex + 1).ToList();
+                            result.Doc = ExtractPythonMultilineString(trimmedLine, remainingLines);
+                        }
+                        else
+                        {
+                            result.Doc = ExtractPythonConstantValue(trimmedLine);
+                        }
                     }
                 }
                 else if (trimmedLine.StartsWith("__helpurl__"))
@@ -1086,18 +1121,15 @@ namespace pyRevitExtensionParser
                     }
                     else
                     {
-                        // Simple string context
-                        var contextValue = ExtractPythonConstantValue(trimmedLine);
-                        if (!string.IsNullOrEmpty(contextValue))
-                        {
-                            result.Context = contextValue.StartsWith("(") ? contextValue : "(" + contextValue + ")";
-                        }
+                        result.Context = ExtractPythonConstantValue(trimmedLine);
                     }
                 }
                 else if (trimmedLine.StartsWith("__highlight__"))
                 {
                     result.Highlight = ExtractPythonConstantValue(trimmedLine);
                 }
+                
+                lineIndex++;
             }
 
             _pythonScriptCache[scriptPath] = result;
@@ -1161,6 +1193,60 @@ namespace pyRevitExtensionParser
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Extracts a multiline Python string literal (triple-quoted) from the remaining lines.
+        /// Handles docstrings and other multiline string content.
+        /// </summary>
+        private static string ExtractPythonMultilineString(string firstLine, IEnumerable<string> remainingLines)
+        {
+            // Find the opening triple quote position in the first line
+            var firstLineTrimmed = firstLine.TrimStart();
+            int firstQuotePos = firstLineTrimmed.IndexOf("\"\"\"");
+            if (firstQuotePos == -1)
+                return null;
+            
+            int contentStart = firstQuotePos + 3;
+            string partialContent = firstLineTrimmed.Substring(contentStart);
+            
+            // Check if the closing quote is on the same line
+            int closingQuotePos = partialContent.IndexOf("\"\"\"");
+            if (closingQuotePos != -1)
+            {
+                // Single-line multiline string
+                return partialContent.Substring(0, closingQuotePos);
+            }
+            
+            // Need to read more lines to find the closing triple quote
+            var content = new StringBuilder();
+            content.Append(partialContent);
+            content.Append("\n");
+            
+            foreach (var line in remainingLines)
+            {
+                content.Append(line);
+                content.Append("\n");
+                
+                // Check if this line contains the closing triple quote
+                if (line.Contains("\"\"\""))
+                {
+                    // Find the last occurrence of triple quotes in this line
+                    var lastQuotePos = line.LastIndexOf("\"\"\"");
+                    if (lastQuotePos > 0)
+                    {
+                        // Remove the content after the closing triple quote (including the quote itself)
+                        var beforeClosing = line.Substring(0, lastQuotePos);
+                        // Remove the content we just added and replace with proper content
+                        content.Length -= line.Length + 1; // Remove the last line + newline
+                        content.Append(beforeClosing);
+                    }
+                    break;
+                }
+            }
+            
+            // Process escape sequences in the collected content
+            return ProcessPythonEscapeSequences(content.ToString());
         }
 
         private static string ExtractPythonConstantValue(string line)

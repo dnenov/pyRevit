@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using pyRevitLabs.Json.Linq;
+using pyRevitLabs.NLog;
 
 namespace pyRevitExtensionParser
 {
@@ -13,6 +14,8 @@ namespace pyRevitExtensionParser
         /// Default locale used for localization fallback
         /// </summary>
         public static string DefaultLocale { get; set; } = "en_us";
+
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         
         // Cache file existence checks to avoid repeated file system calls
         private static Dictionary<string, bool> _fileExistsCache = new Dictionary<string, bool>();
@@ -404,9 +407,32 @@ namespace pyRevitExtensionParser
             var userExtensions = GetConfig().UserExtensionsList;
             foreach (var extPath in userExtensions)
             {
-                var normalizedPath = Path.GetFullPath(extPath);
-                if (Directory.Exists(normalizedPath))
-                    roots.Add(normalizedPath);
+                if (string.IsNullOrWhiteSpace(extPath))
+                {
+                    logger.Debug("Skipping empty userextensions path");
+                    continue;
+                }
+
+                try
+                {
+                    var normalizedPath = Path.GetFullPath(extPath);
+                    if (Directory.Exists(normalizedPath))
+                        roots.Add(normalizedPath);
+                    else
+                        logger.Debug("Skipping non-existent userextensions path: {0}", normalizedPath);
+                }
+                catch (ArgumentException ex)
+                {
+                    logger.Debug("Skipping invalid userextensions path '{0}': {1}", extPath, ex.Message);
+                }
+                catch (PathTooLongException ex)
+                {
+                    logger.Debug("Skipping too long userextensions path '{0}': {1}", extPath, ex.Message);
+                }
+                catch (NotSupportedException ex)
+                {
+                    logger.Debug("Skipping unsupported userextensions path '{0}': {1}", extPath, ex.Message);
+                }
             }
 
             return roots;
@@ -1368,8 +1394,7 @@ namespace pyRevitExtensionParser
             }
             catch (Exception ex)
             {
-                // Log error if needed, but don't fail the parsing
-                System.Diagnostics.Debug.WriteLine($"Error parsing icons for {componentDirectory}: {ex.Message}");
+                logger.Debug("Error parsing icons for {0}: {1}", componentDirectory, ex.Message);
             }
 
             // Cache the result

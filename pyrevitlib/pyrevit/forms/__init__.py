@@ -670,7 +670,11 @@ class TemplateUserInputWindow(WPFWindow):
         WPFWindow.__init__(
             self, op.join(XAML_FILES_DIR, self.xaml_source), handle_esc=True
         )
-        self.Title = title or self.get_locale_string(self.default_title_key) or "pyRevit"
+        if title:
+            self.Title = title
+        else:
+            localized_title = self.get_locale_string(self.default_title_key)
+            self.Title = localized_title if isinstance(localized_title, str) else "User Input"
         self.Width = width
         self.Height = height
 

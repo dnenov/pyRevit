@@ -168,7 +168,14 @@ namespace PyRevitRunner {
                 }
             }
 
-            configs["full_frame"] = true;
+            // Set default values if not specified
+            if (!configs.ContainsKey("full_frame"))
+                configs["full_frame"] = false;
+            if (!configs.ContainsKey("clean"))
+                configs["clean"] = false;
+            if (!configs.ContainsKey("persistent"))
+                configs["persistent"] = false;
+
             return configs.ToString(Formatting.None);
         }
 

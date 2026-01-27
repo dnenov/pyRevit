@@ -6,17 +6,19 @@
         <None Remove="obj\**" />
     </ItemGroup>
     
+    <ItemGroup Condition="'$(UseRunner)' == 'true'">
+        <Compile Include="..\Source\PyRevitRunnerApplication.cs" Link="Source\PyRevitRunnerApplication.cs"/>
+        <Compile Include="..\Source\PyRevitRunnerCommand.cs" Link="Source\PyRevitRunnerCommand.cs"/>
+        <Compile Include="..\Source\ScriptExecutor.cs" Link="Source\ScriptExecutor.cs"/>
+        <Compile Include="..\Source\ErrorReporter.cs" Link="Source\ErrorReporter.cs"/>
+    </ItemGroup>
+
     <ItemGroup Condition="'$(UseLoader)' == 'true'">
         <Compile Include="..\Source\PyRevitLoaderApplication.cs" Link="Source\PyRevitLoaderApplication.cs"/>
         <Compile Include="..\Source\ScriptExecutor.cs" Link="Source\ScriptExecutor.cs"/>
         <Compile Include="..\Source\SmartButtonExecutor.cs" Link="Source\SmartButtonExecutor.cs"/>
         <Compile Include="..\Source\ComboBoxExecutor.cs" Link="Source\ComboBoxExecutor.cs"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(UseRunner)' == 'true'">
-        <Compile Include="..\Source\PyRevitRunnerApplication.cs" Link="Source\PyRevitRunnerApplication.cs"/>
-        <Compile Include="..\Source\PyRevitRunnerCommand.cs" Link="Source\PyRevitRunnerCommand.cs"/>
-        <Compile Include="..\Source\ScriptExecutor.cs" Link="Source\ScriptExecutor.cs"/>
+        <Compile Include="..\Source\ErrorReporter.cs" Link="Source\ErrorReporter.cs"/>
     </ItemGroup>
 
     <ItemGroup Condition="'$(UseRunner)' == 'true'">

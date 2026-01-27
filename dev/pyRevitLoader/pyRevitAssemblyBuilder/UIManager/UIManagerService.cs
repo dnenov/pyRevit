@@ -27,6 +27,7 @@ namespace pyRevitAssemblyBuilder.UIManager
         private readonly IUIRibbonScanner? _ribbonScanner;
         private readonly UIApplication _uiApp;
         private ParsedExtension? _currentExtension;
+        private readonly bool _loadBeta;
 
         /// <summary>
         /// Gets the UIApplication instance used by this service.
@@ -65,6 +66,19 @@ namespace pyRevitAssemblyBuilder.UIManager
             _stackBuilder = stackBuilder ?? throw new ArgumentNullException(nameof(stackBuilder));
             _comboBoxBuilder = comboBoxBuilder ?? throw new ArgumentNullException(nameof(comboBoxBuilder));
             _ribbonScanner = ribbonScanner;
+            
+            // Load beta settings from config
+            try
+            {
+                var config = PyRevitConfig.Load();
+                _loadBeta = config.LoadBeta;
+                _logger.Debug($"Beta tools loading: {_loadBeta}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug($"Failed to load beta config, defaulting to false: {ex.Message}");
+                _loadBeta = false;
+            }
         }
 
         /// <summary>
@@ -106,6 +120,93 @@ namespace pyRevitAssemblyBuilder.UIManager
             _currentExtension = null;
         }
 
+        /// <summary>
+        /// Checks if a component is supported based on Revit version constraints and beta status.
+        /// </summary>
+        /// <param name="component">The component to check.</param>
+        /// <returns>True if the component should be loaded, false otherwise.</returns>
+        private bool IsComponentSupported(ParsedComponent component)
+        {
+            // Check if component is marked as beta
+            if (component.IsBeta)
+            {
+                if (!_loadBeta)
+                {
+                    _logger.Debug($"Skipping beta component '{component.DisplayName}' - beta tools not enabled.");
+                    return false;
+                }
+                _logger.Debug($"Component '{component.DisplayName}' is beta and will be shown.");
+            }
+
+            // Get current Revit version
+            string currentVersion = _uiApp?.Application?.VersionNumber ?? string.Empty;
+            if (string.IsNullOrEmpty(currentVersion))
+            {
+                _logger.Warning("Could not determine Revit version. Allowing all components.");
+                return true;
+            }
+
+            // Normalize version numbers for comparison
+            // Revit versions before 2021 use 2-digit format (e.g., "20" for Revit 2020)
+            // Revit versions 2021+ use 4-digit format (e.g., "2021" for Revit 2021)
+            int currentVersionNum = NormalizeVersionNumber(currentVersion);
+
+            // Check minimum version requirement
+            if (!string.IsNullOrEmpty(component.MinRevitVersion))
+            {
+                int minVersionNum = NormalizeVersionNumber(component.MinRevitVersion);
+                if (currentVersionNum < minVersionNum)
+                {
+                    _logger.Debug($"Component '{component.DisplayName}' requires Revit {component.MinRevitVersion} or later. Current version: {currentVersion}. Skipping.");
+                    return false;
+                }
+            }
+
+            // Check maximum version requirement
+            if (!string.IsNullOrEmpty(component.MaxRevitVersion))
+            {
+                int maxVersionNum = NormalizeVersionNumber(component.MaxRevitVersion);
+                if (currentVersionNum > maxVersionNum)
+                {
+                    _logger.Debug($"Component '{component.DisplayName}' supports up to Revit {component.MaxRevitVersion}. Current version: {currentVersion}. Skipping.");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Normalizes a version number string to an integer for comparison.
+        /// Handles both 2-digit (e.g., "20") and 4-digit (e.g., "2020") formats.
+        /// </summary>
+        /// <param name="version">The version string to normalize.</param>
+        /// <returns>An integer representation of the version.</returns>
+        private int NormalizeVersionNumber(string version)
+        {
+            if (string.IsNullOrEmpty(version))
+                return 0;
+
+            // Remove any non-digit characters
+            var digits = new string(version.Where(char.IsDigit).ToArray());
+
+            if (string.IsNullOrEmpty(digits))
+                return 0;
+
+            if (int.TryParse(digits, out int versionNum))
+            {
+                // If it's a 2-digit version (e.g., "20" for 2020), convert to 4-digit
+                if (versionNum < 100)
+                {
+                    // Assume 20xx format
+                    versionNum = 2000 + versionNum;
+                }
+                return versionNum;
+            }
+
+            return 0;
+        }
+
         private void RecursivelyBuildUI(
             ParsedComponent component,
             ParsedComponent? parentComponent,
@@ -128,6 +229,13 @@ namespace pyRevitAssemblyBuilder.UIManager
             if (string.IsNullOrEmpty(tabName))
             {
                 _logger.Warning($"Cannot build UI for component '{component.DisplayName}': tabName is null or empty.");
+                return;
+            }
+
+            // Check version compatibility and beta status before processing
+            if (!IsComponentSupported(component))
+            {
+                _logger.Debug($"Skipping component '{component.DisplayName}' due to version incompatibility or beta status.");
                 return;
             }
 

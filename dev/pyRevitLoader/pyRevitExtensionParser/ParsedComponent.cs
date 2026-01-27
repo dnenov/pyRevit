@@ -34,6 +34,9 @@ namespace pyRevitExtensionParser
         public string Hyperlink { get; set; }
         public string HelpUrl { get; set; }
         public string Highlight { get; set; }
+        public string MinRevitVersion { get; set; }
+        public string MaxRevitVersion { get; set; }
+        public bool IsBeta { get; set; }
         public string TargetAssembly { get; set; }
         public string CommandClass { get; set; }
         public string AvailabilityClass { get; set; }

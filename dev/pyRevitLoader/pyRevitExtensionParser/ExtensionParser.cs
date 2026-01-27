@@ -290,6 +290,7 @@ namespace pyRevitExtensionParser
                 Titles = parsedBundle?.Titles,
                 Tooltips = parsedBundle?.Tooltips,
                 MinRevitVersion = parsedBundle?.MinRevitVersion,
+                MaxRevitVersion = parsedBundle?.MaxRevitVersion,
                 Context = parsedBundle?.GetFormattedContext(),
                 Engine = parsedBundle?.Engine,
                 Config = extConfig
@@ -712,6 +713,8 @@ namespace pyRevitExtensionParser
                 // First, get values from Python script
                 string title = null, author = null, doc = null;
                 string scriptContext = null, scriptHelpUrl = null, scriptHighlight = null;
+                string scriptMinRevitVersion = null, scriptMaxRevitVersion = null;
+                bool scriptIsBeta = false, scriptCleanEngine = false, scriptFullFrameEngine = false, scriptPersistentEngine = false;
                 Dictionary<string, string> scriptLocalizedTitles = null;
                 Dictionary<string, string> scriptLocalizedTooltips = null;
                 Dictionary<string, string> scriptLocalizedHelpUrls = null;
@@ -728,6 +731,12 @@ namespace pyRevitExtensionParser
                     scriptHelpUrl = scriptConstants.HelpUrl;
                     scriptLocalizedHelpUrls = scriptConstants.LocalizedHelpUrls;
                     scriptHighlight = scriptConstants.Highlight;
+                    scriptMinRevitVersion = scriptConstants.MinRevitVersion;
+                    scriptMaxRevitVersion = scriptConstants.MaxRevitVersion;
+                    scriptIsBeta = scriptConstants.IsBeta;
+                    scriptCleanEngine = scriptConstants.CleanEngine;
+                    scriptFullFrameEngine = scriptConstants.FullFrameEngine;
+                    scriptPersistentEngine = scriptConstants.PersistentEngine;
                 }
 
                 // Override script values with bundle values (bundle takes precedence)
@@ -825,6 +834,27 @@ namespace pyRevitExtensionParser
                 // Determine final help URL: bundle hyperlink takes precedence over script helpurl
                 string finalHyperlink = !string.IsNullOrEmpty(hyperlink) ? hyperlink : scriptHelpUrl;
 
+                // Determine final min Revit version: bundle takes precedence over script
+                string finalMinRevitVersion = !string.IsNullOrEmpty(bundleInComponent?.MinRevitVersion)
+                    ? bundleInComponent.MinRevitVersion
+                    : scriptMinRevitVersion;
+
+                // Determine final max Revit version: bundle takes precedence over script
+                string finalMaxRevitVersion = !string.IsNullOrEmpty(bundleInComponent?.MaxRevitVersion)
+                    ? bundleInComponent.MaxRevitVersion
+                    : scriptMaxRevitVersion;
+
+                // Determine final beta status: bundle takes precedence over script
+                bool finalIsBeta = bundleInComponent != null && bundleInComponent.IsBeta 
+                    ? bundleInComponent.IsBeta 
+                    : scriptIsBeta;
+
+                // Determine final engine config: bundle takes precedence, but script can add flags
+                var finalEngine = bundleInComponent?.Engine ?? new EngineConfig();
+                if (scriptCleanEngine) finalEngine.Clean = true;
+                if (scriptFullFrameEngine) finalEngine.FullFrame = true;
+                if (scriptPersistentEngine) finalEngine.Persistent = true;
+
                 components.Add(new ParsedComponent
                 {
                     Name = namePart,
@@ -844,6 +874,9 @@ namespace pyRevitExtensionParser
                     Hyperlink = finalHyperlink,
                     HelpUrl = finalHelpUrl,
                     Highlight = finalHighlight,
+                    MinRevitVersion = finalMinRevitVersion,
+                    MaxRevitVersion = finalMaxRevitVersion,
+                    IsBeta = finalIsBeta,
                     PanelBackground = bundleInComponent?.PanelBackground,
                     TitleBackground = bundleInComponent?.TitleBackground,
                     SlideoutBackground = bundleInComponent?.SlideoutBackground,
@@ -856,7 +889,7 @@ namespace pyRevitExtensionParser
                     LocalizedTooltips = finalLocalizedTooltips.Count > 0 ? finalLocalizedTooltips : null,
                     LocalizedHelpUrls = finalLocalizedHelpUrls.Count > 0 ? finalLocalizedHelpUrls : null,
                     Directory = dir,
-                    Engine = bundleInComponent?.Engine,
+                    Engine = finalEngine,
                     Members = bundleInComponent?.Members ?? new List<ComboBoxMember>(),
                     OnIconPath = onIconPath,
                     OnIconDarkPath = onIconDarkPath,
@@ -1007,6 +1040,12 @@ namespace pyRevitExtensionParser
             public string Context;
             public List<string> ContextItems;
             public string Highlight;
+            public string MinRevitVersion;
+            public string MaxRevitVersion;
+            public bool IsBeta;
+            public bool CleanEngine;
+            public bool FullFrameEngine;
+            public bool PersistentEngine;
         }
 
         // Cache Python script constant parsing to avoid re-reading files
@@ -1127,6 +1166,30 @@ namespace pyRevitExtensionParser
                 else if (trimmedLine.StartsWith("__highlight__"))
                 {
                     result.Highlight = ExtractPythonConstantValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__min_revit_ver__"))
+                {
+                    result.MinRevitVersion = ExtractPythonValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__max_revit_ver__"))
+                {
+                    result.MaxRevitVersion = ExtractPythonValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__beta__"))
+                {
+                    result.IsBeta = ExtractPythonBoolValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__cleanengine__"))
+                {
+                    result.CleanEngine = ExtractPythonBoolValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__fullframeengine__"))
+                {
+                    result.FullFrameEngine = ExtractPythonBoolValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__persistentengine__"))
+                {
+                    result.PersistentEngine = ExtractPythonBoolValue(trimmedLine);
                 }
                 
                 lineIndex++;
@@ -1259,6 +1322,50 @@ namespace pyRevitExtensionParser
                 return ProcessPythonEscapeSequences(value);
             }
             return null;
+        }
+
+        /// <summary>
+        /// Extracts a Python value that can be either quoted string or unquoted (like numbers).
+        /// For example: '__min_revit_ver__ = 2021' returns '2021'
+        /// </summary>
+        private static string ExtractPythonValue(string line)
+        {
+            var parts = line.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 2)
+            {
+                var value = parts[1].Trim();
+                
+                // Try to extract quoted string first
+                var quotedValue = ExtractPythonStringContent(value);
+                if (quotedValue != null)
+                    return ProcessPythonEscapeSequences(quotedValue);
+                
+                // If no quotes, return the value as-is (for unquoted numbers, etc.)
+                // Remove any trailing comments
+                var commentIndex = value.IndexOf('#');
+                if (commentIndex >= 0)
+                    value = value.Substring(0, commentIndex).Trim();
+                
+                return string.IsNullOrEmpty(value) ? null : value;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Extracts a Python boolean value (True/False) from a line like: __beta__ = True
+        /// </summary>
+        private static bool ExtractPythonBoolValue(string line)
+        {
+            var parts = line.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 2)
+            {
+                var value = parts[1].Trim().ToLowerInvariant();
+                if (value == "true")
+                    return true;
+                if (value == "false")
+                    return false;
+            }
+            return false;
         }
 
         /// <summary>

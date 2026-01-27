@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +13,8 @@ namespace pyRevitExtensionParser
         public new string Directory { get; set; }
         public Dictionary<string, string> Titles { get; set; }
         public Dictionary<string, string> Tooltips { get; set; }
-        public string MinRevitVersion { get; set; }
+        public new string MinRevitVersion { get; set; }
+        public new string MaxRevitVersion { get; set; }
         public ExtensionConfig Config { get; set; }
         
         // Cache directory existence checks to avoid repeated file system calls

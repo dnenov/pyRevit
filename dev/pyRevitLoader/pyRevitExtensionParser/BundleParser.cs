@@ -339,6 +339,9 @@ namespace pyRevitExtensionParser
                 case "min_revit_version":
                     parsed.MinRevitVersion = value;
                     break;
+                case "max_revit_version":
+                    parsed.MaxRevitVersion = value;
+                    break;
                 case "context":
                     // Context can be a simple string or a list
                     // If there's a value on this line, it's a simple string
@@ -361,6 +364,9 @@ namespace pyRevitExtensionParser
 
                 case "highlight":
                     parsed.Highlight = value?.ToLowerInvariant();
+                    break;
+                case "beta":
+                    parsed.IsBeta = value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
                     break;
                 case "content":
                     // Content path for .content bundles (family .rfa files)

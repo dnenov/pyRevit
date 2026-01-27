@@ -166,6 +166,19 @@ namespace pyRevitExtensionParser
         public string MinRevitVersion { get; set; }
 
         /// <summary>
+        /// Gets or sets the maximum Revit version required to run this bundle.
+        /// </summary>
+        /// <remarks>
+        /// <para>Format: "YYYY" (e.g., "2020", "2021", "2024")</para>
+        /// <para>If the current Revit version is higher than specified, the command
+        /// will not be loaded or will be disabled.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>max_revit_version: 2024</code>
+        /// </example>
+        public string MaxRevitVersion { get; set; }
+
+        /// <summary>
         /// Gets or sets the context filter determining when this bundle is available.
         /// </summary>
         /// <remarks>
@@ -323,6 +336,15 @@ namespace pyRevitExtensionParser
         /// <para>Used to visually emphasize important or frequently-used commands.</para>
         /// </remarks>
         public string Highlight { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this bundle contains beta tools.
+        /// </summary>
+        /// <remarks>
+        /// <para>When true, indicates that this bundle contains experimental or beta functionality.</para>
+        /// <para>Beta tools may be hidden from the UI unless beta mode is enabled in settings.</para>
+        /// </remarks>
+        public bool IsBeta { get; set; }
 
         /// <summary>
         /// Gets or sets the background color for the panel containing this bundle.

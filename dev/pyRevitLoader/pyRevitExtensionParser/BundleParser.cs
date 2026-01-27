@@ -356,10 +356,33 @@ namespace pyRevitExtensionParser
                     parsed.Hyperlink = StripQuotes(value);
                     break;
                 case "help_url":
-                    if (!string.IsNullOrEmpty(value))
+                    // Handle multiline indicators or simple help_url string
+                    if (value == "|-")
                     {
+                        // Literal multiline (preserve line breaks)
+                        state.IsInMultilineValue = true;
+                        state.IsLiteralMultiline = true;
+                        state.CurrentLanguageKey = "_help_url_";
+                    }
+                    else if (value == ">-")
+                    {
+                        // Folded multiline (join lines)
+                        state.IsInMultilineValue = true;
+                        state.IsFoldedMultiline = true;
+                        state.CurrentLanguageKey = "_help_url_";
+                    }
+                    else if (value == "|" || value == ">")
+                    {
+                        // Legacy multiline
+                        state.IsInMultilineValue = true;
+                        state.CurrentLanguageKey = "_help_url_";
+                    }
+                    else if (!string.IsNullOrEmpty(value))
+                    {
+                        // Single-line scalar URL
                         parsed.HelpUrl = StripQuotes(value);
                     }
+                    // If value is empty, allow localized-dictionary form under help_url
                     break;
 
                 case "highlight":

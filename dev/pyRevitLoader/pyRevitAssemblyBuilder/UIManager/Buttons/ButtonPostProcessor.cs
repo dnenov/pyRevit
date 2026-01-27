@@ -140,14 +140,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                 if (string.IsNullOrEmpty(helpUrl))
                     return;
 
-                // Validate URL format to prevent invalid values
-                if (!Uri.IsWellFormedUriString(helpUrl, UriKind.Absolute))
-                {
-                    _logger.Debug($"Invalid help URL format for '{component.DisplayName}': {helpUrl}");
-                    return;
-                }
-
-                // Use direct API call - this is the same as the Python implementation
+                // Use direct API call - this is the same as the Python implementation.
                 var contextualHelp = new ContextualHelp(ContextualHelpType.Url, helpUrl);
                 ribbonItem.SetContextualHelp(contextualHelp);
                 _logger.Debug($"Successfully set contextual help for '{component.DisplayName}' to URL: {helpUrl}");

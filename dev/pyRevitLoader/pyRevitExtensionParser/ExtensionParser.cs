@@ -796,6 +796,7 @@ namespace pyRevitExtensionParser
                 // Apply template substitution to localized values
                 finalLocalizedTitles = SubstituteTemplatesInDict(finalLocalizedTitles, mergedTemplates);
                 finalLocalizedTooltips = SubstituteTemplatesInDict(finalLocalizedTooltips, mergedTemplates);
+                finalLocalizedHelpUrls = SubstituteTemplatesInDict(finalLocalizedHelpUrls, mergedTemplates);
 
                 // Determine final context: bundle takes precedence over script
                 // bundleInComponent?.GetFormattedContext() returns "(zero-doc)" when no context in bundle

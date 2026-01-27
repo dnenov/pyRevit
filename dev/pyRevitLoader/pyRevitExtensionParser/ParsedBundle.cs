@@ -306,7 +306,7 @@ namespace pyRevitExtensionParser
         /// </remarks>
         /// <example>
         /// <code>
-        /// helpurl: "https://docs.example.com/my-command"
+        /// help_url: "https://docs.example.com/my-command"
         /// </code>
         /// </example>
         public string HelpUrl { get; set; }

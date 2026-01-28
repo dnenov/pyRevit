@@ -9,6 +9,8 @@ title:
     Cerrar pestañas
   de_de: |-
     Offene Tabs schliessen
+  pt_br: |-
+    Fechar Abas
 tooltip:
   en_us: |-
     Close everything but the selected views.
@@ -22,6 +24,8 @@ tooltip:
   de_de: >-
     Es öffnet sich ein Auswahlfenster, das die geöffneten Tabs (Ansichten)
     vom aktiven Projekt auflistet. Alle im Dialog markierten Ansichten bleiben  geöffnet und alle anderen Tabs werden geschlossen.
+  pt_br: |-
+    Fechar tudo, exceto as vistas selecionadas.
 authors:
   - thumDer
   - Johannes Domeier

@@ -5,7 +5,7 @@ title:
   chinese_s: 删除重叠线
   es_es: Eliminar líneas superpuestas
   de_de: Linien Aufräumen
-  pt_br: Excluir Duplicados
+  pt_br: Overkill
 tooltip:
   en_us: Deletes the lines overlapped by other lines (similar to AutoCAD Overkill)
   fr_fr: Efface les lignes qui se superposent avec d'autres lignes (Similaire à la fonction Overkill dans Autocad)

@@ -41,4 +41,4 @@ tooltip:
     Imprimir itens em ordem de um índice de folhas
     
     Esta ferramenta procura parâmetros de projeto (em Folhas) que são de 
-    Instância, do tipo Integer, e têm "Order" em seus nomes
+    Instância, do tipo 'Numero inteiro', e têm "Order" em seus nomes

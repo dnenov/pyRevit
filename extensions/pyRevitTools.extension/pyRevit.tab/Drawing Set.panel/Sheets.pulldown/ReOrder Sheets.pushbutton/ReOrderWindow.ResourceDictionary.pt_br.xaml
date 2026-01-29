@@ -28,5 +28,5 @@ que é usado para agrupar intervalos de folhas.</system:String>
     <system:String x:Key="SheetName">Nome da folha</system:String>
     
     <system:String x:Key="NoSheetsInModel">Não há folhas neste modelo</system:String>
-    <system:String x:Key="NoOrderParametersFound">Nenhum parâmetro de 'Order' encontrado. Defina um parâmetro de projeto do tipo 'Integer' e atribua à categoria Folhas. Esta ferramenta pode definir índices de ordem de folhas nesse parâmetro.</system:String>
+    <system:String x:Key="NoOrderParametersFound">Nenhum parâmetro de 'Order' encontrado. Defina um parâmetro de projeto do tipo 'Numero inteiro' e atribua à categoria Folhas. Esta ferramenta pode definir índices de ordem de folhas nesse parâmetro.</system:String>
 </ResourceDictionary>

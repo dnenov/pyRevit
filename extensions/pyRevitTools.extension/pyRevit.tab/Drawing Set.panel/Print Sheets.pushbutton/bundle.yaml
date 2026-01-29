@@ -15,7 +15,7 @@ title:
   de_de: |-
     Pläne
     drucken
-  pt_br: >-
+  pt_br: |-
     Imprimir
     Folhas
 tooltip:
@@ -110,7 +110,7 @@ tooltip:
     Wenn Sie mit der Umschalttaste auf das Werkzeug klicken, werden alle
     nicht druckbaren Zeichen aus den Plannummern entfernt. Dies ist für den Fall, dass ein 
     Fehler bei der Ausführung dazu führt, dass diese Zeichen im Plan verbleiben.
-  pt_br: >-
+  pt_br: |-
     Imprima folhas em ordem a partir de um índice de folhas.
     
     Nota:

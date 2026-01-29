@@ -30,7 +30,7 @@ tooltip:
     Shift+Click
 
     Fenster Konfiguration zurücksetzen und öffnen.
-  pt_br: >-
+  pt_br: |-
     Gerencie as notas-chave do projeto.
     
     Shift+Clique
@@ -52,7 +52,7 @@ title:
   de_de: |-
     Bauelementschlüssel
     verwalten
-  pt_br: >-
+  pt_br: |-
     Gerenciar
     Notas-Chave
 min_revit_version: 2014

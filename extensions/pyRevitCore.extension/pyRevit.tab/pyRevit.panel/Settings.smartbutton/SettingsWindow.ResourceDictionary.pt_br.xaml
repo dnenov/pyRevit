@@ -46,7 +46,7 @@
     </system:String>
 
     <system:String x:Key="CoreSettings.UsingCPython.Description4">
-        To run a script with CPython, first line of the script file must be:
+        Para executar um script com CPython, a primeira linha do arquivo de script deve ser:
     </system:String>
 
     <system:String x:Key="CoreSettings.UsingCPython.Description5">

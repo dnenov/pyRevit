@@ -560,12 +560,11 @@ def _add_combobox_members(combobox_ui, combobox):
         # Create member data (minimal - just id and text)
         member_data = UI.ComboBoxMemberData(member_id, member_text)
 
-        # Set GroupName on member_data BEFORE adding (required by Revit API)
-        if member_group:
-            member_data.GroupName = member_group
-
         # Add member to ComboBox (returns ComboBoxMember object)
         try:
+            # Set GroupName on member_data BEFORE adding (required by Revit API)
+            if member_group and hasattr(member_data, "GroupName"):
+                member_data.GroupName = member_group
             member_obj = combobox_ui.add_item(member_data)
             if not member_obj:
                 mlogger.warning("AddItem returned None for: %s", member_text)

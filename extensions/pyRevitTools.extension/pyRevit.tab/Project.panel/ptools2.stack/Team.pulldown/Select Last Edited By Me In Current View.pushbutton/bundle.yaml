@@ -5,6 +5,7 @@ title:
   chinese_s: 在当前视图中选择我最后编辑的图元
   es_es: Seleccionar últimos editados por mí en la vista actual
   de_de: Wähle Elemente die zuletzt von mir bearbeitet wurden in dieser Ansicht
+  pt_br: Selecionar Último Editado por Mim na Vista Atual
 tooltip:
   en_us: >-
     Uses the Worksharing tooltip to find out the element "last edited"  by the user in the current view. If current view is a sheet, the  tools searches all the views placed on this sheet as well. "Last Edited" elements are elements last edited by the user,  and are different from borrowed elements
@@ -15,3 +16,5 @@ tooltip:
     Usa la información de trabajo compartido para encontrar el elemento "último editado" por el usuario en la vista actual. Si la vista actual es una hoja, la herramienta también busca todas las vistas colocadas en esta hoja. Los elementos "Último Editado" son elementos editados por última vez por el usuario, y son diferentes de los elementos prestados
   de_de: >-
     Verwendet den Arbeitsteilungs-Tooltip, um herauszufinden, welches Element  durch den Benutzer in der aktuellen Ansicht zuletzt bearbeitet wurde.  Wenn die aktuelle Ansicht ein Plan ist, durchsucht das Werkzeug auch  alle Ansichten, die auf diesem Plan platziert wurden. "Zuletzt bearbeitete"  Elemente sind Elemente, die vom Benutzer zuletzt bearbeitet wurden,  und unterscheiden sich von ausgeliehenen Elementen
+  pt_br: >-
+    Usa a dica de ferramenta de Compartilhamento de Trabalho para descobrir o elemento "último editado" pelo usuário na vista atual. Se a vista atual for uma folha, a ferramenta pesquisa todas as vistas colocadas nesta folha também. Elementos "Último Editado" são elementos editados pela última vez pelo usuário e são diferentes de elementos emprestados

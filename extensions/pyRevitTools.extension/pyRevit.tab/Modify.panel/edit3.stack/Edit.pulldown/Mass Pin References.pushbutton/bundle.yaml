@@ -5,6 +5,7 @@ title:
   chinese_s: 批量锁定/解锁参照
   es_es: Fijar/Desfijar referencias en masa
   de_de: Referenzen massenhaft (ent-)sperren
+  pt_br: Fixar/Desafixar Referências em Massa
 tooltip:
   en_us: |
     Allows you to select one or more categories (e.g., Grids, Levels, Links) and pin all unpinned instances in the model.
@@ -32,3 +33,8 @@ tooltip:
 
     Shift-Click:
     Hebt die Anheftung aller angehefteten Elemente in den ausgewählten Kategorien auf.
+  pt_br: >-
+    Permite selecionar uma ou mais categorias (ex.: Eixos, Níveis, Vínculos) e fixar todas as instâncias não fixadas no modelo.
+    
+    Shift-Clique:
+    Desafixa todas as instâncias fixadas nas categorias selecionadas.

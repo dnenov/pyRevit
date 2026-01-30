@@ -10,6 +10,8 @@ title:
     Move Viewport Label
   de_de: |-
     Verschieben des Fenstertitels
+  pt_br: |-
+    Mover Título da Viewport
 tooltip:
   en_us: |-
     Move Viewport Label
@@ -22,6 +24,8 @@ tooltip:
     Move Viewport Label
   de_de: |-
     Verschieben des Fenstertitels
+  pt_br: |-
+    Mover título da viewport
 authors:
   - Tim Hevel
   - Jean-Marc Couffin (C# to python and refactor)

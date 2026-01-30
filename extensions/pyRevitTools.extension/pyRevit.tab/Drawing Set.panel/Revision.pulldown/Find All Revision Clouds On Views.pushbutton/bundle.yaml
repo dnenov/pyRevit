@@ -5,6 +5,7 @@ title:
   chinese_s: 查找视图上的所有修订云线
   es_es: Encontrar todas las nubes de revisión en vistas
   de_de: Finde alle Änderungswolken auf Ansichten
+  pt_br: Encontrar Todas as Nuvens de Revisão em Vistas
 tooltip:
   en_us: Lists all revision clouds in this model that have been placed on a view and not on sheet
   fr_fr: Répertorie tous les nuages ​​de révision de ce modèle qui ont été placés sur une vue et non sur une feuille
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 列出此模型中所有已放置在视图上（而非图纸上）的修订云线
   es_es: Lista todas las nubes de revisión en este modelo que han sido colocadas en una vista y no en una hoja
   de_de: Es wird eine Liste erstellt mit allen Änderungswolken im Modell, die auf Ansichten anstatt auf Plänen platziert wurden
+  pt_br: Lista todas as nuvens de revisão neste modelo que foram colocadas em uma vista e não em uma folha

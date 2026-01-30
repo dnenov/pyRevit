@@ -5,6 +5,7 @@ title:
   chinese_s: 选择垂直/水平凹槽
   es_es: Seleccionar ranuras verticales/horizontales
   de_de: Alle horizontale / vertikalen Wandfugen auswählen
+  pt_br: Selecionar Frisos Verticais/Horizontais
 tooltip:
   en_us: >-
     Selects all vertical(default) or horizontal reveals in the project
@@ -41,3 +42,9 @@ tooltip:
     Shift-Click:
 
     Mit gedrückter Shift Taste auf das Werkzeug werden alle horizontalen Wandfugen ausgewählt.
+  pt_br: >-
+    Seleciona todos os frisos verticais (padrão) ou horizontais no projeto
+    
+    Shift-Clique:
+    
+    Selecionar frisos horizontais

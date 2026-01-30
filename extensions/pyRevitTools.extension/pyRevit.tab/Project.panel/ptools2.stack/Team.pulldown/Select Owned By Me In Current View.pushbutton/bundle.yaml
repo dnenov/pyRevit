@@ -5,6 +5,7 @@ title:
   chinese_s: 在当前视图中选择我拥有的图元
   es_es: Seleccionar de mi propiedad en la vista actual
   de_de: Wähle Elemente in aktueller Ansicht die mir gehören
+  pt_br: Selecionar Sob Minha Posse na Vista Atual
 tooltip:
   en_us: >-
     Uses the Worksharing tooltip to find out the element "owned"  by the user in the current view. If current view is a sheet,  the tools searches all the views placed on this sheet as well. "Owned" elements are the elements edited by the user since the  last synchronize and release.
@@ -15,3 +16,5 @@ tooltip:
     Usa la información de trabajo compartido para encontrar el elemento "en posesión" del usuario en la vista actual. Si la vista actual es una hoja, la herramienta también busca todas las vistas colocadas en esta hoja. Los elementos "En posesión" son los elementos editados por el usuario desde la última sincronización y liberación.
   de_de: >-
     Verwendet den Arbeitsteilungs-Tooltip, um das Element herauszufinden,  das dem Benutzer in der aktuellen Ansicht "gehört".  Wenn die aktuelle Ansicht ein Plan ist, durchsucht das Werkzeug  alle Ansichten, die auf diesem Plan platziert wurden.  "Eigene" Elemente sind die Elemente, die der Benutzer  seit der letzten Synchronisierung und Freigabe bearbeitet hat.
+  pt_br: >-
+    Usa a dica de ferramenta de Compartilhamento de Trabalho para descobrir o elemento "sob posse" do usuário na vista atual. Se a vista atual for uma folha, a ferramenta pesquisa todas as vistas colocadas nesta folha também. Elementos "sob posse" são os elementos editados pelo usuário desde a última sincronização e liberação.

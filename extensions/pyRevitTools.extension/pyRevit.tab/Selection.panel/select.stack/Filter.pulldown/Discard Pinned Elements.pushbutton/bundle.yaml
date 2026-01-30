@@ -5,6 +5,7 @@ title:
   chinese_s: 排除锁定图元
   es_es: Descartar elementos fijados
   de_de: Gepinnte Elemente von der aktuellen Auswahl ausschliessen
+  pt_br: Descartar Elementos Fixados
 tooltip:
   en_us: Discards (not delete) pinned elements from current selection
   fr_fr: Enlève (ne supprime pas) les éléments épinglés de la sélection courante
@@ -13,4 +14,5 @@ tooltip:
   es_es: Descarta (no elimina) elementos fijados de la selección actual
   de_de: >-
     Die aktuelle Elementauswahl wird so vermindert,  dass keine gepinnte Elemente mehr in der Auswahl vorhanden sind.  Die Elemente werden also nicht gelöscht,  sondern nur aus der aktuellen Auswahl entfernt.
+  pt_br: Descarta (não exclui) elementos fixados da seleção atual
 context: Selection

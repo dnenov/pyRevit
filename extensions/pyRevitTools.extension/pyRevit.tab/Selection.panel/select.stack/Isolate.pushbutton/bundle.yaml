@@ -5,6 +5,7 @@ title:
   chinese_s: 隔离
   es_es: Aislar
   de_de: Isolieren
+  pt_br: Isolar
 tooltip:
   en_us: >-
     Isolates specific elements in current view and
@@ -41,3 +42,6 @@ tooltip:
     Shift-Select:
     Es können in einem Auswahldialog gezielt Kategorien festgelegt werden,
     die isoliert werden sollen.
+  pt_br: >-
+    Isola elementos específicos na vista atual e
+    coloca a vista no modo de isolar elemento

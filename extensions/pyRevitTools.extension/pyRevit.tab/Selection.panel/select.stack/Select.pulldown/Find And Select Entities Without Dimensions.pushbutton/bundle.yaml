@@ -5,6 +5,7 @@ title:
   chinese_s: 查找并选择无关联标注的图元
   es_es: Encontrar y seleccionar entidades sin dimensiones
   de_de: Nur Elemente ohne Bemaßungsreferenzen auswählen
+  pt_br: Encontrar e Selecionar Elementos sem Cotas
 tooltip:
   en_us: Selects elements with no associated dimensions in current view
   fr_fr: Sélectionne les éléments sans dimensions associées dans la vue actuelle
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 在当前视图中选择没有关联标注的图元
   es_es: Selecciona elementos sin dimensiones asociadas en la vista actual
   de_de: Wählt Elemente aus, die in der aktuellen Ansicht keine Bemaßungen referenzieren
+  pt_br: Seleciona elementos sem cotas associadas na vista atual

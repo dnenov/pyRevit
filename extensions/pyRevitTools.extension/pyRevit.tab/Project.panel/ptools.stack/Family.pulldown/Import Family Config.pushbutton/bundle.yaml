@@ -5,6 +5,7 @@ title:
   chinese_s: 导入族配置
   es_es: Importar configuración de familia
   de_de: Familien Konfiguration importieren
+  pt_br: Importar Config. da Família
 tooltip:
   en_us: >-
     Import family configurations from yaml file and modify current family.
@@ -112,5 +113,13 @@ tooltip:
     Die Familien Konfiguration muss eine yaml Datei sein, die Informationen über die Parameter und Typen enthält, die der Familie hinzugefügt werden sollen. 
 
     Die Formatierung der Konfigurationsdatei sieht folgendermaßen aus:
+  pt_br: >-
+    Importar configurações da família de arquivo yaml e modificar a família atual.
+    
+    Espera-se que o arquivo de configuração da família seja um arquivo yaml,
+    
+    fornecendo informações sobre os parâmetros e tipos a serem criados.
+    
+    A estrutura deste arquivo de configuração é mostrada abaixo:
 author: '{{author}}'
 context: doc-family

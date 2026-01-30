@@ -5,6 +5,7 @@ title:
   chinese_s: 博客
   es_es: Blog
   de_de: Blog
+  pt_br: Blog
 tooltip:
   en_us: Opens the pyRevit blog.
   fr_fr: Ouvre le blog de pyRevit.
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 打开 pyRevit 博客。
   es_es: Abre el blog de pyRevit.
   de_de: Öffnet den pyRevit Blog.
+  pt_br: Abre o blog do pyRevit.
 context: zero-doc

@@ -6,6 +6,7 @@ title:
   chinese_s: 将剖面框对齐到面
   es_es: Orientar caja de sección a cara
   de_de: 3D-Schnittbereich auf eine Fläche ausrichten
+  pt_br: Orientar Caixa de Corte para a Face
 tooltip:
   en_us: Aligns the section box of the current 3D view to selected face
   fr_fr: Aligne la zone de coupe de la vue 3D actuelle sur la face sélectionnée
@@ -16,4 +17,5 @@ tooltip:
     Damit diese Funktion verwendet werden kann, muss der 3D-Schnittbereich in
     der aktiven 3D Ansicht aktiviert sein. Nach dem Ausführen des Befehls muss eine  Fläche im Modell ausgewählt werden. Mit der TAB Taste kann man zwischen angrenzenden
     Flächen durchwechseln. Eine Seite des 3D-Schnittbereichs übernimmt die  Ausrichtung der gewählten Fläche!
+  pt_br: Alinha a caixa de corte da vista 3D atual à face selecionada
 context: active-3d-view

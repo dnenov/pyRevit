@@ -5,6 +5,7 @@ title:
   chinese_s: 将裁剪区域设置为选定形状
   es_es: Establecer región de recorte a forma seleccionada
   de_de: Zuschneidebereich der Ansicht von Detaillinien übernehmen
+  pt_br: Definir Região de Recorte para Forma Selecionada
 tooltip:
   en_us: >-
     Draw the desired crop boundary as a closed polygon on your sheet (using
@@ -32,3 +33,7 @@ tooltip:
     wird die Form der Detaillinien annehmen. Anschließend sollte man die Detaillinien
     manuell löschen (optional). Dieses Skript erstellt den Zuschneidebereich im Skizzen
     Modus. Man kann den Zuschneidebereich jederzeit wieder zurücksetzen, wenn man das  Ansichtsfenster auswählt.
+  pt_br: >-
+    Desenhe o limite de recorte desejado como um polígono fechado em sua folha (usando 
+    linhas de detalhe). Em seguida, selecione o limite e a viewport de destino e execute 
+    o script. Este script aplicará o limite desenhado à vista da viewport selecionada

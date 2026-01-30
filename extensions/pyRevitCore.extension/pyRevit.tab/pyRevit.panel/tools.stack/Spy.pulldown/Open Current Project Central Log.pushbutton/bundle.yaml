@@ -5,6 +5,7 @@ title:
   chinese_s: 打开当前项目的中央日志
   es_es: Abrir el log central del proyecto actual
   de_de: Öffnet das Änderungsprotokoll der Projektdatei
+  pt_br: Abrir Log Central do Projeto Atual
 tooltip:
   en_us: Opens the central log for the current workshared project
   fr_fr: Ouvre le log central du projet partagé en cours
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 打开当前项目的中央日志
   es_es: Abre el log central del proyecto actual
   de_de: Öffnet das Änderungsprotkoll der aktiven Projektdatei. Die Arbeitsteilung muss dafür aktiviert sein, da ansonstten kein Protokoll vorhanden ist.
+  pt_br: Abre o log central para o projeto com compartilhamento de trabalho atual

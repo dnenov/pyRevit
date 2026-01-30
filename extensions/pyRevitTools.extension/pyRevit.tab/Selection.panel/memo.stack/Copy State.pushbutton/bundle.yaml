@@ -5,6 +5,7 @@ title:
   chinese_s: 复制状态
   es_es: Copiar estado
   de_de: Zustand kopieren
+  pt_br: Copiar Estado
 tooltip:
   en_us: >-
     Copies the state of desired parameter of the active
@@ -36,6 +37,12 @@ tooltip:
     4) Filter Overrides (bestimmte Filter Überschreibungen der Ansicht(en) auswählen)
     Es können auch mehrere Ansichten im Projektbrowser ausgewählt werden,  nur stehen dann eventuell nicht alle Einstellungszustände zur Auswahl.
     In einer anderen Ansicht kann dann das Werkzeug "Zustand einfügen"  verwendet werden, um den gespeicherten Zustand auf die Ansicht zu übertragen.
+  pt_br: >-
+    Copia o estado do parâmetro desejado da vista
+    
+    ativa para a memória. ex: Configurações de Visibilidade/Gráficos ou
+    
+    estado de Zoom. Execute e veja como funciona
 author: >-
   Gui Talarico
 

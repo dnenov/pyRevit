@@ -5,6 +5,7 @@ title:
   chinese_s: 将族转换为基于面主体
   es_es: Convertir familia a basada en cara
   de_de: Konvertiere Familien in flächenbasierte Familien
+  pt_br: Converter Família para Baseada em Face
 tooltip:
   en_us: >-
     This script removes all instances of the selected element  Family and tries to convert the family into face host based.  Only families of CommunicationDevices, DataDevices,  DuctTerminal, ElectricalEquipment, ElectricalFixtures,  FireAlarmDevices, LightingDevices, LightingFixtures,  MechanicalEquipment, NurseCallDevices, PlumbingFixtures,  SecurityDevices, Sprinklers, TelephoneDevices can be  converted
@@ -17,3 +18,5 @@ tooltip:
     Este script elimina todas las instancias de la Familia de elemento seleccionada e intenta convertir la familia en basada en cara. Solo las familias de CommunicationDevices, DataDevices, DuctTerminal, ElectricalEquipment, ElectricalFixtures, FireAlarmDevices, LightingDevices, LightingFixtures, MechanicalEquipment, NurseCallDevices, PlumbingFixtures, SecurityDevices, Sprinklers, TelephoneDevices pueden ser convertidas
   de_de: >-
     Dieses Skript entfernt alle Exemplare des ausgewählten   Familie und versucht, die Familie in eine flächebasierte  Familie umzuwandeln. Nur Familien der Kategorien  Kommunikationsgeräte, Datengeräte, Luftkanalformteile,  EletrischeAusstattung, Elektroinstallationen, Brandmelder,  Lichtschalter, Leuchten, HLS-Bauteile, Notrufgeräte,  Sanitärinstallationen, Sicherheitsgeräte, Sprinkler  und Telefongeräte können umgewandelt werden.
+  pt_br: >-
+    Este script remove todas as instâncias da Família de elementos selecionada e tenta converter a família em baseada em hospedeiro de face.  Apenas famílias de Dispositivos de Comunicação, Dispositivos de Dados,  Terminais de Duto, Equipamentos Elétricos, Luminárias,  Dispositivos de Alarme de Incêndio, Dispositivos de Iluminação, Luminárias,  Equipamentos Mecânicos, Dispositivos de Chamada de Enfermeira, Peças Hidrossanitárias,  Dispositivos de Segurança, Sprinklers, Dispositivos de Telefone podem ser  convertidos

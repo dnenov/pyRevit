@@ -5,6 +5,7 @@ title:
   chinese_s: 关于
   es_es: Sobre
   de_de: Über
+  pt_br: Sobre
 tooltip:
   en_us: >-
     About pyRevit. Opens the pyRevit blog website. You can find detailed information on how pyRevit works, updates about the new tools and changes, and a lot of other information there.
@@ -25,4 +26,6 @@ tooltip:
     Sobre pyRevit. Abre el blog online de pyRevit. Puedes encontrar información detallada del funcionamiento de pyRevit, actualizaciones y cambios de las herramientas, y mucha otra información.
   de_de: >-
     Über pyRevit. Öffnet die pyRevit-Blog-Website. Sie finden dort detaillierte Informationen darüber, wie pyRevit funktioniert, Updates zu den neuen Tools und Änderungen sowie viele weitere Informationen.
+  pt_br: >-
+    Sobre o pyRevit. Abre o site do blog do pyRevit. Você pode encontrar informações detalhadas sobre como o pyRevit funciona, atualizações sobre as novas ferramentas e mudanças, e muitas outras informações lá.
 context: zero-doc

@@ -6,6 +6,7 @@ title:
   chinese_s: M追加
   es_es: MAgregar
   de_de: El.z.Sp.hinzufügen
+  pt_br: MAppend
 tooltip:
   en_us: >-
     Append current selection to memory
@@ -24,4 +25,7 @@ tooltip:
   de_de: >-
     Fügt die aktuelle Auswahl dem Speicher hinzu.
     Funktioniert wie die M+ Taste auf dem Taschenrechner.  Dies ist ein Projekt-abhängiger Speicher.  Jedes Projekt hat seinen eigenen Auswahlspeicher,  der im Ordner %appdata%/pyRevit als *.pym Datei gespeichert wird.
+  pt_br: >-
+    Adiciona seleção atual à memória. 
+    Funciona como o botão M+ em uma calculadora. Esta é uma memória dependente do projeto. Cada projeto tem sua própria memória de seleção salva na pasta %appdata%/pyRevit como arquivos *.pym
 context: Selection

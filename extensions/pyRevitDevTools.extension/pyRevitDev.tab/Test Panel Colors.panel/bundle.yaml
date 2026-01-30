@@ -5,6 +5,7 @@ title:
   chinese_s: 测试面板颜色
   es_es: Colores del panel de prueba
   de_de: Test-Panel-Farben
+  pt_br: Testar Cores do Painel
 layout:
   - ButtonA
   - ">>>"

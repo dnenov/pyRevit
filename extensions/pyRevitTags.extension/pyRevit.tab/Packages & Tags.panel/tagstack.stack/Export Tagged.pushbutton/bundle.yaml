@@ -5,6 +5,7 @@ title:
   chinese_s: 导出标签
   es_es: Exportar etiquetas
   de_de: Getaggte exportieren
+  pt_br: Exportar Identificados
 tooltip:
   en_us: Manage sheet packages
   fr_fr: Gérer les paquets de feuilles
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 管理图纸包
   es_es: Gestionar paquetes de planos
   de_de: Plan Pakete verwalten.
+  pt_br: Gerenciar pacotes de folhas
 author: '{{author}}'

@@ -5,6 +5,7 @@ title:
   chinese_s: 查找所有加载的程序集
   es_es: Buscar todos los ensamblados cargados
   de_de: Suche alle geladene DLL Bibliotheken
+  pt_br: Encontrar Todos os Assemblies Carregados
 tooltip:
   en_us: List all currently loaded assemblies
   fr_fr: Lister tous les DLL chargés
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 列出所有当前加载的程序集
   es_es: Lista todos los ensamblados cargados en la consola
   de_de: Listet alle geladenen DLL Bibliotheken in der Konsole auf
+  pt_br: Lista todos os assemblies carregados atualmente
 context: zero-doc

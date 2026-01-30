@@ -5,6 +5,7 @@ title:
   chinese_s: 比较属性
   es_es: Comparar propiedades
   de_de: Eigenschaften vergleichen
+  pt_br: Comparar Propriedades
 tooltip:
   en_us: Compare instance and type properties between two elements
   fr_fr: Comparer les paramètres d'instance et d'occurence entre deux éléments
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 比较两个图元之间的实例属性和类型属性
   es_es: Comparar propiedades de instancia y tipo entre dos elementos
   de_de: Vergleicht die Exemplar und Typeneigenschaften zwischen zwei Elementen
+  pt_br: Comparar propriedades de instância e tipo entre dois elementos
 author: '{{author}}'

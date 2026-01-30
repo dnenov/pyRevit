@@ -8,7 +8,7 @@ When using the `Combine into one file` option
 in Revit 2022 and earlier,
 the tool adds non-printable character u'\u200e'
 (Left-To-Right Mark) at the start of the sheet names
-to push Revit's interenal printing engine to sort
+to push Revit's internal printing engine to sort
 the sheets correctly per the drawing index order.
 
 Make sure your drawings indices consider this
@@ -24,7 +24,7 @@ to remain.
 import re
 import os.path as op
 import codecs
-import os, datetime, locale
+import os, datetime, locale, ConfigParser
 from collections import namedtuple
 
 from pyrevit import HOST_APP
@@ -679,6 +679,56 @@ class PrintSheetsWindow(forms.WPFWindow):
         self._setup_docs_list()
         self._setup_naming_formats()
 
+        self._apply_projectinfo_naming_format_default()
+
+        self._all_sheets_list = list(self.sheets_lb.ItemsSource) if self.sheets_lb.ItemsSource else []
+
+
+    def copy_naming_format(self, sender, args):
+        try:
+            naming_format = sender.DataContext
+            if not naming_format:
+                return
+            
+            script.clipboard_copy(naming_format.name)
+
+        except Exception as e:
+            logger.error("Failed to copy naming format: %s", e)
+            
+
+    def _apply_projectinfo_naming_format_default(self):
+        pi = self.selected_doc.ProjectInformation
+        param = pi.LookupParameter("Naming Format") if pi else None
+        param_value = param.AsString() if param else None
+
+        selected_item = next(
+            (nf for nf in self.namingformat_cb.ItemsSource if nf.name == param_value),
+            None
+        )
+
+        if not selected_item and self.namingformat_cb.ItemsSource:
+            selected_item = self.namingformat_cb.ItemsSource[0]
+
+        self.namingformat_cb.SelectedItem = selected_item
+
+
+    def sheet_search_changed(self, sender, args):
+        search_text = self.sheetsearch_tb.Text.strip().lower()
+        if not self._all_sheets_list:
+            return
+
+        if not search_text:
+            self.sheets_lb.ItemsSource = self._all_sheets_list
+        else:
+            filtered = []
+            for sheet in self._all_sheets_list:
+                number = sheet.number.lower() if sheet.number else ''
+                name = sheet.name.lower() if sheet.name else ''
+                if search_text in number or search_text in name:
+                    filtered.append(sheet)
+            self.sheets_lb.ItemsSource = filtered
+
+
     # doc and schedule
     @property
     def selected_doc(self):
@@ -1050,10 +1100,8 @@ class PrintSheetsWindow(forms.WPFWindow):
         PrintUtils.ensure_dir(dirPath)
         doc = self.selected_doc
 
-        if IS_REVIT_2022_OR_NEWER or self.export_dwg.IsChecked:
+        if self.selected_printer =="Revit Internal Printer" or self.export_dwg.IsChecked:
             PrintUtils.open_dir(dirPath)
-        else:
-            return
 
 
         with revit.Transaction('Reload Keynote File',
@@ -1179,10 +1227,8 @@ class PrintSheetsWindow(forms.WPFWindow):
         PrintUtils.ensure_dir(dirPath)
         doc = target_doc
 
-        if IS_REVIT_2022_OR_NEWER:
+        if self.selected_printer =="Revit Internal Printer":
             PrintUtils.open_dir(dirPath)
-        else:
-            return
 
         if target_sheets:
             with forms.ProgressBar(step=1, title='Exporting Linked PDFs... ' + '{value} of {max_value}', cancellable=True) as pb1:

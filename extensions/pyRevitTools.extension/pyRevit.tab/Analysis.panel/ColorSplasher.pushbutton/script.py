@@ -877,7 +877,13 @@ class ColorSplasherWindow(forms.WPFWindow):
         self._table_data_3.Columns.Add("Key", System.String)
         self._table_data_3.Columns.Add("Value", System.Object)
 
+        self.Closed += self.closed
+        pyrevit_script.restore_window_position(self)
+
         self._setup_ui()
+
+    def closed(self, sender, args):
+        pyrevit_script.save_window_position(self)
 
     def _get_data_row_from_item(self, item, item_index=None):
         """Get DataRow from ListBox item consistently.

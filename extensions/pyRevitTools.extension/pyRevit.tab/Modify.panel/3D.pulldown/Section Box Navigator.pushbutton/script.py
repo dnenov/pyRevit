@@ -219,26 +219,8 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
         self.update_grid_status()
         self.update_expand_actions_status()
 
-        # Event subscriptions
         self.Closed += self.form_closed
-
-        try:
-            pos = script.load_data(WINDOW_POSITION, this_project=False)
-            all_bounds = [s.WorkingArea for s in System.Windows.Forms.Screen.AllScreens]
-            x, y = pos["Left"], pos["Top"]
-            visible = any(
-                (b.Left <= x <= b.Right and b.Top <= y <= b.Bottom) for b in all_bounds
-            )
-            if not visible:
-                raise Exception
-            self.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual
-            self.Left = pos.get("Left", 200)
-            self.Top = pos.get("Top", 150)
-        except Exception:
-            self.WindowStartupLocation = (
-                System.Windows.WindowStartupLocation.CenterScreen
-            )
-
+        script.restore_window_position(self)
         self.Show()
 
     def update_info(self):
@@ -1542,8 +1524,7 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
         """Cleanup when form is closed."""
         try:
             # Save window position
-            new_pos = {"Left": self.Left, "Top": self.Top}
-            script.store_data(WINDOW_POSITION, new_pos, this_project=False)
+            script.save_window_position(self)
 
             # Unregister event handlers
             events.stop_events()
@@ -1586,7 +1567,7 @@ if __name__ == "__main__":
                 # Create a temporary form instance to get locale strings for alerts
                 temp_form = SectionBoxNavigatorForm.__new__(SectionBoxNavigatorForm)
                 forms.WPFWindow.__init__(temp_form, "SectionBoxNavigator.xaml", handle_esc=False)
-                
+
                 # Ask user if they want to restore
                 if forms.alert(
                     temp_form.get_locale_string("StoredSectionBoxFound"),
@@ -1615,7 +1596,7 @@ if __name__ == "__main__":
             forms.WPFWindow.__init__(temp_form, "SectionBoxNavigator.xaml", handle_esc=False)
             error_title = temp_form.get_locale_string("ErrorTitle")
             error_msg = temp_form.get_locale_string("AnErrorOccurredFormat").format(str(ex))
-        except:
+        except Exception:
             error_title = "Error"
             error_msg = "An error occurred: {}".format(str(ex))
         forms.alert(error_msg, title=error_title)

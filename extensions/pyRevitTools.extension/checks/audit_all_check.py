@@ -58,7 +58,8 @@ FILE_INFO_HEADERS = [
     "Pinned status",
 ]
 
-VALID_VIEW_TYPES = [
+# Base list excludes view types that may be added/removed by Revit version
+_VALID_VIEW_TYPES_BASE = [
     DB.ViewType.FloorPlan,
     DB.ViewType.CeilingPlan,
     DB.ViewType.Elevation,
@@ -74,13 +75,18 @@ VALID_VIEW_TYPES = [
     DB.ViewType.Detail,
     DB.ViewType.CostReport,
     DB.ViewType.LoadsReport,
-    DB.ViewType.PresureLossReport,
     DB.ViewType.ColumnSchedule,
     DB.ViewType.PanelSchedule,
     DB.ViewType.Walkthrough,
     DB.ViewType.Rendering,
-    DB.ViewType.SystemsAnalysisReport,
 ]
+_PresureLossReport = getattr(DB.ViewType, "PresureLossReport", None)
+_SystemsAnalysisReport = getattr(DB.ViewType, "SystemsAnalysisReport", None)
+VALID_VIEW_TYPES = list(_VALID_VIEW_TYPES_BASE)
+if _PresureLossReport is not None:
+    VALID_VIEW_TYPES.insert(VALID_VIEW_TYPES.index(DB.ViewType.LoadsReport) + 1, _PresureLossReport)
+if _SystemsAnalysisReport is not None:
+    VALID_VIEW_TYPES.append(_SystemsAnalysisReport)
 
 INVALID_VIEW_TYPES = [
     DB.ViewType.Undefined,
@@ -208,8 +214,10 @@ class SheetViewInfo:
         self.views_loads_report_count = sum(
             1 for x in views if x.ViewType == DB.ViewType.LoadsReport
         )
-        self.views_presure_loss_report_count = sum(
-            1 for x in views if x.ViewType == DB.ViewType.PresureLossReport
+        self.views_presure_loss_report_count = (
+            sum(1 for x in views if x.ViewType == _PresureLossReport)
+            if _PresureLossReport is not None
+            else 0
         )
         self.views_column_schedule_count = sum(
             1 for x in views if x.ViewType == DB.ViewType.ColumnSchedule
@@ -223,8 +231,10 @@ class SheetViewInfo:
         self.views_rendering_count = sum(
             1 for x in views if x.ViewType == DB.ViewType.Rendering
         )
-        self.views_systems_analysis_report_count = sum(
-            1 for x in views if x.ViewType == DB.ViewType.SystemsAnalysisReport
+        self.views_systems_analysis_report_count = (
+            sum(1 for x in views if x.ViewType == _SystemsAnalysisReport)
+            if _SystemsAnalysisReport is not None
+            else 0
         )
         self.views_not_on_sheets = sum(
             1

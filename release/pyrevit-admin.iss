@@ -90,7 +90,11 @@ Filename: "{app}\bin\pyrevit.exe"; RunOnceId: "DetachClones"; Parameters: "detac
 [Code]
 function InitializeSetup: Boolean;
 begin
+  // .NET 8 for Revit 2025-2026
   Dependency_AddDotNet80;
   Dependency_AddDotNet80Desktop;
+  // .NET 10 for Revit 2027+
+  Dependency_AddDotNet100;
+  Dependency_AddDotNet100Desktop;
   Result := True;
 end;

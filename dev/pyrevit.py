@@ -50,20 +50,8 @@ import sys
 import os.path as op
 from typing import Dict
 
-# When run directly (e.g. python dev/pyrevit.py), build deps must be in the
-# current env. Install with: pip install -r dev/requirements-build.txt
-# Or use: pipenv run pyrevit build labs Debug
-try:
-    from docopt import docopt
-except (ImportError, ModuleNotFoundError):
-    _repo_root = op.dirname(op.dirname(op.abspath(__file__)))
-    _req = op.join(_repo_root, "dev", "requirements-build.txt")
-    print("Build dependencies missing (e.g. docopt). Install with:")
-    print("  pip install -r dev/requirements-build.txt")
-    print("Or use: pipenv run pyrevit build labs Debug")
-    if op.isfile(_req):
-        print("  (requirements: {})".format(_req))
-    sys.exit(1)
+# pipenv dependencies
+from docopt import docopt
 
 # dev scripts
 from scripts import utils

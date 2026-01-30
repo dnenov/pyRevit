@@ -6,6 +6,7 @@ title:
   chinese_s: 将图纸复制到已打开的文档
   es_es: Copiar hojas a documentos abiertos
   de_de: Kopiere Pläne in andere geöffnete Projekte
+  pt_br: Copiar Folhas para Documentos Abertos
 tooltip:
   en_us: >-
     Copies selected or current sheet(s) to other projects currently open in
@@ -36,3 +37,9 @@ tooltip:
   de_de: >-
     Kopiert die/den ausgewählte(n) oder aktuelle(n) Pläne/Plan in andere, derzeit  in Revit geöffnete Projekte. Stellen Sie sicher, dass in den Zielprojekten  mindestens eine Legendenansicht existiert (die Revit-API bietet keine Methode  zum Erstellen von Legenden. Daher muss dieses Skript eine vorhandene Legende  duplizieren, um eine neue Legende zu erstellen)
     Das Werkzeug kopiert keine Modellansichten (Grundrisse, Ansichten, Schnitte usw.).
+  pt_br: >-
+    Copia a(s) folha(s) selecionada(s) ou atual(is) para outros projetos atualmente abertos
+    no Revit. Certifique-se de que os documentos de destino tenham pelo menos uma vista 
+    de Legenda (a API do Revit não fornece um método para criar vistas de Legenda, 
+    portanto, este script precisa duplicar uma existente para criar uma nova Legenda) 
+    a ferramenta não copia vistas de modelo (plantas de piso, elevações, cortes, ...)

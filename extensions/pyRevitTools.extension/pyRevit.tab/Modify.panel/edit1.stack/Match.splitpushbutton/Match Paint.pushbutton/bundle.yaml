@@ -5,6 +5,7 @@ title:
   chinese_s: 匹配涂料
   es_es: Coincidir pintura
   de_de: Eingefärbtes Material kopieren
+  pt_br: Igualar Pintura
 tooltip:
   en_us: Pickup painted surface material and apply to other surfaces
   fr_fr: Permet d'appliquer le matériau paint d'une surface sur une autre surface
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 拾取已涂刷的表面材质，并将其应用到其他表面
   es_es: Recoger material de superficie pintado y aplicarlo a otras superficies
   de_de: Übernimmt ein eingefärbtes Oberflächen Material und kopiert es auf eine andere Fläche
+  pt_br: Capturar material de superfície pintada e aplicar a outras superfícies

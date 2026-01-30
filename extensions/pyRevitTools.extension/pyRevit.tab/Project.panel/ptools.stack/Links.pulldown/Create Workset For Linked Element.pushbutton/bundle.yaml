@@ -5,6 +5,7 @@ title:
   chinese_s: 为链接图元创建工作集
   es_es: Crear área de trabajo para elemento vinculado
   de_de: Erstelle Bearbeitungsbereich für verlinktes Element
+  pt_br: Criar Workset para Elemento Vinculado
 tooltip:
   en_us: >-
     This tool will create a workset for the selected linked element based on its name.  If the model is not workshared, it will be converted into a workshared model. Configurable options: - include all elements instead of only selected ones - apply workset to the element type as well - use custom prefixes
@@ -17,3 +18,5 @@ tooltip:
     Esta herramienta creará un área de trabajo para el elemento vinculado seleccionado basándose en su nombre. Si el modelo no es compartido, se convertirá en un modelo compartido. Opciones configurables: - incluir todos los elementos en lugar de solo los seleccionados - aplicar el área de trabajo al tipo de elemento también - usar prefijos personalizados
   de_de: >-
     Dieses Werkzeug erstellt ein Bearbeitungsbereich für das  ausgewählte verknüpfte Element auf der Grundlage seines Namens.  Wenn das Modell keine Arbeitsteilung verwendet,  wird es in ein Modell mit Arbeitsteilung umgewandelt. Konfiguration für: - alle Elemente anstatt nur gewählte - auch der Typ des Elements wird gesetzt - spezifische Prefixes
+  pt_br: >-
+    Esta ferramenta criará um workset para o elemento vinculado selecionado com base em seu nome. Se o modelo não tiver compartilhamento de trabalho, ele será convertido em um modelo com compartilhamento de trabalho. Opções configuráveis: - incluir todos os elementos em vez de apenas os selecionados - aplicar workset ao tipo de elemento também - usar prefixos personalizados

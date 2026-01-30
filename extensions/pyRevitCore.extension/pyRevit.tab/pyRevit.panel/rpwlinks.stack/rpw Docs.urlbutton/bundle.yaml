@@ -5,6 +5,7 @@ title:
   chinese_s: RevitPythonWrapper 文档
   es_es: rpw
   de_de: rpw
+  pt_br: Rpw
 tooltip:
   en_us: Opens the documentation page for RevitPythonWrapper
   fr_fr: Ouvre la page de documentation pour RevitPythonWrapper
@@ -12,5 +13,6 @@ tooltip:
   chinese_s: 打开 RevitPythonWrapper 的文档页面
   es_es: Abre la pagina de documentacion para RevitPythonWrapper
   de_de: Öffnet die Dokumentationsseite vom RevitPythonWrapper.
+  pt_br: Abre a página de documentação do RevitPythonWrapper
 hyperlink: "http://revitpythonwrapper.readthedocs.io/en/latest/"
 context: zero-doc

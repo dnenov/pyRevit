@@ -5,6 +5,7 @@ title:
   chinese_s: 重排选定视口
   es_es: Reordenar ventana gráfica seleccionada
   de_de: Ansichtsfenster auf Plan neu anordnen
+  pt_br: Reordenar Viewport Selecionada
 tooltip:
   en_us: Reorders the selected viewport on current sheet
   fr_fr: Réarrange les vues sélectionnés sur la feuille actuelle
@@ -16,3 +17,4 @@ tooltip:
     auswählen. Nun kann man festlegen ob es hierarchisch in Bezug zu anderen Ansichten
     nach vorne oder nach hinten verschoben werden soll. Achtung: Anpassungen von Ansichtsfenster
     Beschriftungen werden dadurch eventuell zurückgesetzt.
+  pt_br: Reordena a viewport selecionada na folha atual

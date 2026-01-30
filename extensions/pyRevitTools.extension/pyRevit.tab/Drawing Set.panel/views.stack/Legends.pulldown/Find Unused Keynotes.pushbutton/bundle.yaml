@@ -5,6 +5,7 @@ title:
   chinese_s: 查找未使用的注释
   es_es: Encontrar notas clave no utilizadas
   de_de: Suche nach nicht verwendeten Bauelementschlüsseln
+  pt_br: Encontrar Notas-Chave Não Utilizadas
 tooltip:
   en_us: Lists keynotes that have not been used in this model
   fr_fr: Lists keynotes that have not been used in this model
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 列出此模型中未使用的注释
   es_es: Lista las notas clave que no se han utilizado en este modelo
   de_de: Listet alle Bauelementschlüssel auf, die in diesem Modell nicht verwendet werden
+  pt_br: Lista notas-chave que não foram usadas neste modelo

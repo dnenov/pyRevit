@@ -5,6 +5,7 @@ title:
   chinese_s: 将选择集列为可点击链接
   es_es: Listar selección como enlaces clicables
   de_de: Ausgewählte Elemente als anklickbare Links anzeigen
+  pt_br: Listar Seleção Como Links Clicáveis
 tooltip:
   en_us: Lists the selected element ids as clickable links. This is a quick way to go through a series of elements
   fr_fr: Répertorie les identifiants d'éléments sélectionnés sous forme de liens cliquables. C'est un moyen rapide de parcourir une série d'éléments
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 将选定图元的ID列为可点击链接。这是快速浏览一系列图元的方法
   es_es: Lista los IDs de los elementos seleccionados como enlaces clicables. Esta es una forma rápida de revisar una serie de elementos
   de_de: Die aktuell ausgewählten Elemente werden in einer Konsole aufgelistet. Zu jedem Element Namen wird die Element-ID als anklickbarer Link angezeigt
+  pt_br: Lista os IDs dos elementos selecionados como links clicáveis. Esta é uma maneira rápida de percorrer uma série de elementos
 context: selection

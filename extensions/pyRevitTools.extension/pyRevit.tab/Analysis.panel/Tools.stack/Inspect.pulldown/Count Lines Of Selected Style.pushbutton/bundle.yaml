@@ -6,6 +6,7 @@ title:
   chinese_s: 统计选定线样式的线数量
   es_es: Contar líneas del estilo seleccionado
   de_de: Zähle die Linien des ausgewählten Stils
+  pt_br: Contar Linhas do Estilo Selecionado
 tooltip:
   en_us: >-
     Counts all lines in the model with matching style to the selected line
@@ -33,3 +34,8 @@ tooltip:
 
 
     CTRL-Click: Listet jede übereinstimmende Linie auf
+  pt_br: >-
+    Conta todas as linhas no modelo com estilo correspondente à linha selecionada
+    
+    
+    CTRL-Clique: Lista todas as linhas correspondentes

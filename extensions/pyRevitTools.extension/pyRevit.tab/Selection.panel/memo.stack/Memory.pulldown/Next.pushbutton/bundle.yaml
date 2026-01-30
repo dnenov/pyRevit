@@ -5,6 +5,7 @@ title:
   chinese_s: 下一个
   es_es: Siguiente
   de_de: Nächstes Element im Speicher wählen
+  pt_br: Próximo
 tooltip:
   en_us: >-
     Select next element in selection memory.
@@ -37,3 +38,9 @@ tooltip:
 
     Shift+Click +10
     Wählt das 10. Element im Speicher aus
+  pt_br: >-
+    Selecionar próximo elemento na memória de seleção.
+    
+    Clique +1
+    
+    Shift-Clique +10

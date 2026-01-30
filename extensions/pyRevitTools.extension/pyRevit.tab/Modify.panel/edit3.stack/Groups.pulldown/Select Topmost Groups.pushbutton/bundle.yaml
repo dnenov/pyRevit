@@ -5,6 +5,7 @@ title:
   chinese_s: 选择最高层级的组
   es_es: Seleccionar grupos superiores
   de_de: Oberste übergeordnete Gruppe auswählen
+  pt_br: Selecionar Grupos de Nível Superior
 tooltip:
   en_us: >-
     Selects group instances, which contain selected elements
@@ -41,4 +42,10 @@ tooltip:
     Shift+Click:
 
     Nicht gruppierte Elemente einbeziehen
+  pt_br: >-
+    Seleciona instâncias de grupo que contêm elementos selecionados. por padrão, exclui elementos não agrupados da seleção
+    
+    Shift-Clique:
+    
+    Incluir elementos não agrupados
 context: Selection

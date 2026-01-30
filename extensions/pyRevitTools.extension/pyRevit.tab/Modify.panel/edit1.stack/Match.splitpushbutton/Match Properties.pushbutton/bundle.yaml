@@ -5,6 +5,7 @@ title:
   chinese_s: 匹配属性
   es_es: Coincidir propiedades
   de_de: Kopiere Eigenschaften
+  pt_br: Igualar Propriedades
 tooltip:
   en_us: >-
     Match instance or type properties between elements and their types
@@ -43,5 +44,11 @@ tooltip:
     Shift+Click:
 
     Übertrage die zuvor übertragenen Eigenschaften nochmals auf ein weiteres Element
+  pt_br: >-
+    Igualar propriedades de instância ou tipo entre elementos e seus tipos
+    
+    Shift-Clique:
+    
+    Reaplicar as propriedades igualadas anteriores
 author: '{{author}}'
 

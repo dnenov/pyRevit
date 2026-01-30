@@ -5,6 +5,7 @@ title:
   chinese_s: 排除编组图元
   es_es: Descartar elementos agrupados
   de_de: Gruppierte Elemente von der aktuellen Auswahl ausschliessen
+  pt_br: Descartar Elementos Agrupados
 tooltip:
   en_us: Discards (not delete) grouped elements from the current selection
   fr_fr: Supprime (ne supprime pas) les éléments groupés de la sélection actuelle
@@ -13,4 +14,5 @@ tooltip:
   es_es: Descarta (no elimina) elementos agrupados de la selección actual
   de_de: >-
     Die aktuelle Elementauswahl wird so vermindert,  dass keine gruppierte Elemente mehr in der Auswahl vorhanden sind.  Die Elemente werden also nicht gelöscht,  sondern nur aus der aktuellen Auswahl entfernt.
+  pt_br: Descarta (não exclui) elementos agrupados da seleção atual
 context: Selection

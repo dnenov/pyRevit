@@ -5,6 +5,7 @@ title:
   chinese_s: 仓库
   es_es: Repositorio
   de_de: Repository
+  pt_br: Repositório
 tooltip:
   en_us: Opens the git repository page
   fr_fr: Ouvre la page du dépôt git
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 打开 git 仓库页面
   es_es: 'Abre la página del repositorio de git'
   de_de: Öffnet die Git Repository Seite
+  pt_br: Abre a página do repositório git
 context: zero-doc

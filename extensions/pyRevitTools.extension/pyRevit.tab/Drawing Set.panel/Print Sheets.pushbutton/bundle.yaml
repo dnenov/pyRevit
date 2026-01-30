@@ -15,6 +15,9 @@ title:
   de_de: |-
     Pläne
     drucken
+  pt_br: |-
+    Imprimir
+    Folhas
 tooltip:
   en_us: |-
     Print sheets in order from a sheet index.
@@ -24,11 +27,14 @@ tooltip:
     in Revit 2022 and earlier,
     the tool adds non-printable character u'\u200e'
     (Left-To-Right Mark) at the start of the sheet names
-    to push Revit's interenal printing engine to sort
+    to push Revit's internal printing engine to sort
     the sheets correctly per the drawing index order. 
 
     Make sure your drawings indices consider this
     when filtering for sheet numbers.
+
+    Add 'Naming Format' as a Project Information parameter
+    to define the default Print Sheets naming format for this project. The print sheets Naming Format drop down may be right-clicked to copy the name to clipboard.
 
     Shift-Click:
     Shift-Clicking the tool will remove all
@@ -45,6 +51,8 @@ tooltip:
 
     Assurez-vous que les index de vos dessins tiennent compte de ceci lors du filtrage des numéros de feuille.
 
+    Ajouter un paramètre 'Format de nommage' dans les Informations du projet pour définir le format de nommage par défaut des feuilles de dessin. Le menu déroulant Format de nommage des feuilles de dessin peut être cliqué avec le bouton droit pour copier le nom dans le presse-papiers.
+
     Shift-Click: Shift-Clicking sur l'outil pour supprimer tous les caractères non-imprimables des numéros de feuilles, en cas d'erreur dans l'outil, cela entraînerait la conservation de ces caractères.
   ru: >-
     Печатает листы по индексу листа.
@@ -52,6 +60,8 @@ tooltip:
     Примечание: Когда используется опция 'Объединение листы в один файл' инструмент добавляет не печатаемый символ u'\u200e' (Left-To-Right Mark) в начале имен листов, чтобы использовать внутренний механизм печати Revit для корректной сортировки листов по индексу листа.
 
     Убедитесь, что ваши индексы учитывают это при фильтрации по номерам листов.
+
+    Добавьте параметр «Формат именования» в сведения о проекте, чтобы задать формат именования по умолчанию для печати листов. В раскрывающемся списке «Формат именования» можно щёлкнуть правой кнопкой мыши, чтобы скопировать имя в буфер обмена.
 
     Shift-Click:
 
@@ -66,6 +76,7 @@ tooltip:
 
     在按图纸编号筛选时，请确保您的图纸索引考虑到这一点。
 
+    在项目信息中添加「命名格式」参数，以定义此项目的默认打印图纸命名格式。可右键单击打印图纸的「命名格式」下拉列表以将名称复制到剪贴板。
 
     Shift-单击：
 
@@ -83,6 +94,8 @@ tooltip:
 
     Asegúrese de que sus índices de dibujo consideren esto
     al filtrar por números de hoja.
+
+    Añada 'Formato de Nombres' como parámetro de Información del Proyecto para definir el formato de nombres por defecto de Imprimir Hojas en este proyecto. El menú desplegable Formato de Nombres se puede hacer clic con el botón derecho para copiar el nombre al portapapeles.
 
     Shift-Clic:
     Al hacer Shift-Clic en la herramienta se eliminarán todos
@@ -103,7 +116,31 @@ tooltip:
     Stellen Sie sicher, dass Ihre Zeichnungsindizes dies berücksichtigen
     wenn Sie nach Plannummern filtern.
 
+    Fügen Sie 'Namensformat' als Parameter in den Projektinformationen hinzu, um das Standard-Namensformat für den Druck von Plänen für dieses Projekt zu definieren. Auf die Namensformat-Dropdown-Liste kann mit der rechten Maustaste geklickt werden, um den Namen in die Zwischenablage zu kopieren.
+
     Shift-Klick:
     Wenn Sie mit der Umschalttaste auf das Werkzeug klicken, werden alle
     nicht druckbaren Zeichen aus den Plannummern entfernt. Dies ist für den Fall, dass ein 
     Fehler bei der Ausführung dazu führt, dass diese Zeichen im Plan verbleiben.
+  pt_br: |-
+    Imprima folhas na ordem a partir de um índice de folhas.
+
+    Nota:
+    Ao usar a opção `Combinar em um único arquivo`
+    no Revit 2022 e versões anteriores,
+    a ferramenta adiciona o caractere não imprimível u'\u200e'
+    (Marca da esquerda para direita) no início dos nomes das folhas
+    para que o mecanismo de impressão interno do Revit ordene
+    as folhas corretamente conforme a ordem do índice de desenhos.
+
+    Certifique-se de que seus índices de desenhos considerem isso
+    ao filtrar por números de folha.
+
+    Adicione 'Formato de Nomenclatura' como parâmetro de Informações do Projeto
+    para definir o formato de nomenclatura padrão de Imprimir Folhas neste projeto. A lista suspensa Formato de Nomenclatura pode ser clicada com o botão direito para copiar o nome para a área de transferência.
+
+    Shift-Clique:
+    Clicar com Shift na ferramenta removerá todos
+    os caracteres não imprimíveis dos números das folhas,
+    caso um erro na ferramenta faça com que esses caracteres
+    permaneçam.

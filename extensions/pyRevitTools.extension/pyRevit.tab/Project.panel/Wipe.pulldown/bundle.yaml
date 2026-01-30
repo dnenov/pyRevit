@@ -5,6 +5,7 @@ title:
   chinese_s: 清除
   es_es: Limpiar
   de_de: Löschen
+  pt_br: Remover
 layout:
   - Wipe Model Components
   - Wipe Attached Constraints

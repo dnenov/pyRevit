@@ -5,6 +5,7 @@ title:
   chinese_s: 切换
   es_es: Alternar
   de_de: Umschalter
+  pt_br: Alternadores
 layout:
   - toggles1
   - toggles2

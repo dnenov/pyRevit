@@ -5,6 +5,7 @@ title:
   chinese_s: 在图纸上设置修订
   es_es: Establecer revisión en hojas
   de_de: Aktiviere eine Änderung auf Plänen
+  pt_br: Definir Revisão nas Folhas
 tooltip:
   en_us: >-
     Select a revision from the list of revisions and this script set that revision on all sheets in the model as an additional revision.   Shift+Click bypasses the issued check.
@@ -17,3 +18,4 @@ tooltip:
     Seleccione una revisión de la lista de revisiones y este script establecerá esa revisión en todas las hojas del modelo como una revisión adicional. Shift+Click omite la verificación de emisión.
   de_de: >-
     Wählen Sie eine Änderung aus der Liste der Änderungen aus und dieses Skript setzt diese Änderung auf allen Plänen im Modell als zusätzliche Änderung. Umschalt+Klick umgeht die Ausgabekontrolle.
+  pt_br: Selecione uma revisão da lista de revisões e este script define essa revisão em todas as folhas do modelo como uma revisão adicional.   Shift+Clique ignora a verificação de emitido.

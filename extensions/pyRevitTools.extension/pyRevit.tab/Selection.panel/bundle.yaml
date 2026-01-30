@@ -5,6 +5,7 @@ title:
   chinese_s: 选择
   es_es: Selección
   de_de: Auswahl
+  pt_br: Seleção
 layout:
   - Pick
   - Set Workset

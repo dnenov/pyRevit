@@ -5,6 +5,7 @@ title:
   chinese_s: 将视图添加到图纸
   es_es: Agregar vistas a hojas
   de_de: Füge Ansichten Plänen hinzu
+  pt_br: Adicionar Vistas Às Folhas
 tooltip:
   en_us: >-
     Adds the selected views (callouts, sections, elevations) to the selected sheets. Model views will only be added to the first selected sheet since they can not exist on multiple sheets. The command defaults to active view if no views are selected
@@ -39,4 +40,10 @@ tooltip:
     Shift+Click:
 
     Wähle die Ansichten vom Quellprojekt aus einer Liste aus, ansatt der Auswahl im Projekt oder die aktive Ansicht
+  pt_br: >-
+    Adiciona as vistas selecionadas (chamadas de detalhe, cortes, elevações) às folhas selecionadas. Vistas de modelo serão adicionadas apenas à primeira folha selecionada, pois não podem existir em várias folhas. O comando assume a vista ativa como padrão se nenhuma vista for selecionada
+    
+    Shift+Clique:
+    
+    Escolher vistas de origem da lista em vez da seleção ou vista ativa
 author: 'Dan Mapes'

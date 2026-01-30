@@ -7,6 +7,7 @@ title:
   chinese_s: 复制视口（图例）到其他图纸
   es_es: Copiar ventanas gráficas (leyendas) a otras hojas
   de_de: Kopiere Legenden auf andere Pläne
+  pt_br: Copiar Viewports (Legendas) para Outras Folhas
 tooltip:
   en_us: >-
     Open the source sheet. Run this script and select destination sheets. Select
@@ -31,3 +32,8 @@ tooltip:
     existe en esa hoja, la ubicación y el tipo se actualizarán
   de_de: >-
     Öffnen Sie den Plan der als Quelle dienen soll. Führen Sie dieses Skript aus  und wählen Sie den Plan bzw Pläne aus, der/die als Ziel dienen soll(en).  Wählen Sie Ansichten und klicken Sie auf den Button Fertigstellen in der  Eigenschaftsleiste. Die ausgewählten Ansichten werden zu den Zielplänen  hinzugefügt. Wenn die Ansicht oder die Bauteilliste bereits auf diesem Plan  vorhanden ist, werden die Position und der Typ aktualisiert
+  pt_br: >-
+    Abra a folha de origem. Execute este script e selecione as folhas de destino. 
+    Selecione as Viewports e pressione o botão Concluir na barra de propriedades. 
+    As vistas selecionadas serão adicionadas às folhas de destino. Se a vista ou 
+    tabela já existir nessa folha, a localização e o tipo serão atualizados.

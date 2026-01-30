@@ -10,6 +10,8 @@ title:
     Abrir hoja referenciada
   de_de: |-
     Öffne den referenzierten Plan
+  pt_br: |-
+    Abrir Folha de Referência
 tooltip:
   en_us: |-
     Opens the sheet containing this view and zooms to the viewport
@@ -22,3 +24,5 @@ tooltip:
     Abre la hoja que contiene esta vista y hace zoom a la ventana gráfica
   de_de: |-
     Es wird der Plan geöffnet, der die Ansicht enthält und zoomt auf das Ansichtsfenster
+  pt_br: |-
+    Abre a folha contendo esta vista e aplica zoom na viewport

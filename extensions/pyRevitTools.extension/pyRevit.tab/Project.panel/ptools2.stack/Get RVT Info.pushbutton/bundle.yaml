@@ -5,6 +5,7 @@ title:
   chinese_s: 获取 RVT 文件信息
   es_es: Obtener información RVT
   de_de: Infos einer RVT Datei abrufen
+  pt_br: Obter Informações do Rvt
 tooltip:
   en_us: Get information from a RVT file
   fr_fr: Obtenir les informations d'un fichier RVT
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 从 RVT 文件中获取信息
   es_es: Obtener información de un archivo RVT
   de_de: Man kann eine RVT Datei auswählen und bekommt Informationen dazu angezeigt
+  pt_br: Obter informações de um arquivo RVT
 context: zero-doc

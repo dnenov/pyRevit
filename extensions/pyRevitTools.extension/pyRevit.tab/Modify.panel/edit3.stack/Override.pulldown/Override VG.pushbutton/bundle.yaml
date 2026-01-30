@@ -5,6 +5,7 @@ title:
   chinese_s: 替换可见性/图形
   es_es: Sobrescribir V/G
   de_de: Element grafisch überschreiben
+  pt_br: Substituir V/G
 tooltip:
   en_us: Provides options for overriding Visibility/Graphics on selected elements
   fr_fr: Donne des options de remplacement de visibilité/graphismes des éléments sélectionnés
@@ -22,4 +23,5 @@ tooltip:
     7) Solid-Orange Selected = Mit Farbe orange und Muster Flächenfüllung überschreiben
     8) Solid-Blue Selected = Mit Farbe blau und Muster Flächenfüllung überschreiben
     9) Dashed-Line Selected = Mit Linienmuster gestrichelt überschreiben
+  pt_br: Fornece opções para substituir Visibilidade/Gráficos nos elementos selecionados
 context: selection

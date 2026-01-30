@@ -9,6 +9,8 @@ title:
     Buscar vistas por filtro
   de_de: |-
     Suche Ansichten mit/ohne Unterlagen o. Ansichtsvorlagen
+  pt_br: |-
+    Pesquisar Vistas por Filtro
 tooltip:
   en_us: |-
     Lists views based on a search option
@@ -24,3 +26,5 @@ tooltip:
     2) Ohne Unterlage
     3) Mit Ansichtsvorlage
     4) Ohne Ansichtsvorlage
+  pt_br: |-
+    Lista vistas com base em uma opção de pesquisa

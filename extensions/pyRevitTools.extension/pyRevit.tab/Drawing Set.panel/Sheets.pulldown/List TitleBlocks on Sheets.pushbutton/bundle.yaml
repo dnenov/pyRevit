@@ -5,6 +5,7 @@ title:
   chinese_s: 列出/选择图纸上的标题栏
   es_es: Listar/Seleccionar bloques de título en hojas
   de_de: Liste alle Planköpfe auf Plänen auf
+  pt_br: Listar/Selecionar Margens e Carimbos em Folhas
 tooltip:
   en_us: Lists title blocks on selected sheets for review or selection
   fr_fr: >-
@@ -14,3 +15,4 @@ tooltip:
   chinese_s: 列出选定图纸上的标题栏以供检查或选择
   es_es: Lista los bloques de título en las hojas seleccionadas para revisión o selección
   de_de: Listet alle Planköpfe von ausgewählten Plänen auf, um sie zu überprüfen oder auszuwählen
+  pt_br: Lista margens e carimbos nas folhas selecionadas para revisão ou seleção

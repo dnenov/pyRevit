@@ -5,6 +5,7 @@ title:
   chinese_s: 将修订复制到已打开的文档
   es_es: Copiar revisiones a documentos abiertos
   de_de: Kopiere alle Änderungen in geöffnete Projekte
+  pt_br: Copiar Revisões para Documentos Abertos
 tooltip:
   en_us: Copy selected revisions from current model to selected open models
   fr_fr: Copie les révisions sélectionnées du modèle actuel vers les modèles ouverts
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 将选定修订从当前模型复制到选定的已打开模型
   es_es: Copiar las revisiones seleccionadas del modelo actual a los modelos abiertos seleccionados
   de_de: Es werden alle ausgewählten Änderungen vom aktiven Modell in andere ausgewählte offene Modelle kopiert
+  pt_br: Copia revisões selecionadas do modelo atual para modelos abertos selecionados

@@ -5,6 +5,7 @@ title:
   chinese_s: 获取中心文件路径
   es_es: Obtener ruta central
   de_de: Pfad von Zentraldatei abrufen
+  pt_br: Obter Caminho do Central
 tooltip:
   en_us: >-
     Print the full path to the central model (if model is workshared)
@@ -41,3 +42,9 @@ tooltip:
     Shift+Click:
 
     Öffnet den Pfad der Zentraldatei im Datei Explorer
+  pt_br: >-
+    Imprime o caminho completo para o modelo central (se o modelo tiver compartilhamento de trabalho)
+    
+    Shift-Clique:
+    
+    Abre o caminho do modelo central no navegador de arquivos

@@ -5,6 +5,7 @@ title:
   chinese_s: 保留已涂刷图元
   es_es: Mantener elementos pintados
   de_de: Nur Elemente mit gefärbten Flächen in aktueller Auswahl belassen
+  pt_br: Manter Elementos Pintados
 tooltip:
   en_us: Keeps elements with painted faces in current selection and filters everything else out.
   fr_fr: Conserve les éléments avec des faces peintes dans la sélection actuelle et filtre tout le reste.
@@ -13,4 +14,5 @@ tooltip:
   es_es: Mantiene elementos con caras pintadas en la selección actual y filtra todo lo demás.
   de_de: >-
     Die aktuelle Elementauswahl wird so vermindert,  dass nur Elemente in der Auswahl verbleiben,  die eingefärbte Flächen haben.  Die Elemente werden also nicht gelöscht,  sondern nur aus der aktuellen Auswahl entfernt.
+  pt_br: Mantém elementos com faces pintadas na seleção atual e filtra todo o resto.
 context: Selection

@@ -6,6 +6,7 @@ title:
   chinese_s: M写入
   es_es: MEscribir
   de_de: Sp.mit.El.überschr.
+  pt_br: MWrite
 tooltip:
   en_us: >-
     Clear memory and Append current selection
@@ -27,4 +28,8 @@ tooltip:
   de_de: >-
     Löscht den Speicher und schreibt die aktuelle Auswahl in den Speicher
     Funktioniert wie die MC und M+ Taste auf dem Taschenrechner.  Dies ist ein Projekt-abhängiger Speicher.  Jedes Projekt hat seinen eigenen Auswahlspeicher,  der im Ordner %appdata%/pyRevit als *.pym Datei gespeichert wird.
+  pt_br: >-
+    Limpar memória e Anexar seleção atual
+    
+    Funciona como os botões MC e M+ em uma calculadora. Esta é uma memória dependente do projeto. Cada projeto tem sua própria memória de seleção salva na pasta %appdata%/pyRevit como arquivos *.pym
 context: Selection

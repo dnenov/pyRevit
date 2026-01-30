@@ -5,6 +5,7 @@ title:
   chinese_s: 加载更多类型
   es_es: Cargar más tipos
   de_de: Weitere Typen Laden
+  pt_br: Carregar Mais Tipos
 tooltip:
   en_us: Loads other types from selected family instance
   fr_fr: Charge d'autres types à partir de l'instance de famille sélectionnée
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 从选定的族实例加载其他类型
   es_es: Carga otros tipos desde la instancia de familia seleccionada
   de_de: Es werden weitere Typen des ausgewählten Familienexemplars geladen
+  pt_br: Carrega outros tipos da instância de família selecionada

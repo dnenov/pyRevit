@@ -149,6 +149,8 @@ func main() {
 					"default": complete.Command{
 						Sub: complete.Commands{},
 						Flags: complete.Flags{
+							"--installed": complete.PredictNothing,
+							"--allusers":  complete.PredictNothing,
 							"--allusers":  complete.PredictNothing,
 							"--attached":  complete.PredictNothing,
 							"--installed": complete.PredictNothing,
@@ -156,6 +158,8 @@ func main() {
 					},
 				},
 				Flags: complete.Flags{
+					"--installed": complete.PredictNothing,
+					"--allusers":  complete.PredictNothing,
 					"--help":      complete.PredictNothing,
 					"--allusers":  complete.PredictNothing,
 					"--attached":  complete.PredictNothing,
@@ -368,6 +372,8 @@ func main() {
 						Flags: complete.Flags{
 							"--rft": complete.PredictNothing,
 							"--rte": complete.PredictNothing,
+							"--rft": complete.PredictNothing,
+							"--csv": complete.PredictNothing,
 							"--csv": complete.PredictNothing,
 						},
 					},
@@ -416,6 +422,7 @@ func main() {
 				Sub: complete.Commands{},
 				Flags: complete.Flags{
 					"--from": complete.PredictNothing,
+					"--help": complete.PredictNothing,
 					"--help": complete.PredictNothing,
 				},
 			},

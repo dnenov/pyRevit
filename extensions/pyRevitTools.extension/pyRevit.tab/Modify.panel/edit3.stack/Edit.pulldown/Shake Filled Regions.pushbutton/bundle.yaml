@@ -5,6 +5,7 @@ title:
   chinese_s: 刷新填充区域
   es_es: Regenerar regiones rellenas
   de_de: Gefüllte Bereiche regenerieren
+  pt_br: Atualizar Regiões Preenchidas
 tooltip:
   en_us: >-
     Moves all Filled Regions on the seleced views back-and-forth by a tiny  amount to push Revit to regenerate the filled region and update the  display. This tool is meant to be used in conjunction with the  "Convert Line Styles" tool. The convert tool updates the line  styles inside Filled region but does not currently shake the  filled regions (Revit crashes on large models.)
@@ -18,3 +19,5 @@ tooltip:
   de_de: >-
     Verschiebt alle gefüllten Bereiche in den ausgewählten Ansichten  um ein winziges Stück und wieder zurück, damit Revit den gefüllten  Bereich regeneriert und die Darstellung aktualisiert.   Dieses Werkzeug wird im Anschluss an das Werkzeug „Linienstile  konvertieren“ verwendet. Denn das Werkzeug „Linienstile Konvertieren“  kann auch die Linienstile innerhalb der gefüllten Bereiche Aktualisieren.
     Die Regenierung der gefüllten Bereiche muss jedoch separat  durchgeführt werden, damit Revit bei großen Modellen nicht abstürzt.
+  pt_br: >-
+    Move todas as Regiões Preenchidas nas vistas selecionadas para frente e para trás em uma quantidade minúscula para forçar o Revit a regenerar a região preenchida e atualizar a exibição. Esta ferramenta deve ser usada em conjunto com a ferramenta "Converter Estilos de Linha". a ferramenta de conversão atualiza os estilos de linha dentro da Região Preenchida, mas atualmente não atualiza as regiões preenchidas (o Revit trava em modelos grandes.)

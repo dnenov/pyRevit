@@ -5,6 +5,7 @@ title:
   chinese_s: 分解并移除选定组
   es_es: Explotar y eliminar grupos seleccionados
   de_de: Ausgewählte Gruppen auflösen und entfernen
+  pt_br: Explodir e Remover Grupos Selecionados
 tooltip:
   en_us: >-
     Explodes all instances of the selected groups and removes
@@ -20,4 +21,7 @@ tooltip:
     la definición del grupo del navegador del proyecto
   de_de: >-
     Löst im gesamten Projekt alle Exemplare der ausgewählten Gruppen  auf und entfernt die Gruppe aus dem Projektbrowser.
+  pt_br: >-
+    Explode todas as instâncias dos grupos selecionados e remove a 
+    definição do grupo do navegador de projeto
 context: selection

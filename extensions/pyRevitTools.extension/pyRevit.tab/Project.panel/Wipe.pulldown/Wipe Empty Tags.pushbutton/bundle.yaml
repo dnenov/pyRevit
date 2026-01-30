@@ -5,6 +5,7 @@ title:
   chinese_s: 移除空标记
   es_es: Eliminar etiquetas vacías
   de_de: Lösche alle leeren Beschriftungen
+  pt_br: Remover Identificadores Vazios
 tooltip:
   en_us: >-
     Removes empty tags in current view
@@ -37,3 +38,9 @@ tooltip:
     Shift+Click:
 
     Es erscheint ein Auswahldialog mit verfügbaren Ansichten im Projekt.  Auf den ausgewählten Ansichten werden alle leeren Beschriftungen gelöscht
+  pt_br: >-
+    Remove identificadores vazios na vista atual
+    
+    Shift-Clique:
+    
+    Remover identificadores nas vistas selecionadas

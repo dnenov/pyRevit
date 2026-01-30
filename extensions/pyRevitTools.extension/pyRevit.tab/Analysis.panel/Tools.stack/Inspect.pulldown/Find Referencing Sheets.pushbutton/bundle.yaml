@@ -5,6 +5,7 @@ title:
   chinese_s: 查找引用图纸
   es_es: Encontrar hojas que referencian
   de_de: Suche alle referenzierten Pläne
+  pt_br: Encontrar Folhas de Referência
 tooltip:
   en_us: >-
     Find all sheets referencing the current view
@@ -27,4 +28,8 @@ tooltip:
     Es werden alle Pläne aufgelistet, die die aktuelle Ansicht referenzieren.
 
     Dies ist insbesondere hilfreich, um Legenden zu finden.
+  pt_br: >-
+    Encontra todas as folhas que referenciam a vista atual
+    
+    Especialmente útil para encontrar legendas
 author: '{{author}}'

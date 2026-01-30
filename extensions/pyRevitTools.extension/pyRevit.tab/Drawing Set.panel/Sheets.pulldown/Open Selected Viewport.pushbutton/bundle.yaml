@@ -5,6 +5,7 @@ title:
   chinese_s: 打开选定视口
   es_es: Abrir ventanas gráficas seleccionadas
   de_de: Öffne Ansicht des ausgewählten Ansichtsfensters
+  pt_br: Abrir Viewports Selecionadas
 tooltip:
   en_us: >-
     Opens the view associated to the selected viewport. You can assign a
@@ -24,3 +25,7 @@ tooltip:
     se trabaja en hojas
   de_de: >-
     Öffnet die Ansicht des aktuell ausgewählten Ansichtsfensters auf einem Plan.  Es ist empfehlenswert für dieses Skript ein Tastaturkürzel zu vergeben, um  schnell zu Ansichten zu wechseln, wenn man auf einem Plan ist.
+  pt_br: >-
+    Abre a vista associada à viewport selecionada. Você pode atribuir um 
+    atalho a esta ferramenta e esta é uma maneira rápida de abrir as 
+    vistas ao trabalhar em folhas

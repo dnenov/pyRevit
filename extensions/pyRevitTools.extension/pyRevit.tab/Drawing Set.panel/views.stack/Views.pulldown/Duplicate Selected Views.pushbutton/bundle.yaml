@@ -10,6 +10,8 @@ title:
     Duplicar vistas seleccionadas
   de_de: |-
     Dupliziere ausgewählte Ansichten
+  pt_br: |-
+    Duplicar Vistas Selecionadas
 tooltip:
   en_us: |-
     Batch duplicates the selected views with or without detailing
@@ -26,3 +28,5 @@ tooltip:
     "Mit Detaillierung", "Ohne Detaillierung" oder als "Abhängige Ansicht"
     dupliziert werden. Hinweis: Nicht alle Ansichten können als "Abhängige
     Ansicht dupliziert werden" (z.B. 3D Ansichten).
+  pt_br: |-
+    Duplica em lote as vistas selecionadas com ou sem detalhamento

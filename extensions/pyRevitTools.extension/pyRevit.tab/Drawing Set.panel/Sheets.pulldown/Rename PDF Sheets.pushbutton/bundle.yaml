@@ -5,6 +5,7 @@ title:
   chinese_s: 重命名 PDF 图纸
   es_es: Renombrar hojas PDF
   de_de: PDF Pläne umbenennen
+  pt_br: Renomear Folhas PDF
 tooltip:
   en_us: >-
     Renames PDF sheets printed from Revit and removes the Central model name
@@ -48,4 +49,10 @@ tooltip:
     Shift-Click:
 
     PDF Dateien auf dem Desktop werden umbenannt
+  pt_br: >-
+    Renomeia folhas PDF impressas do Revit e remove o nome do modelo Central dos nomes PDF. 
+    A ferramenta solicitará uma pasta contendo o arquivo.
+    
+    Shift-Clique:
+    Renomear arquivos na área de trabalho
 context: zero-doc

@@ -5,6 +5,7 @@ title:
   chinese_s: 反选
   es_es: Invertir selección
   de_de: Aktuelle Auswahl invertieren
+  pt_br: Inverter Seleção
 tooltip:
   en_us: >-
     Inverts selection in active view
@@ -33,4 +34,10 @@ tooltip:
     Seleccionar miembros del grupo en lugar de elementos del grupo padre
   de_de: >-
     Die aktuelle Auswahl in der aktiven Ansicht wird invertiert
+  pt_br: >-
+    Inverte a seleção na vista ativa
+
+    Shift-Clique:
+
+    Selecionar membros do grupo em vez de elementos do grupo pai
 context: selection

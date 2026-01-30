@@ -5,6 +5,7 @@ title:
   chinese_s: 选择
   es_es: Elegir
   de_de: El.n.Kat.ausw.
+  pt_br: Selecionar
 tooltip:
   en_us: >-
     Activates selection tool that picks a specific type of element
@@ -37,3 +38,9 @@ tooltip:
     Shift-Click:
 
     In einem Auswahldialog kann man gezielt Kategorien auswählen,  die dann mit dem Auswahlwerkzeug auswählbar sind.
+  pt_br: >-
+    Ativa a ferramenta de seleção que escolhe um tipo específico de elemento
+    
+    Shift-Clique:
+    
+    Escolher favoritos de todas as categorias disponíveis

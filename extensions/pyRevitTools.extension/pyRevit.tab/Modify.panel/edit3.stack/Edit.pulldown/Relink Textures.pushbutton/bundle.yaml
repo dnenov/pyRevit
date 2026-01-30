@@ -5,6 +5,7 @@ title:
   chinese_s: 重链材质
   es_es: Volver a vincular texturas
   de_de: Texturen erneut verknüpfen
+  pt_br: Revincular Texturas
 tooltip:
   en_us: >-
     Step 1: Click to select texture folders. If the location of missing textures is unknown, select the entire drive (e.g. C:).
@@ -21,4 +22,6 @@ tooltip:
   de_de: >-
     Schritt 1: Klicken Sie, um Texturordner auszuwählen. Wenn der Speicherort der fehlenden Texturen unbekannt ist, wählen Sie das gesamte Laufwerk aus (z. B. C:).
     Schritt 2: Klicken Sie erneut auf die Schaltfläche, um die Texturen erneut zu verknüpfen. Der Vorgang kann mehrere Minuten dauern.
+  pt_br: >-
+    Passo 1: Clique para selecionar pastas de texturas. Se a localização das texturas ausentes for desconhecida, selecione a unidade inteira (ex: C:). Passo 2: Clique no botão novamente para revincular as texturas. O processo pode levar vários minutos.
 author: Roi Hason @ Swich Design

@@ -5,6 +5,7 @@ title:
   chinese_s: 清除族参数
   es_es: Limpiar parámetros de familia
   de_de: Familien Parameter löschen
+  pt_br: Remover Parâmetros de Família
 tooltip:
   en_us: >-
     This script removes all custom parameters that has not been used
@@ -33,4 +34,10 @@ tooltip:
     Este script elimina todos los parámetros personalizados que no se han utilizado en dimensiones como etiquetas y también restablece el valor de los otros parámetros a cero o nulo
   de_de: >-
     Dieses Skript entfernt alle benutzerdefinierten Parameter,  die nicht in Bemaßungen als Beschriftungen verwendet wurden und setzt auch den Wert für die anderen Parameter auf 0 oder Null. Dieses Skript wird im Familieneditor ausgeführt!
+  pt_br: >-
+    Este script remove todos os parâmetros personalizados que não foram usados
+    
+    em cotas como rótulos e também redefine o valor para os outros
+    
+    parâmetros para zero ou nulo
 context: doc-family

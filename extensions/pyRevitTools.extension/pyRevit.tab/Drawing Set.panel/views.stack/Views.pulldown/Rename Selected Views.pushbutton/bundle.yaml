@@ -10,6 +10,8 @@ title:
     Renombrar vistas seleccionadas
   de_de: |-
     Schreibweise von ausgewählte Ansichten ändern
+  pt_br: |-
+    Renomear Vistas Selecionadas
 tooltip:
   en_us: |-
     Changes the selected view names
@@ -24,3 +26,5 @@ tooltip:
     Entweder man wählt im Projektbrowser bereits die Ansichten aus
     oder es erscheint ein Auswahldialog mit verfübaren Ansichten im  Projekt. Man kann die Schreibweise der gewählten Ansichten nach  folgenden Kriterien ändern: 1) Title Case 2) UPPER CASE 3) lower case
     4) camel Case 5) Sentence case
+  pt_br: |-
+    Altera os nomes das vistas selecionadas

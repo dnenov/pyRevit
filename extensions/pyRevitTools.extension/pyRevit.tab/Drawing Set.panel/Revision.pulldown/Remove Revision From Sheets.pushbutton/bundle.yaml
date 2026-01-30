@@ -5,6 +5,7 @@ title:
   chinese_s: 从图纸中移除修订
   es_es: Eliminar revisión de hojas
   de_de: Entferne Änderung von Plänen
+  pt_br: Remover Revisão das Folhas
 tooltip:
   en_us: >-
     Select a revision from the list of revisions and this script will remove
@@ -22,3 +23,4 @@ tooltip:
     esa revisión de todas las hojas si no ha sido "nublada" en la hoja
   de_de: >-
     Wählen Sie eine Änderung aus der Liste der Änderungen aus und dieses Skript  entfernt diese Änderung von allen Plänen, wenn sie nicht auf dem Plan „eingewolkt“ wurde
+  pt_br: Selecione uma revisão da lista de revisões e este script removerá essa revisão de todas as folhas se ela não tiver "nuvem" na folha

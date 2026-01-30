@@ -5,6 +5,7 @@ title:
   chinese_s: 打开注释文件
   es_es: Abrir archivo de notas clave
   de_de: Bauelementschlüssel-Datei öffnen
+  pt_br: Abrir Arquivo de Notas-Chave
 tooltip:
   en_us: Open keynotes file
   fr_fr: Ouvrir le fichier de notes d'identification
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 打开注释文件
   es_es: Abrir archivo de notas clave
   de_de: Öffnet die Bauelementschlüssel Datei
+  pt_br: Abrir arquivo de notas-chave

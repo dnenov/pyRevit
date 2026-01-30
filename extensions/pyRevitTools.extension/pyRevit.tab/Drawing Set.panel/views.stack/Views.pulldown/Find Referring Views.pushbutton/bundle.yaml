@@ -10,6 +10,8 @@ title:
     Abrir vistas referenciadas
   de_de: |-
     Öffne referenzierte Ansichten
+  pt_br: |-
+    Abrir Vistas de Referência
 tooltip:
   en_us: |-
     List all view that are referring the selected viewports or active view
@@ -23,3 +25,5 @@ tooltip:
   de_de: >-
     Es werden alle Ansichten aufgelistet, die das ausgewählte Ansichtsfenster oder aktive Ansicht referenzieren.
     Achtung: Die Ausführung dieses Befehls kann sehr lange dauern und kann nicht unterbrochen werden!
+  pt_br: |-
+    Listar todas as vistas que estão referenciando as viewports selecionadas ou a vista ativa

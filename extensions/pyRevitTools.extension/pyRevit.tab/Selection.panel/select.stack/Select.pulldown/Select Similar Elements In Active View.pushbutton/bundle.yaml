@@ -5,6 +5,7 @@ title:
   chinese_s: 在活动视图中选择类似图元
   es_es: Seleccionar elementos similares en la vista activa
   de_de: Ähnliche Elemente in der aktiven Ansicht auswählen
+  pt_br: Selecionar Elementos Similares na Vista Ativa
 tooltip:
   en_us: >-
     Selects elements similar to the currently
@@ -47,4 +48,12 @@ tooltip:
     Shift-Click :
 
     Es werden im gesamten Modell die Elemente ausgewählt die dem aktuell gewähltem Element ähnlich sind.
+  pt_br: >-
+    Seleciona elementos similares aos elementos
+    
+    atualmente selecionados na vista ativa
+    
+    Shift-Clique :
+    
+    selecionar em todo o projeto
 context: selection

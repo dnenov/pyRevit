@@ -18,7 +18,11 @@ title:
     Área de trabajo
   de_de: >-
     Set
-
+    
+    Workset
+  pt_br: >-
+    Definir
+    
     Workset
 tooltip:
   en_us: >-
@@ -52,5 +56,11 @@ tooltip:
     Shift + Klick
 
     Optional kann auch die Arbeitsebene entsprechend dem Ebenenparameter und die Phase der aktuellen Ansicht gesetzt werden.
+  pt_br: >-
+    Define o workset ativo a partir da seleção.
+    
+    Shift + Clique
+    
+    Pode ser configurado para também definir o Plano de Trabalho para o nível da tabela de elementos, Fase da Vista atual.
 author: 'Jean-Marc Couffin, Wurschdhaud (extra functionality)'
 contact: 'https://github.com/jmcouffin, https://github.com/Wurschdhaud'

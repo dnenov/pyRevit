@@ -6,6 +6,7 @@ title:
   chinese_s: 匹配
   es_es: Coincidir
   de_de: Grafische Überschreibung kopieren
+  pt_br: Igualar
 tooltip:
   en_us: >-
     Pick the source object that has the element graphics override you like to match to, and then pick the destination objects one by one and this tool will match the graphics overrides
@@ -42,3 +43,9 @@ tooltip:
     Shift-Click:
 
     Es wird ein Dialog mit Einstellungen angezeigt, mit denen man Festlegen kann,  welche Art von grafischen Überschreibungen kopiert werden sollen
+  pt_br: >-
+    Selecione o objeto de origem que possui a sobreposição de gráficos de elemento que você deseja igualar e, em seguida, selecione os objetos de destino um por um e esta ferramenta igualará as sobreposições de gráficos
+    
+    Shift-Clique:
+    
+    Mostra a janela de Configuração de Igualar

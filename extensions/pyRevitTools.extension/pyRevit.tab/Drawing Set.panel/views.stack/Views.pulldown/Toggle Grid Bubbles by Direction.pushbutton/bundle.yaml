@@ -5,6 +5,7 @@ title:
   chinese_s: 按方向切换轴网气泡
   es_es: Alternar burbujas de cuadrícula por dirección
   de_de: Rasterlinien-Symbole nach Richtung umschalten
+  pt_br: Alternar Bolhas de Eixo por Direção
 tooltip:
   en_us: >-
     Toggle grid bubbles in the active view by direction. 
@@ -41,6 +42,13 @@ tooltip:
     Wenn der Befehl ohne vorherige Auswahl von Rasterlinien ausgeführt wird,  werden alle Rasterlinien in der aktiven Ansicht betroffen sein,  andernfalls werden nur die ausgewählten Rasterlinien betroffen sein.
 
     Funktioniert sowohl in Grundriss- und Deckenansichten als auch in Schnitt- und Ansichtsansichten.
+  pt_br: >-
+    Alternar bolhas de eixo na vista ativa por direção.
+    
+    Se o comando for executado sem seleção prévia de eixos, todos os eixos na vista ativa 
+    serão afetados; caso contrário, apenas os eixos selecionados serão afetados.
+    
+    Funciona tanto em vistas de planta/forro quanto em vistas de corte/elevação.
 author: Mohamed Asli
 min_revit_version: 2016
 engine:

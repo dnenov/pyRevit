@@ -10,6 +10,8 @@ title:
     Crear tabla desde CSV
   de_de: |-
     Erstelle Bauteilschlüsselliste mit einer CSV
+  pt_br: |-
+    Criar Tabela a partir de CSV
 tooltip:
   en_us: |-
     Import existing CSV file as a key schedule
@@ -99,3 +101,21 @@ tooltip:
       B,Wert21,Wert22
 
       C,Wert32,Wert32
+  pt_br: >-
+    Importar arquivo CSV existente como uma tabela de chaves
+    
+    
+      - a primeira linha do CSV deve conter os nomes dos campos
+    
+      - O primeiro campo do CSV deve ser "Key Name"
+    
+    
+      Exemplo CSV:
+    
+      Key Name,NomeDoParametro1,NomeDoParametro2
+    
+      A,Valor11,Valor12
+    
+      B,Valor21,Valor22
+    
+      C,Valor32,Valor32

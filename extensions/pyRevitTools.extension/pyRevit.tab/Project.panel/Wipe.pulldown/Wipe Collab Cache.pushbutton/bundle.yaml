@@ -5,6 +5,7 @@ title:
   chinese_s: 清除 BIM360 协作缓存
   es_es: Limpiar caché de colaboración BIM360
   de_de: Lösche BIM360 Collab Speicher
+  pt_br: Remover Cache de Colaboração Bim360
 tooltip:
   en_us: Erase selected BIM360 collaboration cache
   fr_fr: Efface le Collaboration Cache de BIM360
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 清除选定的 BIM360 协作缓存
   es_es: Borrar caché de colaboración BIM360 seleccionado
   de_de: Hiermit wird der BIM360 Collaboration Speicher gelöscht
+  pt_br: Apagar cache de colaboração BIM360 selecionado
 context: zero-doc

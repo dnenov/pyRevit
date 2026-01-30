@@ -5,6 +5,7 @@ title:
   chinese_s: 选择
   es_es: Elegir
   de_de: Auswahl
+  pt_br: Selecionar
 layout:
   - Pick
   - Pick Detail Elements

@@ -1,0 +1,6 @@
+# Minimal deps to run dev/pyrevit.py (build, release, etc.) without pipenv.
+# Install: pip install -r dev/requirements-build.txt
+docopt
+requests
+pyyaml
+colorama

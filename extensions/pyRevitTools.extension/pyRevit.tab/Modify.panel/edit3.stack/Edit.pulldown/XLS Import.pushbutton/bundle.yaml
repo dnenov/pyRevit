@@ -5,6 +5,7 @@ title:
   chinese_s: 从 Excel 导入参数
   es_es: Importar parámetros desde Excel
   de_de: Parameter aus Excel importieren
+  pt_br: Importar Parâmetros do Excel
 tooltip:
   en_us: >-
     Imports element parameter values from a previously exported Excel file.
@@ -27,5 +28,9 @@ tooltip:
     Importiert Werte von Elementparametern aus einer zuvor exportierten Excel-Datei.
     Die Datei muss gültige Element-IDs und Parameterwerte im konfigurierten Einheitentyp enthalten.
     Schreibgeschützte und nicht unterstützte Parameter werden übersprungen. Der Benutzer-Bearbeitbarkeitsstatus wird ignoriert.
+  pt_br: >-
+    Importa valores de parâmetros de elementos de um arquivo Excel exportado anteriormente. 
+    O arquivo deve conter IDs de elemento válidos e valores de parâmetros no tipo de unidade configurado. 
+    Parâmetros somente leitura e não suportados serão ignorados. O status modificável pelo usuário é ignorado.
 author: wurschdhaud
 min_revit_version: 2022

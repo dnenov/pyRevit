@@ -5,6 +5,7 @@ title:
   chinese_s: 剖面框导航器
   es_es: Navegador de caja de sección
   de_de: Schnittbox-Navigator
+  pt_br: Navegador de Caixa de Corte
 tooltip:
   en_us: |
     Modeless window for section box navigation in 3D views.
@@ -27,6 +28,10 @@ tooltip:
     Abgelöstes Fenster zur Navigation von Schnittboxen in 3D-Ansichten.
     Schnelles Ausrichten an Ebenen, präzises Verschieben, gleichmäßiges Erweitern/Verkleinern.
     Echtzeitvorschau beim Überfahren zeigt Änderungen vor dem Anwenden.
+  pt_br: |-
+    Janela não modal para navegação da caixa de corte em vistas 3D. Ajuste rapidamente os limites 
+    aos níveis, utilize o deslocamento preciso (nudge) e expanda ou reduza uniformemente. 
+    A visualização em tempo real ao passar o cursor (hover) mostra as alterações antes da aplicação.
 author: wurschdhaud
 context:
   - active-3d-view

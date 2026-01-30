@@ -5,6 +5,7 @@ title:
   chinese_s: 获取洞口
   es_es: Obtener aberturas
   de_de: Öffnungen ermitteln
+  pt_br: Obter Aberturas
 tooltip:
   en_us: |
     Scans through the project for openings. A list with clickable links will be presented. Open a 3D view to access and see the selected openings. A selection filter will be created or updated to select all openings with one click.
@@ -18,4 +19,5 @@ tooltip:
     Escanea el proyecto en busca de aberturas. Se presentará una lista con enlaces clicables. Abra una vista 3D para acceder y ver las aberturas seleccionadas. Se creará o actualizará un filtro de selección para seleccionar todas las aberturas con un solo clic.
   de_de: |
     Durchsucht das Projekt nach Öffnungen. Eine Liste mit anklickbaren Links wird angezeigt. Öffnen Sie eine 3D-Ansicht, um auf die ausgewählten Öffnungen zuzugreifen und diese zu sehen. Es wird ein Auswahlfilter erstellt oder aktualisiert, um alle Öffnungen mit einem Klick auszuwählen.
+  pt_br: Analisa o projeto em busca de aberturas. Uma lista com links clicáveis será apresentada. Abra uma vista 3D para acessar e visualizar as aberturas selecionadas. Um filtro de seleção será criado ou atualizado para selecionar todas as aberturas com um clique.
 authors: Jakob Steiner, inspired by the initial work of Andreas Draxl, Mohamed Bedair, special thanks to Erik Frits

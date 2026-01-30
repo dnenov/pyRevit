@@ -5,6 +5,7 @@ title:
   chinese_s: 保存族
   es_es: Guardar familias
   de_de: Familien speichern
+  pt_br: Salvar Famílias
 tooltip:
   en_us: Saves chosen families from the project
   fr_fr: Sauvegarder les familles sélectionnées dans le projet
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 从项目中保存选定的族
   es_es: Guarda las familias elegidas del proyecto
   de_de: Speichert die im Projekt ausgewählten Familien
+  pt_br: Salva famílias escolhidas do projeto

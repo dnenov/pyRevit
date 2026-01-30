@@ -5,6 +5,7 @@ title:
   chinese_s: 重新加载链接
   es_es: Recargar enlaces
   de_de: Verknüpfungen neu laden
+  pt_br: Recarregar Vínculos
 tooltip:
   en_us: >-
     Reloads choosen Revit, CAD and DWG Links
@@ -29,3 +30,7 @@ tooltip:
     Lädt die ausgewählten Revit, CAD und DWG Verknüpfungen neu
 
     Es kann Verknüpfungen von Modellen mit Arbeitsteilung "lokal" neu laden
+  pt_br: >-
+    Recarrega vínculos escolhidos do Revit, CAD e DWG
+    
+    Pode recarregar vínculos "localmente" para modelos com compartilhamento de trabalho

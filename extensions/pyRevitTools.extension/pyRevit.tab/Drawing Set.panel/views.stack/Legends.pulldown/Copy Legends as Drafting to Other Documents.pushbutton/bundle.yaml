@@ -6,6 +6,7 @@ title:
   chinese_s: 将图例复制为详图到其他文档
   es_es: Copiar leyendas como vistas de detalle a otros documentos
   de_de: Kopiere Legenden als Zeichenansicht in andere Projekte
+  pt_br: Copiar Legendas Como Vista de Desenho para Outros Documentos
 tooltip:
   en_us: Converts selected legend views to detail views and copies them to all projects currently open in Revit
   fr_fr: Convertit les vues de légende sélectionnées en vues de détail et les copie dans tous les projets actuellement ouverts dans Revit
@@ -14,3 +15,4 @@ tooltip:
   es_es: Convierte las vistas de leyenda seleccionadas en vistas de detalle y las copia a todos los proyectos actualmente abiertos en Revit
   de_de: >-
     Zunächst muss ein Projekt als Quelle definiert werden, durch die aktive Ansicht.  Beim Ausführen des Befehls öffnet sich ein Auswahldialog mit aktuell parallel  geöffneten Projekten. Im nächsten Dialog können Legendenansichten ausgewählt  werden in Zeichenansichten umgewandelt und in zuvor gewählten Projekte kopiert  werden. Auf den Legenden dürfen keine Legendenkomponenten platziert sein, da  ansonsten das Skript nicht funktioniert.
+  pt_br: Converte vistas de legenda selecionadas em vistas de desenho e as copia para todos os projetos atualmente abertos no Revit

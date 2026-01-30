@@ -5,6 +5,7 @@ title:
   chinese_s: 包含或排除样板参数
   es_es: Include or exclude template parameters
   de_de: Ansichtsvorlagenparameter aktivieren o. deaktivieren
+  pt_br: Incluir Ou Excluir Parâmetros de Modelo
 tooltip:
   en_us: Include or exclude template parameters, not functional for 3D view templates
   fr_fr: Inclure ou exclure les paramètres du gabarit de vue - non fonctionnel pour les gabarits de vue 3D
@@ -17,4 +18,5 @@ tooltip:
     gleichzeitig anwenden kann.
     Hinweis: Diese Skript kann nicht auf 3D Ansichtsvorlagen angewendet werden, obwohl diese
     im Auswahldialog angezeigt werden!
+  pt_br: Incluir ou excluir parâmetros de modelo, não funcional para modelos de vista 3D
 author: Jean-Marc Couffin

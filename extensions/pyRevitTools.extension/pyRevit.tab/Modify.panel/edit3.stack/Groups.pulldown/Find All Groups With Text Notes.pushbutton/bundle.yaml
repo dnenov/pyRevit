@@ -5,6 +5,7 @@ title:
   chinese_s: 查找所有包含文字注释的组
   es_es: Encontrar todos los grupos con notas de texto
   de_de: Finde alle Detailgruppen mit Text
+  pt_br: Encontrar Todos os Grupos com Notas de Texto
 tooltip:
   en_us: List all detail groups that include a text element inside them. This is helpful for spell checking.
   fr_fr: Liste tous les groupes de détail qui incluent une note textuelle. Utile pour la correction orthographique.
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 列出内部包含文本元素的所有详图组。这对于拼写检查很有帮助。
   es_es: Lista todos los grupos de detalle que incluyen un elemento de texto dentro de ellos. Esto es útil para la verificación ortográfica.
   de_de: Listet alle Detailgruppen auf, die ein Textelement enthalten. Dies ist hilfreich für die Rechtschreibprüfung.
+  pt_br: Lista todos os grupos de detalhes que incluem um elemento de texto dentro deles. Isso é útil para verificação ortográfica.

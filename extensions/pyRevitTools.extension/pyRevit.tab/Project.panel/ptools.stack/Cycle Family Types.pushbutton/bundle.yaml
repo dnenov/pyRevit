@@ -5,6 +5,7 @@ title:
   chinese_s: Cycle Types
   es_es: Ciclar tipos
   de_de: Familien Typen durchwechseln
+  pt_br: Alternar Tipos
 tooltip:
   en_us: Cycle family types
   fr_fr: Parcourir les types de familles
@@ -13,6 +14,7 @@ tooltip:
   es_es: Ciclar tipos de familia
   de_de: >-
     Mit jedem Ausführen wird der nächste verfügbare Familien Typ ausgewählt.  Das Werkzeug kann nur im Familieneditor betätigt werden! Dies ist bei  der Familienerstellung hilfreich, um die einzelnen Typen schnell  im Ansichtsfenster anzuschauen, ohne dass der Familientypen Dialog  aufgerufen werden muss.
+  pt_br: Alternar tipos de família
 context: doc-family
 authors:
   - '{{author}}'

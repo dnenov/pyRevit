@@ -6,6 +6,7 @@ title:
   chinese_s: 批量图纸生成器
   es_es: Generador de hojas por lotes
   de_de: Plangenerator
+  pt_br: Criador de Folhas em Lote
 tooltip:
   en_us: >-
     Enter sheet names and numbers in the text box and this tool will create all
@@ -21,3 +22,6 @@ tooltip:
     a la vez
   de_de: >-
     Geben Sie die Plannamen und -nummern in das Textfeld ein, und dieses Skript  erstellt alle Pläne auf einmal
+  pt_br: >-
+    Insira nomes e números de folhas na caixa de texto e esta ferramenta criará 
+    todos de uma vez

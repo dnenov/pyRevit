@@ -5,6 +5,7 @@ title:
   chinese_s: 族快速检查
   es_es: Verificación rápida de familia
   de_de: Familien Schnell-Check
+  pt_br: Verificação Rápida de Família
 tooltip:
   en_us: >-
     Non-exhaustive check to detect corrupt Revit families.
@@ -52,6 +53,14 @@ tooltip:
 
     github.com/frederic-beaupere
 
+    PR731 https://github.com/pyrevitlabs/pyRevit/pull/731
+  pt_br: >-
+    Verificação não exaustiva para detectar famílias Revit corrompidas.
+    
+    Copyright (c) 2017 Frederic Beaupere
+    
+    github.com/frederic-beaupere
+    
     PR731 https://github.com/pyrevitlabs/pyRevit/pull/731
 author:
 - Frederic Beaupere

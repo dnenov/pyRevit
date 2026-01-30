@@ -5,6 +5,7 @@ title:
   chinese_s: 设置
   es_es: 'Configuración'
   de_de: Einstellungen
+  pt_br: Configurações
 tooltip:
   en_us: >-
     Shows the preferences window for pyRevit. You can customize how pyRevit loads and set some basic parameters here.
@@ -42,6 +43,12 @@ tooltip:
     Shift-Click:
 
     Zeigt die Konfigurationsdatei im Explorer an.
+  pt_br: >-
+    Mostra a janela de preferências do pyRevit. Você pode personalizar como o pyRevit carrega e definir alguns parâmetros básicos aqui.
+    
+    Shift-Clique:
+    
+    Mostra o arquivo de configuração no explorer.
 context: zero-doc
 engine:
   clean: true

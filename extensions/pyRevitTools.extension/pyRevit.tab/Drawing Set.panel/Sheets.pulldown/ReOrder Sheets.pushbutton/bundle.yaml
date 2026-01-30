@@ -5,6 +5,7 @@ title:
   chinese_s: 重新排序图纸
   es_es: Reordenar hojas
   de_de: Planreihenfolge neu anordnen
+  pt_br: Reordenar Folhas
 tooltip:
   en_us: >-
     Print items in order from a sheet index
@@ -36,3 +37,8 @@ tooltip:
     Hinweis: Bevor diese Werkzeug verwendet werden kann muss ein Exemplar-Projektparameter
     z.B. "Plansortierungs_Order_Index" vom Datentyp Ganzzahl erstellt und der  Kategorie "Pläne" zugewiesen werden. Wichtig ist, dass der Parametername das
     Wort "Order" enthält. Es können optional auch mehrere Sortiertparameter angelegt werden.
+  pt_br: >-
+    Imprimir itens em ordem de um índice de folhas
+    
+    Esta ferramenta procura parâmetros de projeto (em Folhas) que são de 
+    Instância, do tipo 'Numero inteiro', e têm "Order" em seus nomes

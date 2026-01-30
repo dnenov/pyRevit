@@ -5,6 +5,7 @@ title:
   chinese_s: 粘贴状态
   es_es: Pegar estado
   de_de: Zustand einfügen
+  pt_br: Colar Estado
 tooltip:
   en_us: >-
     Applies the copied state to the active view
@@ -47,6 +48,11 @@ tooltip:
     Shift-Click:
 
     Zeigt zusätzliche Optionen an, z.B. Filter in Ansichtsvorlagen übertragen oder
+  pt_br: >-
+    Aplica o estado copiado à vista ativa
+    Isso funciona em conjunto com a ferramenta Copiar Estado
+    Shift-Clique:
+    Mostrar opções adicionais
 author: >-
   Gui Talarico
 

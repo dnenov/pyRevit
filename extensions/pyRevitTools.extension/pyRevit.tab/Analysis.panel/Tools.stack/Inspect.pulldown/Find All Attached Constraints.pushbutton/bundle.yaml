@@ -6,6 +6,7 @@ title:
   chinese_s: 查找所有附着约束
   es_es: Encontrar todas las restricciones adjuntas
   de_de: Finde alle verbundenen Abhängigkeiten
+  pt_br: Encontrar Todas as Restrições Anexadas
 tooltip:
   en_us: Find all constraints attached to the selected element
   fr_fr: Trouver toutes les contraintes attachées à l'élément sélectionné
@@ -13,3 +14,4 @@ tooltip:
   chinese_s: 查找附着到所选图元的所有约束
   es_es: Encontrar todas las restricciones adjuntas al elemento seleccionado
   de_de: Finde alle Abhängigkeiten die mit dem gewählten Element verbunden sind
+  pt_br: Encontra todas as restrições anexadas ao elemento selecionado

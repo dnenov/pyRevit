@@ -6,6 +6,7 @@ title:
   chinese_s: M读取
   es_es: MLeer
   de_de: El.im Sp.auswählen
+  pt_br: MRead
 tooltip:
   en_us: >-
     Read selection from memory
@@ -27,3 +28,7 @@ tooltip:
   de_de: >-
     Liest die Auswahl aus dem Speicher aus
     Funktioniert wie die MR Taste auf dem Taschenrechner.  Dies ist ein Projekt-abhängiger Speicher.  Jedes Projekt hat seinen eigenen Auswahlspeicher,  der im Ordner %appdata%/pyRevit als *.pym Datei gespeichert wird.
+  pt_br: >-
+    Ler seleção da memória
+    
+    Funciona como o botão MR em uma calculadora. Esta é uma memória dependente do projeto. Cada projeto tem sua própria memória de seleção salva na pasta %appdata%/pyRevit como arquivos *.pym

@@ -5,6 +5,7 @@ title:
   chinese_s: pyRevit
   es_es: pyRevit
   de_de: pyRevit
+  pt_br: pyRevit
 layout:
   - tools
   - ">>>>>"

@@ -5,6 +5,7 @@ title:
   chinese_s: 这是谁做的？？
   es_es: ¿Quién hizo eso??
   de_de: Wer hat das getan??
+  pt_br: Quem Fez Isso??
 tooltip:
   en_us: Figure out who made specific changes in the model.
   fr_fr: Trouver qui a fait un changement spécifique dans le modèle.
@@ -12,6 +13,7 @@ tooltip:
   chinese_s: 找出模型中特定更改的负责人
   es_es: Averiguar quién hizo cambios específicos en el modelo.
   de_de: Hiermit kann man herausfinden wer bestimmte Änderungen am Modell vorgenommen hat.
+  pt_br: Descubra quem fez alterações específicas no modelo.
 author: >-
   Frederic Beaupere
 

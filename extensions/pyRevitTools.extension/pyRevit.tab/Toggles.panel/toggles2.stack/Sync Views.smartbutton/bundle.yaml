@@ -5,6 +5,7 @@ title:
   chinese_s: 同步视图
   es_es: Sincronizar vistas
   de_de: Ansichten synchr.
+  pt_br: Sincronizar Vistas
 tooltip:
   en_us: >-
     Keep views synchronized. This means that as you pan and zoom and
@@ -34,3 +35,8 @@ tooltip:
     Halten Sie die Ansichten synchronisiert. Das bedeutet, dass Sie beim Schwenken und Zoomen und
     zwischen der Grundriss- und der Deckenansicht wechseln, hält dieses Werkzeug die Ansichten
     in der gleichen Zoomstufe, so dass Sie im selben Bereich weiterarbeiten Bereich arbeiten können,  ohne dass Sie erneut zoomen und schwenken müssen. Dieses Werkzeug funktioniert am besten,  wenn die Ansichten maximiert sind.
+  pt_br: >-
+    Mantém as vistas sincronizadas. Isso significa que, conforme você faz pan e zoom e alterna entre 
+    vistas de Planta e Planta de Forro, esta ferramenta manterá as vistas na mesma área de zoom para 
+    que você possa continuar trabalhando na mesma área sem a necessidade de fazer zoom e pan novamente. 
+    Esta ferramenta funciona melhor quando as vistas estão maximizadas

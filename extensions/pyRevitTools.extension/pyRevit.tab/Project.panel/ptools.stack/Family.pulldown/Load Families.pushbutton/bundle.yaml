@@ -5,6 +5,7 @@ title:
   chinese_s: 加载族
   es_es: Cargar familias
   de_de: Familien laden
+  pt_br: Carregar Famílias
 tooltip:
   en_us: >-
     This tool gives you the option to load multiple Families from a folder and its subfolders.
@@ -29,4 +30,8 @@ tooltip:
     Mit diesem Werkzeug können Sie mehrere Familien aus einem Ordner und seinen Unterordnern laden.
 
     Sie können wählen, ob Sie die Familie mit allen Typen laden möchten oder die Typen für jede Familie auswählen möchten.
+  pt_br: >-
+    Esta ferramenta oferece a opção de carregar várias Famílias de uma pasta e suas subpastas.
+    
+    Você pode escolher carregar a Família com todos os seus Tipos ou selecionar Tipos para cada Família.
 author: Hikmet Deniz Kibar

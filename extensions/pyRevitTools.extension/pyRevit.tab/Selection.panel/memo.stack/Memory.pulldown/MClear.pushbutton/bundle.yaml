@@ -5,6 +5,7 @@ title:
   chinese_s: M清除
   es_es: MLimpiar
   de_de: Auswahl im Speicher löschen
+  pt_br: MClear
 tooltip:
   en_us: >-
     Clears selection from memory
@@ -26,3 +27,7 @@ tooltip:
   de_de: >-
     Löscht die Auswahl im Speicher
     Funktioniert wie die MC Taste auf dem Taschenrechner.  Dies ist ein Projekt-abhängiger Speicher.  Jedes Projekt hat seinen eigenen Auswahlspeicher,  der im Ordner %appdata%/pyRevit als *.pym Datei gespeichert wird.
+  pt_br: >-
+    Deleta seleção da memória
+   
+    Funciona como o botão MC em uma calculadora. Esta é uma memória dependente do projeto. Cada projeto tem sua própria memória de seleção salva na pasta %appdata%/pyRevit como arquivos *.pym

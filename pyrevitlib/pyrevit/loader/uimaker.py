@@ -560,14 +560,17 @@ def _add_combobox_members(combobox_ui, combobox):
         # Create member data (minimal - just id and text)
         member_data = UI.ComboBoxMemberData(member_id, member_text)
 
-        # Add member to ComboBox first (returns ComboBoxMember object)
+        # Add member to ComboBox (returns ComboBoxMember object)
         try:
+            # Set GroupName on member_data BEFORE adding (required by Revit API)
+            if member_group and hasattr(member_data, "GroupName"):
+                member_data.GroupName = member_group
             member_obj = combobox_ui.add_item(member_data)
             if not member_obj:
                 mlogger.warning("AddItem returned None for: %s", member_text)
                 continue
 
-            # Now set properties on the actual ComboBoxMember object (not the data)
+            # Now set additional properties on the actual ComboBoxMember object
 
             # Set member icon if available
             if member_icon:
@@ -588,12 +591,7 @@ def _add_combobox_members(combobox_ui, combobox):
                         "Error setting member icon: %s", member_icon_err
                     )
 
-            # Set member group if available
-            if member_group and hasattr(member_obj, "GroupName"):
-                try:
-                    member_obj.GroupName = member_group
-                except Exception as group_err:
-                    mlogger.debug("Error setting member group: %s", group_err)
+            # Note: GroupName is set on member_data before AddItem (above)
 
             # Set member tooltip if available
             if member_tooltip and hasattr(member_obj, "ToolTip"):
@@ -644,21 +642,22 @@ def _add_combobox_members(combobox_ui, combobox):
 
 def setup_combobox(combobox, ui_item, uiapp, script_globals):
     """Set up ComboBox event handlers from script globals.
-    
+
     This function looks for special global variables in the script and
     wires them up as event handlers for the ComboBox.
-    
+
     Recognized global variables:
+        - __selfinit__(component, ui_item, uiapp): Called for initialization
         - __cmb_on_change__(sender, args, ctx): Called when selection changes
         - __cmb_dropdown_close__(sender, args, ctx): Called when dropdown closes
         - __cmb_dropdown_open__(sender, args, ctx): Called when dropdown opens
-    
+
     Args:
         combobox: The parsed component metadata
         ui_item: The pyRevit UI wrapper for the ComboBox
         uiapp: The Revit UIApplication instance
         script_globals (dict): The globals() dict from the script
-        
+
     Returns:
         (bool): True if setup succeeded, False otherwise
     """
@@ -667,10 +666,23 @@ def setup_combobox(combobox, ui_item, uiapp, script_globals):
         if not cmb:
             mlogger.debug("Could not get ComboBox API object")
             return False
-        
-        # Create context object
+
+        # Call __selfinit__ if present (traditional pattern for initialization)
+        selfinit = script_globals.get('__selfinit__')
+        if callable(selfinit):
+            mlogger.debug("Calling __selfinit__ for ComboBox")
+            try:
+                res = selfinit(combobox, ui_item, uiapp)
+                if res is False:
+                    mlogger.debug("__selfinit__ returned False, deactivating")
+                    return False
+            except Exception as init_err:
+                mlogger.error("Error in ComboBox __selfinit__: %s", init_err)
+                return False
+
+        # Create context object for event handlers
         ctx = components.ComboBoxContext(combobox, ui_item, uiapp, cmb)
-        
+
         # Get event handlers from script globals
         on_change = script_globals.get('__cmb_on_change__')
         on_dropdown_close = script_globals.get('__cmb_dropdown_close__')
@@ -877,7 +889,7 @@ def _produce_ui_combobox(ui_maker_params):
             script_globals = {
                 name: getattr(imported_script, name)
                 for name in dir(imported_script)
-                if not name.startswith('_') or name.startswith('__cmb_')
+                if not name.startswith('_') or name.startswith('__cmb_') or name == '__selfinit__'
             }
             res = setup_combobox(
                 combobox, combobox_ui, HOST_APP.uiapp, script_globals

@@ -5,6 +5,7 @@ title:
   chinese_s: 开发者工具
   es_es: Herramientas de desarrollador
   de_de: Entwicklertools
+  pt_br: Ferramentas de Desenvolvedor
 layout:
   - Developer Docs
   - Generate API Stubs

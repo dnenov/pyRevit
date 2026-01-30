@@ -5,6 +5,7 @@ title:
   chinese_s: 从选定视图中移除底图
   es_es: Eliminar fondo de las vistas seleccionadas
   de_de: Entferne die Unterlage von gewählten Ansichten
+  pt_br: Remover Subjacência das Vistas Selecionadas
 tooltip:
   en_us: Removes Underlay From Selected Views
   fr_fr: Enlève les fonds de plans des vues sélectionnées
@@ -15,3 +16,4 @@ tooltip:
     Entweder man wählt im Projektbrowser bereits die Ansichten aus
     oder es erscheint ein Auswahldialog mit verfübaren Ansichten im  Projekt. Von den ausgewählten Ansichten wird die Unterlage
     entfernt.
+  pt_br: Remove subjacência das vistas selecionadas

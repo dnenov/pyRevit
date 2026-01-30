@@ -5,6 +5,7 @@ title:
   chinese_s: 列出图纸上的图例
   es_es: Listar leyendas en hojas
   de_de: Liste alle Legenden auf Plänen auf
+  pt_br: Listar Legendas em Folhas
 tooltip:
   en_us: List Legends on Sheets
   fr_fr: Lister les légendes sur les feuilles
@@ -14,4 +15,5 @@ tooltip:
   de_de: >-
     Es öffnet sich ein Konsolenfenster, in dem alle Legenden aufgelistet sind,  die auf einem Plan platziert wurden. Der dazugehörige Plan wird ebenfalls
     angezeigt. Mit einem Klick auf die ID wird die Legende bzw Plan geöffnet.
+  pt_br: Listar legendas em folhas
 author: Jean-Marc Couffin

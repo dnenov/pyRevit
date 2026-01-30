@@ -5,6 +5,7 @@ title:
   chinese_s: 同步
   es_es: Sincronizar
   de_de: Synchronisieren
+  pt_br: Sincronizar
 tooltip:
   en_us: >-
     Replace the sync button
@@ -39,4 +40,8 @@ tooltip:
     1) Close them and call it a day (Ansichten werden und bleiben geschlossen)
     2) Close them but reopen them right after (Ansichten werden geschlossen und nach dem synchronisieren wieder geöffnet)
     3) Don't touch my views (Ansichten bleiben beim Synchronisieren geöffnet)
+  pt_br: >-
+    Substitui o botão de sincronização
+    
+    Shift-Clique: Habilitar ou desabilitar o fechamento de janelas inativas e a ativação da vista inicial
 author: Aniket Dikshit, Jean-Marc Couffin

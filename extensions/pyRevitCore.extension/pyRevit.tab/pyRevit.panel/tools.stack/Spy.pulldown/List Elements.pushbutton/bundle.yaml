@@ -5,6 +5,7 @@ title:
   chinese_s: 列出元素
   es_es: Listar elementos
   de_de: Elementliste anzeigen
+  pt_br: Listar Elementos
 tooltip:
   en_us: Lists specific elements from the model database
   fr_fr: Répertorie les éléments spécifiques de la base de données du modèle
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 列出模型数据库中的特定元素
   es_es: Lista elementos específicos de la base de datos del modelo
   de_de: Erstellt eine Liste mit allen vorhandenen Elementen in der Modelldatenbank und zeigt die gefundenen Elemente in der Konsole zuammen mit zusätzliche Informationen an. Der gewünschte Elementtyp wird im Dialog ausgewählt.
+  pt_br: Lista elementos específicos do banco de dados do modelo

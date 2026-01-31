@@ -3,10 +3,9 @@ import os
 import re
 from collections import namedtuple
 
-from pyrevit import script, forms, coreutils, revit, DB, HOST_APP
+from pyrevit import script, forms, coreutils, revit, DB
 from pyrevit.revit import get_parameter_data_type, is_yesno_parameter
 from pyrevit.compat import get_elementid_value_func
-from pyrevit.userconfig import user_config
 
 get_elementid_value = get_elementid_value_func()
 
@@ -15,32 +14,13 @@ para_itemplate = forms.utils.load_ctrl_template(para_item_xml)
 ele_item_xml = script.get_bundle_file("ElementItemStyle.xaml")
 ele_itemplate = forms.utils.load_ctrl_template(ele_item_xml)
 
-
-class ElementSelectFromList(forms.SelectFromList):
-    """Custom SelectFromList that merges ElementItemStyle resource dictionaries."""
-    
-    def _setup(self, **kwargs):
-        # Merge ElementItemStyle resource dictionaries
-        ele_item_resfile = ele_item_xml.replace(
-            ".xaml", ".ResourceDictionary.{}.xaml".format(user_config.user_locale)
-        )
-        ele_item_resfile_en = ele_item_xml.replace(
-            ".xaml", ".ResourceDictionary.en_us.xaml"
-        )
-        
-        if os.path.isfile(ele_item_resfile):
-            self.merge_resource_dict(ele_item_resfile)
-        elif os.path.isfile(ele_item_resfile_en):
-            self.merge_resource_dict(ele_item_resfile_en)
-        
-        # Call parent _setup
-        super(ElementSelectFromList, self)._setup(**kwargs)
-
 script.get_output().close_others()
 logger = script.get_logger()
-doc = HOST_APP.doc
+doc = revit.doc
 active_view = revit.active_view
 project_units = doc.GetUnits()
+BIP = DB.BuiltInParameter
+measurable = DB.UnitUtils.IsMeasurableSpec
 
 unit_postfix_pattern = re.compile(r"\s*\[.*\]$")
 
@@ -77,7 +57,7 @@ def get_unit_label_and_value(param, forge_type_id, field, project_units):
     Returns (converted_value, label_string, unit_type_id, symbol_type_id) for a parameter.
     Respects schedule field overrides if provided, otherwise uses project units.
     """
-    if not forge_type_id or not DB.UnitUtils.IsMeasurableSpec(forge_type_id):
+    if not forge_type_id or not measurable(forge_type_id):
         return param.AsValueString(), "", None, None
 
     # Prefer field overrides, otherwise project units
@@ -140,7 +120,7 @@ def create_element_definitions(elements):
                 if isinstance(el, DB.FamilyInstance):
                     family = el.Symbol.Family.Name
                     type_name = el.Symbol.get_Parameter(
-                        DB.BuiltInParameter.SYMBOL_NAME_PARAM
+                        BIP.SYMBOL_NAME_PARAM
                     ).AsString()
                     element_label = "family instance(s)"
                 else:
@@ -201,7 +181,7 @@ def select_elements(elements):
 
     context = grouped_selection
 
-    selected_defs = ElementSelectFromList.show(
+    selected_defs = forms.SelectFromList.show(
         context,
         title="Select Elements to Export",
         width=500,
@@ -286,7 +266,7 @@ def get_schedule_elements_and_params(schedule):
                     param_data_type = get_parameter_data_type(param.Definition)
 
                     unit_type_id = None
-                    if param_data_type and DB.UnitUtils.IsMeasurableSpec(param_data_type):
+                    if param_data_type and measurable(param_data_type):
                         try:
                             fmt_opts = field.GetFormatOptions()
                             if fmt_opts:
@@ -300,7 +280,7 @@ def get_schedule_elements_and_params(schedule):
                         definition=param.Definition,
                         isreadonly=param.IsReadOnly,
                         isunit=(
-                            DB.UnitUtils.IsMeasurableSpec(param_data_type)
+                            measurable(param_data_type)
                             if param_data_type
                             else False
                         ),
@@ -332,9 +312,7 @@ def select_parameters(src_elements):
 
                     # For non-schedule exports, use project units
                     unit_type_id = None
-                    if param_data_type and DB.UnitUtils.IsMeasurableSpec(
-                        param_data_type
-                    ):
+                    if param_data_type and measurable(param_data_type):
                         try:
                             fmt_opts = project_units.GetFormatOptions(param_data_type)
                             unit_type_id = fmt_opts.GetUnitTypeId()
@@ -347,7 +325,7 @@ def select_parameters(src_elements):
                         definition=p.Definition,
                         isreadonly=p.IsReadOnly,
                         isunit=(
-                            DB.UnitUtils.IsMeasurableSpec(param_data_type)
+                            measurable(param_data_type)
                             if param_data_type
                             else False
                         ),
@@ -371,6 +349,136 @@ def select_parameters(src_elements):
     return selected_params
 
 
+def create_dropdown_validation(
+    worksheet, workbook, col_idx, param, src_elements, hidden_sheets
+):
+    """
+    Create dropdown validation for ElementId and Workset parameters.
+
+    Args:
+        worksheet: The main worksheet
+        workbook: The workbook object
+        col_idx: Column index (0-based)
+        param: ParamDef namedtuple
+        src_elements: List of source elements
+        hidden_sheets: Dict to track created hidden sheets
+    """
+    storage_type = param.storagetype
+
+    if storage_type == DB.StorageType.Integer:
+        if param.definition.BuiltInParameter == BIP.ELEM_PARTITION_PARAM:
+            try:
+                # worksets = DB.FilteredWorksetCollector(doc).OfKind(DB.WorksetKind.UserWorkset)
+                worksets = DB.FilteredWorksetCollector(doc)
+                workset_names = sorted([ws.Name for ws in worksets if ws.Name])
+
+                if workset_names:
+                    hidden_sheet_name = "_worksets"
+
+                    if hidden_sheet_name not in hidden_sheets:
+                        hidden_sheet = workbook.add_worksheet(hidden_sheet_name)
+                        hidden_sheet.hide()
+                        hidden_sheets[hidden_sheet_name] = hidden_sheet
+
+                        # Write workset names to hidden sheet
+                        for idx, name in enumerate(workset_names):
+                            hidden_sheet.write(idx, 0, name)
+
+                    formula = "={}!$A$1:$A${}".format(
+                        hidden_sheet_name, len(workset_names)
+                    )
+
+                    worksheet.data_validation(
+                        1,
+                        col_idx,
+                        len(src_elements),
+                        col_idx,
+                        {
+                            "validate": "list",
+                            "source": formula,
+                            "error_message": "Please select a valid workset",
+                            "error_type": "stop",
+                        },
+                    )
+
+            except Exception as e:
+                logger.warning(
+                    "Could not create workset dropdown for '{}': {}".format(
+                        param.name, e
+                    )
+                )
+
+    elif storage_type == DB.StorageType.ElementId:
+        try:
+            sample_category = None
+
+            for el in src_elements:
+                param_el = el.LookupParameter(param.name)
+                if param_el and param_el.HasValue:
+                    el_id = param_el.AsElementId()
+                    if el_id and el_id != DB.ElementId.InvalidElementId:
+                        ref_element = doc.GetElement(el_id)
+                        if (
+                            ref_element
+                            and hasattr(ref_element, "Category")
+                            and ref_element.Category
+                        ):
+                            sample_category = ref_element.Category.BuiltInCategory
+                            break
+
+            if sample_category is not None:
+                collector = revit.query.get_elements_by_categories([sample_category])
+                element_names = sorted(
+                    list(
+                        set(
+                            [
+                                el.Name
+                                for el in collector
+                                if hasattr(el, "Name") and el.Name
+                            ]
+                        )
+                    )
+                )
+
+                if element_names:
+                    safe_param_name = (
+                        re.sub(r"[^\w\s-]", "", param.name).strip().replace(" ", "_")
+                    )
+                    hidden_sheet_name = "_elem_{}".format(
+                        safe_param_name[:25]
+                    )  # Limit sheet name length
+
+                    if hidden_sheet_name not in hidden_sheets:
+                        hidden_sheet = workbook.add_worksheet(hidden_sheet_name)
+                        hidden_sheet.hide()
+                        hidden_sheets[hidden_sheet_name] = hidden_sheet
+
+                        for idx, name in enumerate(element_names):
+                            hidden_sheet.write(idx, 0, name)
+
+                    formula = "={}!$A$1:$A${}".format(
+                        hidden_sheet_name, len(element_names)
+                    )
+
+                    worksheet.data_validation(
+                        1,
+                        col_idx,
+                        len(src_elements),
+                        col_idx,
+                        {
+                            "validate": "list",
+                            "source": formula,
+                            "error_message": "Please select a valid element",
+                            "error_type": "stop",
+                        },
+                    )
+
+        except Exception as e:
+            logger.warning(
+                "Could not create ElementId dropdown for '{}': {}".format(param.name, e)
+            )
+
+
 def export_xls(src_elements, selected_params, field_mapping=None):
     """
     Export the given elements and parameters to an Excel file.
@@ -386,6 +494,9 @@ def export_xls(src_elements, selected_params, field_mapping=None):
     worksheet = workbook.add_worksheet("Export")
     metadata_sheet = workbook.add_worksheet("_metadata")
     metadata_sheet.hide()
+
+    # Track hidden sheets for dropdowns
+    hidden_sheets = {}
 
     bold = workbook.add_format({"bold": True})
     unlocked = workbook.add_format({"locked": False})
@@ -429,7 +540,7 @@ def export_xls(src_elements, selected_params, field_mapping=None):
         symbol_type_id = None
         is_schedule_override = param.name in field_mapping
 
-        if forge_type_id and DB.UnitUtils.IsMeasurableSpec(forge_type_id):
+        if forge_type_id and measurable(forge_type_id):
             # Get field for this parameter if available
             field = field_mapping.get(param.name)
 
@@ -497,9 +608,7 @@ def export_xls(src_elements, selected_params, field_mapping=None):
                             forge_type_id = param.forge_type_id
                             field = field_mapping.get(param_name)
 
-                            if forge_type_id and DB.UnitUtils.IsMeasurableSpec(
-                                forge_type_id
-                            ):
+                            if forge_type_id and measurable(forge_type_id):
                                 val, _, _, _ = get_unit_label_and_value(
                                     param_el, forge_type_id, field, project_units
                                 )
@@ -508,7 +617,7 @@ def export_xls(src_elements, selected_params, field_mapping=None):
                         elif param_el.StorageType == DB.StorageType.String:
                             val = param_el.AsString()
                         elif param_el.StorageType == DB.StorageType.Integer:
-                            if get_elementid_value(param_el.Id) == int(DB.BuiltInParameter.ELEM_PARTITION_PARAM):
+                            if get_elementid_value(param_el.Id) == int(BIP.ELEM_PARTITION_PARAM):
                                 val = str(revit.query.get_element_workset(el).Name)
                             elif is_yesno_parameter(param.definition):
                                 val = "Yes" if param_el.AsInteger() else "No"
@@ -534,6 +643,16 @@ def export_xls(src_elements, selected_params, field_mapping=None):
             worksheet.write(row_idx, col_idx + 1, val, cell_format)
             if len(str(val)) > max_widths[col_idx + 1]:
                 max_widths[col_idx + 1] = min(len(str(val)), 50)
+
+    for col_idx, param in enumerate(valid_params):
+        create_dropdown_validation(
+            worksheet,
+            workbook,
+            col_idx + 1,  # +1 because column 0 is ElementId
+            param,
+            src_elements,
+            hidden_sheets,
+        )
 
     for col_idx, width in enumerate(max_widths):
         worksheet.set_column(col_idx, col_idx, width + 3)

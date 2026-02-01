@@ -120,10 +120,6 @@ def set_product_data(_: Dict[str, str]):
     pyrevit_pc = _get_new_product_code()
     pyrevitcli_pc = _get_new_product_code()
 
-    # update product info on installer files
-    _installer_set_uuid(pyrevit_pc, configs.PYREVIT_INSTALLER_FILES)
-    _installer_set_uuid(pyrevitcli_pc, configs.PYREVIT_CLI_INSTALLER_FILES)
-
     # update product info on MSI installer files
     _msi_set_uuid(
         pyrevit_pc,

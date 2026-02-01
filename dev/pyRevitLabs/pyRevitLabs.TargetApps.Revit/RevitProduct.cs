@@ -263,7 +263,7 @@ namespace pyRevitLabs.TargetApps.Revit {
                         var revitProduct = FindRevitProduct(regVersion, binaryFilePath);
                         if (revitProduct is null)
                         {
-                            logger.Warn("Cannot determine Revit product for \"{0}\" (version: {1}). This installation will be excluded from the list. " +
+                            logger.Warn("Could not determine Revit product for \"{0}\" (version: {1}). This installation will be excluded from the list. " +
                                        "This may occur if the version is not listed in pyrevit-hosts.json and the binary file information could not be read.",
                                        regName, regVersion);
                             continue;

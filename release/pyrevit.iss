@@ -73,9 +73,10 @@ Source: "..\pyRevitfile"; DestDir: "{app}"; Flags: ignoreversion; Components: co
 [Registry]
 ; Uninstaller does not undo this change
 ; Multiple installs keep adding the path
+; When run as admin, HKCU would be the elevated user's; PATH is set in CurStepChanged via ExecAsOriginalUser instead.
 ; https://stackoverflow.com/a/3431379/2350244
 ; https://stackoverflow.com/a/9962307/2350244 (mod path module)
-Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}\bin"
+Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}\bin"; Check: NotAdmin
 
 [Run]
 Filename: "{app}\bin\pyrevit.exe"; Description: "Clearning caches..."; Parameters: "caches clear --all"; Flags: runhidden
@@ -88,6 +89,26 @@ Filename: "{app}\bin\pyrevit.exe"; RunOnceId: "ClearCaches"; Parameters: "caches
 Filename: "{app}\bin\pyrevit.exe"; RunOnceId: "DetachClones"; Parameters: "detach --all"; Flags: runhidden
 
 [Code]
+function NotAdmin: Boolean;
+begin
+  Result := not IsAdmin;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  Params: String;
+  ResultCode: Integer;
+begin
+  if (CurStep = ssPostInstall) and IsAdmin then
+  begin
+    Params := '-NoProfile -ExecutionPolicy Bypass -Command ''[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";' + ExpandConstant('{app}\bin') + '", "User")''';
+    if ExecAsOriginalUser(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Params, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) and (ResultCode = 0) then
+      Log('Added install path to original user PATH')
+    else
+      Log('ExecAsOriginalUser failed or non-zero exit when adding PATH');
+  end;
+end;
+
 function InitializeSetup: Boolean;
 begin
   // .NET 8 for Revit 2025-2026

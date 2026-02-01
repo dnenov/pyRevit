@@ -2230,5 +2230,17 @@
         "release": "2027 Preview Release",
         "target": "x64",
         "version": "27.0.0.302"
+    },
+    {
+        "build": "20260110_1515",
+        "meta": {
+            "schema": "1.0",
+            "source": "https://help.autodesk.com/view/RVT/2027/ENU/?guid=RevitReleaseNotes_2027release_html"
+        },
+        "notes": "https://help.autodesk.com/view/RVT/2027/ENU/?guid=RevitReleaseNotes_2027release_html",
+        "product": "Autodesk Revit",
+        "release": "2027 Preview Release",
+        "target": "x64",
+        "version": "27.0.0.370"
     }
 ]

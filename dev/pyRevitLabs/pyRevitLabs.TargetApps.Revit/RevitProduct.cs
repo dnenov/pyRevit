@@ -28,7 +28,7 @@ namespace pyRevitLabs.TargetApps.Revit {
     }
 
     public class RevitProductData {
-        public static string HostFileURL = GithubAPI.GetRawUrl(PyRevitLabsConsts.OriginalRepoId, PyRevitLabsConsts.TargetBranch, @"bin/pyrevit-hosts.json");
+        public static string HostFileURL = GithubAPI.GetRawUrl(PyRevitLabsConsts.OriginalRepoId, PyRevitLabsConsts.HostsFileBranch, @"bin/pyrevit-hosts.json");
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -137,6 +137,8 @@ namespace pyRevitLabs.TargetApps.Revit {
         }
 
         public static void Update() => _dstore.UpdateData(forceUpdate: true);
+
+        public static void RefreshIfStale() => _dstore.UpdateData(forceUpdate: false);
     }
 
     public class RevitProduct {
@@ -233,6 +235,8 @@ namespace pyRevitLabs.TargetApps.Revit {
             // fails:
             //     Revit Content Libraries 2016
             var revitFinder = new Regex(@"^Revit\s[A-Za-z]*\s*\d{4}\s?($|\s-)");
+            // also match Revit Preview Release (e.g. 2027 preview) and "Autodesk Revit Preview Release"
+            var previewFinder = new Regex(@"^(Autodesk\s+)?Revit\s+Preview\s+Release\s*$", RegexOptions.IgnoreCase);
 
             // open parent regkey
             var uninstallKey =
@@ -243,7 +247,7 @@ namespace pyRevitLabs.TargetApps.Revit {
                 var subkey = uninstallKey.OpenSubKey(key);
                 var appName = subkey.GetValue("DisplayName") as string;
                 logger.Debug("Analysing registered app: {0} @ {1}", appName, subkey.Name);
-                if (appName != null && revitFinder.IsMatch(appName))
+                if (appName != null && (revitFinder.IsMatch(appName) || previewFinder.IsMatch(appName)))
                 {
                     logger.Debug("App is a Revit product: {0}", appName);
                     try

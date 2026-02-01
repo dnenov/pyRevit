@@ -267,7 +267,9 @@ namespace pyRevitLabs.TargetApps.Revit {
                         var revitProduct = FindRevitProduct(regVersion, binaryFilePath);
                         if (revitProduct is null)
                         {
-                            logger.Debug("Can not determine Revit product.");
+                            logger.Warn("Could not determine Revit product for \"{0}\" (version: {1}). This installation will be excluded from the list. " +
+                                       "This may occur if the version is not listed in pyrevit-hosts.json or if product information could not be read from the binary file.",
+                                       regName, regVersion);
                             continue;
                         }
                         logger.Debug("Revit Product is : {0}", revitProduct);
@@ -321,10 +323,11 @@ namespace pyRevitLabs.TargetApps.Revit {
                 return revitProduct; 
             }
 
-            logger.Debug("Could not determine Revit Product from version \"{0}\"", regVersion);
+            logger.Debug("Could not determine Revit Product from version \"{0}\" in pyrevit-hosts.json", regVersion);
             // try to get product key from binary version
             if (binaryFilePath == null)
             {
+                logger.Warn("Revit version \"{0}\" not found in pyrevit-hosts.json and no binary path available to read version info", regVersion);
                 return null;
             }
             try
@@ -332,11 +335,20 @@ namespace pyRevitLabs.TargetApps.Revit {
                 var prodInfo = RevitProductData.GetBinaryProductInfo(binaryFilePath);
                 logger.Debug("Read build number \"{0}\" from binary at \"{1}\"", prodInfo.build, binaryFilePath);
                 revitProduct = LookupRevitProduct(prodInfo.build);
-                return revitProduct is null ? new RevitProduct(prodInfo) : revitProduct;
+                // If still not found in database, create from binary info
+                if (revitProduct is null)
+                {
+                    logger.Info("Version \"{0}\" (build: {1}) not found in pyrevit-hosts.json. Using product information from binary file. " +
+                               "Consider updating pyrevit-hosts.json if this version should be officially supported.", 
+                               regVersion, prodInfo.build);
+                    revitProduct = new RevitProduct(prodInfo);
+                }
+                return revitProduct;
             }
-            catch
+            catch (Exception ex)
             {
-                logger.Debug("Failed reading product info from binary at \"{0}\"", binaryFilePath);
+                logger.Warn(ex, "Revit version \"{0}\" not found in pyrevit-hosts.json and failed to read product info from binary at \"{1}\"", 
+                            regVersion, binaryFilePath);
             }
             return null;
         }

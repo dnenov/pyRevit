@@ -111,5 +111,27 @@ namespace pyRevitLabs.UnitTests.RevitAddons {
             Assert.IsTrue(userFilePath2027.EndsWith("TestAddin.addin", StringComparison.OrdinalIgnoreCase),
                 $"File path should end with TestAddin.addin: {userFilePath2027}");
         }
+
+        [TestMethod()]
+        public void GetRevitAddonsFilePath_ExplicitAllUsers_Test() {
+            // With allusers: false, path must contain user AppData (no elevation override)
+            var userPath = pyRevitLabs.TargetApps.Revit.RevitAddons.GetRevitAddonsFilePath(2027, "TestAddin", allusers: false);
+            Assert.IsTrue(userPath.IndexOf("AppData", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                         userPath.IndexOf("Roaming", StringComparison.OrdinalIgnoreCase) >= 0,
+                "allusers: false should return path under user AppData/Roaming: " + userPath);
+
+            // With allusers: true, Revit 2026 and earlier use CommonApplicationData
+            var allUsersPath2026 = pyRevitLabs.TargetApps.Revit.RevitAddons.GetRevitAddonsFilePath(2026, "TestAddin", allusers: true);
+            var commonData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            Assert.IsTrue(allUsersPath2026.StartsWith(commonData, StringComparison.OrdinalIgnoreCase),
+                "allusers: true for 2026 should be under CommonApplicationData: " + allUsersPath2026);
+
+            // With allusers: true, Revit 2027+ uses install path or CommonApplicationData
+            var allUsersPath2027 = pyRevitLabs.TargetApps.Revit.RevitAddons.GetRevitAddonsFilePath(2027, "TestAddin", allusers: true);
+            Assert.IsTrue(allUsersPath2027.EndsWith("TestAddin.addin", StringComparison.OrdinalIgnoreCase),
+                "Path should end with TestAddin.addin: " + allUsersPath2027);
+            Assert.IsTrue(allUsersPath2027.Contains("Addins") && allUsersPath2027.Contains("2027"),
+                "Path should contain Addins and year 2027: " + allUsersPath2027);
+        }
     }
 }

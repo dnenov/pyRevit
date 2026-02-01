@@ -3,7 +3,7 @@
 """Section Box Navigator - Modeless window for section box navigation."""
 
 from pyrevit import revit, script, forms
-from pyrevit.framework import System
+from pyrevit.framework import System, Controls, Media
 from pyrevit.revit import events
 from pyrevit import DB, UI
 
@@ -204,7 +204,7 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
         self.pending_action = None
 
         if not length_unit_symbol_label:
-            self.project_unit_text.Visibility = System.Windows.Visibility.Visible
+            self.project_unit_text.Visibility = forms.WPF_VISIBLE
             self.project_unit_text.Text = (
                 self.get_locale_string("LengthLabelAdjust") + "\n" + length_unit_label
             )
@@ -218,10 +218,107 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
         self.update_info()
         self.update_grid_status()
         self.update_expand_actions_status()
+        self.update_dropdown_visibility()
 
         self.Closed += self.form_closed
         script.restore_window_position(self)
         self.Show()
+
+    def update_dropdown_visibility(self):
+        """Show/hide dropdown arrows based on Level mode."""
+        visibility = forms.WPF_VISIBLE if self.rbLevel.IsChecked else forms.WPF_COLLAPSED
+
+        self.btnTopUpDropdown.Visibility = visibility
+        self.btnTopDownDropdown.Visibility = visibility
+        self.btnBottomUpDropdown.Visibility = visibility
+        self.btnBottomDownDropdown.Visibility = visibility
+        self.btnBoxUpDropdown.Visibility = visibility
+        self.btnBoxDownDropdown.Visibility = visibility
+
+    def populate_level_menu(self, menu, direction, target):
+        """Populate a level menu with all available levels in the given direction.
+
+        Args:
+            menu: StackPanel to populate with level buttons
+            direction: 'up' or 'down'
+            target: 'top', 'bottom', or 'both'
+        """
+        menu.Children.Clear()
+
+        info = get_section_box_info(self.current_view, DATAFILENAME)
+        if not info:
+            return
+
+        # Determine reference elevation based on target
+        if target == "top":
+            ref_elevation = info["transformed_max"].Z
+        elif target == "bottom":
+            ref_elevation = info["transformed_min"].Z
+        elif target == "both":
+            # For box movement, use the top elevation
+            ref_elevation = info["transformed_max"].Z
+        else:
+            return
+
+        # Collect all levels in the direction
+        levels = []
+        current_elevation = ref_elevation
+
+        while True:
+            if direction == "up":
+                next_level, _ = get_next_level_above(
+                    current_elevation, self.all_levels, TOLERANCE
+                )
+            else:
+                next_level, _ = get_next_level_below(
+                    current_elevation, self.all_levels, TOLERANCE
+                )
+
+            if not next_level:
+                break
+
+            levels.append(next_level)
+            current_elevation = next_level.Elevation
+
+            # Limit to reasonable number of levels
+            if len(levels) >= 20:
+                break
+
+        # Create buttons for each level
+        for level in levels:
+            btn = Controls.Button()
+            btn.Style = self.FindResource("LevelMenuItemStyle")
+
+            # Format level name and elevation
+            level_name = level.Name
+            level_elev = format_length_value(level.Elevation)
+            btn.Content = "{0} ({1})".format(level_name, level_elev)
+
+            # Store level info in Tag
+            btn.Tag = {
+                "target": target,
+                "direction": direction,
+                "elevation": level.Elevation
+            }
+
+            # Wire up click and hover events
+            btn.Click += self.btn_menu_item_click
+            btn.MouseEnter += self.btn_preview_enter
+            btn.MouseLeave += self.btn_preview_leave
+
+            menu.Children.Add(btn)
+
+        # If no levels found, add a disabled message
+        if len(levels) == 0:
+            lbl = Controls.TextBlock()
+            lbl.Text = self.get_locale_string("NoLevelFoundInDirection")
+            lbl.Margin = System.Windows.Thickness(10, 5, 10, 5)
+            lbl.Foreground = Media.Brushes.Gray
+            menu.Children.Add(lbl)
+
+    # ----------
+    # STATUS MESSAGES
+    # ----------
 
     def update_info(self):
         """Update the information display."""
@@ -338,13 +435,13 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
         try:
             # Define color mapping
             colors = {
-                "error": System.Windows.Media.Brushes.Red,
-                "warning": System.Windows.Media.Brushes.Orange,
-                "info": System.Windows.Media.Brushes.Blue,
-                "success": System.Windows.Media.Brushes.Green,
+                "error": Media.Brushes.Red,
+                "warning": Media.Brushes.Orange,
+                "info": Media.Brushes.Blue,
+                "success": Media.Brushes.Green,
             }
 
-            color = colors.get(message_type.lower(), System.Windows.Media.Brushes.Black)
+            color = colors.get(message_type.lower(), Media.Brushes.Black)
 
             def update_ui():
                 if column == 1:
@@ -389,12 +486,12 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
                 info = get_section_box_info(self.current_view, DATAFILENAME)
                 if not info:
                     self.txtGridStatus.Text = self.get_locale_string("NoSectionBoxActive")
-                    self.txtGridStatus.Foreground = System.Windows.Media.Brushes.Gray
+                    self.txtGridStatus.Foreground = Media.Brushes.Gray
                     return
 
                 # Get current grid position info if needed
                 self.txtGridStatus.Text = "..."
-                self.txtGridStatus.Foreground = System.Windows.Media.Brushes.Black
+                self.txtGridStatus.Foreground = Media.Brushes.Black
 
             self.Dispatcher.Invoke(System.Action(update_ui))
         except Exception as ex:
@@ -409,18 +506,22 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
                 if not info:
                     self.txtExpandActionsStatus.Text = self.get_locale_string("NoSectionBoxActive")
                     self.txtExpandActionsStatus.Foreground = (
-                        System.Windows.Media.Brushes.Gray
+                        Media.Brushes.Gray
                     )
                     return
 
                 self.txtExpandActionsStatus.Text = "..."
                 self.txtExpandActionsStatus.Foreground = (
-                    System.Windows.Media.Brushes.Black
+                    Media.Brushes.Black
                 )
 
             self.Dispatcher.Invoke(System.Action(update_ui))
         except Exception as ex:
             logger.error("Error updating expand/actions status: {}".format(ex))
+
+    # ----------
+    # ACTIONS
+    # ----------
 
     def execute_action(self, params):
         """Execute an action in Revit context."""
@@ -452,22 +553,16 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
 
     def do_level_move(self, params):
         """Move section box to level or by nudge amount."""
-        direction = params.get("direction")  # 'top-up', 'bottom-down', 'box-up', etc.
-        is_level_mode = params.get("is_level_mode", True)
+        target = params.get("target")  # 'top, 'bottom', 'both'
+        direction = params.get("direction")  # 'up', 'down'
         nudge_amount = params.get("nudge_amount", 0)
         do_not_apply = params.get("do_not_apply", False)
+        elevation = params.get("elevation", None)  # picked from the level menu item preview
 
         info = get_section_box_info(self.current_view, DATAFILENAME)
         if not info:
             return None if do_not_apply else False
 
-        # Parse direction
-        parts = direction.split("-")
-        target = parts[0]  # 'top', 'bottom', or 'box'
-        movement = parts[1]  # 'up' or 'down'
-
-        adjust_top = False
-        adjust_bottom = False
         top_distance = 0
         bottom_distance = 0
 
@@ -476,14 +571,10 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
         next_bottom_level = None
         next_level = None
 
-        if is_level_mode:
+        if self.rbLevel.IsChecked and not elevation:
             # Level mode - snap to next level
-            if target == "box":
-                # Move entire box
-                adjust_top = True
-                adjust_bottom = True
-
-                if movement == "up":
+            if target == "both":
+                if direction == "up":
                     next_top_level, _ = get_next_level_above(
                         info["transformed_max"].Z, self.all_levels, TOLERANCE
                     )
@@ -517,9 +608,7 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
                     return None
 
             elif target == "top":
-                adjust_top = True
-
-                if movement == "up":
+                if direction == "up":
                     next_level, _ = get_next_level_above(
                         info["transformed_max"].Z, self.all_levels, TOLERANCE
                     )
@@ -544,9 +633,7 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
                     return None
 
             elif target == "bottom":
-                adjust_bottom = True
-
-                if movement == "up":
+                if direction == "up":
                     next_level, _ = get_next_level_above(
                         info["transformed_min"].Z, self.all_levels, TOLERANCE
                     )
@@ -570,50 +657,82 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
                         self.show_status_message(1, self.get_locale_string("WouldCreateInvalidBox"), "error")
                     return None
 
+        elif elevation:
+            if target == "top":
+                top_distance = elevation - info["transformed_max"].Z
+                # Validate won't go below bottom
+                if elevation <= info["transformed_min"].Z:
+                    if not do_not_apply:
+                        self.show_status_message(
+                            1, self.get_locale_string("WouldCreateInvalidBox"), "error"
+                        )
+                    return None
+            elif target == "bottom":
+                bottom_distance = elevation - info["transformed_min"].Z
+                # Validate won't go above top
+                if elevation >= info["transformed_max"].Z:
+                    if not do_not_apply:
+                        self.show_status_message(
+                            1, self.get_locale_string("WouldCreateInvalidBox"), "error"
+                        )
+                    return None
+            elif target == "both":
+                # Move entire box - calculate distances for both top and bottom
+                current_height = info["transformed_max"].Z - info["transformed_min"].Z
+                top_distance = elevation - info["transformed_max"].Z
+                # Keep same height
+                bottom_distance = (elevation - current_height) - info["transformed_min"].Z
+                # Validate new bottom position won't be invalid
+                new_bottom = info["transformed_min"].Z + bottom_distance
+                new_top = info["transformed_max"].Z + top_distance
+                if new_top <= new_bottom:
+                    if not do_not_apply:
+                        self.show_status_message(
+                            1, self.get_locale_string("WouldCreateInvalidBox"), "error"
+                        )
+                    return None
+            else:
+                return None
+
         else:
             # Nudge mode - move by specified amount
-            distance = nudge_amount if movement == "up" else -nudge_amount
+            distance = nudge_amount if direction == "up" else -nudge_amount
 
-            if target == "box":
-                # Move entire box
-                adjust_top = True
-                adjust_bottom = True
+            if target == "both":
                 top_distance = distance
                 bottom_distance = distance
             elif target == "top":
-                adjust_top = True
                 top_distance = distance
             elif target == "bottom":
-                adjust_bottom = True
                 bottom_distance = distance
 
         # Create adjusted box
         if do_not_apply:
             new_box = create_adjusted_box(
                 info,
-                min_z=bottom_distance if adjust_bottom else 0,
-                max_z=top_distance if adjust_top else 0,
+                min_z=bottom_distance,
+                max_z=top_distance,
             )
             return new_box
 
         # Apply the adjustment
         if self.adjust_section_box(
-            min_z_change=bottom_distance if adjust_bottom else 0,
-            max_z_change=top_distance if adjust_top else 0,
+            min_z_change=bottom_distance,
+            max_z_change=top_distance,
             min_x_change=0,
             max_x_change=0,
             min_y_change=0,
             max_y_change=0,
         ):
             # Success - show informative message
-            if is_level_mode:
+            if self.rbLevel.IsChecked and not elevation:
                 # Level mode - show which level we moved to
-                if target == "box":
+                if target == "both":
                     if next_top_level and next_bottom_level:
                         self.show_status_message(
                             1,
                             self.get_locale_string("BoxMovedFormat").format(
-                                movement, next_top_level.Name, next_bottom_level.Name
+                                direction, next_top_level.Name, next_bottom_level.Name
                             ),
                             "success",
                         )
@@ -622,7 +741,7 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
                         self.show_status_message(
                             1,
                             self.get_locale_string("TopMovedFormat").format(
-                                movement, next_level.Name
+                                direction, next_level.Name
                             ),
                             "success",
                         )
@@ -631,17 +750,32 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
                         self.show_status_message(
                             1,
                             self.get_locale_string("BottomMovedFormat").format(
-                                movement, next_level.Name
+                                direction, next_level.Name
                             ),
                             "success",
                         )
+            elif elevation:
+                self.show_status_message(
+                    1,
+                    self.get_locale_string("TopMovedFormat").format(
+                        direction, "as selected"
+                    ),
+                    "success",
+                )
+                # Close all popups
+                self.popupTopUp.IsOpen = False
+                self.popupTopDown.IsOpen = False
+                self.popupBottomUp.IsOpen = False
+                self.popupBottomDown.IsOpen = False
+                self.popupBoxUp.IsOpen = False
+                self.popupBoxDown.IsOpen = False
             else:
                 # Nudge mode - show nudge amount
                 nudge_display = format_length_value(abs(nudge_amount))
 
                 self.show_status_message(
                     1,
-                    self.get_locale_string("NudgedFormat").format(target, nudge_display, movement),
+                    self.get_locale_string("NudgedFormat").format(target, nudge_display, direction),
                     "success",
                 )
 
@@ -672,8 +806,9 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
 
     def do_grid_move(self, params):
         """Move section box side to next grid line or by nudge amount."""
-        direction_name = params.get("direction")  # 'north-out', 'south-in', etc.
-        is_grid_mode = params.get("is_grid_mode", True)
+        target = params.get("target")  # 'north', 'south', 'east', 'west'
+        direction = params.get("direction")  # 'in', 'out'
+        direction_name = str(target + direction)
         nudge_amount = params.get("nudge_amount", 0)
         do_not_apply = params.get("do_not_apply", False)
 
@@ -681,10 +816,7 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
         if not info:
             return None if do_not_apply else False
 
-        # Parse direction into cardinal direction and in/out modifier
-        parts = direction_name.split("-")
-        cardinal_dir = parts[0]  # 'north', 'south', 'east', 'west'
-        modifier = parts[1] if len(parts) > 1 else "out"  # 'in' or 'out'
+        cardinal_dir = target
 
         # Get cardinal direction vector - this represents which FACE we want to move
         face_direction = get_cardinal_direction(cardinal_dir, self.current_view)
@@ -703,7 +835,7 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
         min_y_change = 0
         max_y_change = 0
 
-        if is_grid_mode:
+        if self.rbGrid.IsChecked:
             # Grid mode - snap to next grid line
             # Get faces and select the face we want to move
             faces = get_section_box_face_info(info)
@@ -720,8 +852,12 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
             # "-out": search away from center (same as face direction)
             # "-in": search toward center (opposite of face direction)
             search_direction = (
-                face_direction if modifier == "out" else face_direction.Negate()
+                face_direction if direction == "out" else face_direction.Negate()
             )
+            # if view is parallel to grid we won't find a solution, check flattened
+            flat = DB.XYZ(search_direction.X, search_direction.Y, 0)
+            if flat.GetLength() < TOLERANCE:
+                return
 
             # Find next grid in the search direction
             grid, intersection = find_next_grid_in_direction(
@@ -769,8 +905,12 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
             # "-out": move away from center (same as face direction)
             # "-in": move toward center (opposite of face direction)
             movement_direction = (
-                face_direction if modifier == "out" else face_direction.Negate()
+                face_direction if direction == "out" else face_direction.Negate()
             )
+            # if view is parallel to grid we won't find a solution, check flattened
+            flat = DB.XYZ(movement_direction.X, movement_direction.Y, 0)
+            if flat.GetLength() < TOLERANCE:
+                return
 
             # Get the movement in local coordinates
             local_movement = inverse_transform.OfVector(movement_direction).Multiply(
@@ -814,7 +954,7 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
             max_z_change=0,
         ):
             # Success - show informative message
-            if is_grid_mode:
+            if self.rbGrid.IsChecked:
                 # Get grid name
                 grid_name = self.get_locale_string("Unknown")
                 if grid:
@@ -1138,79 +1278,63 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
             except Exception as ex:
                 logger.warning("Error hiding preview: {}".format(ex))
 
+    # ----------
     # Helper Functions
+    # ----------
 
-    def _handle_level_move(self, direction):
+    def _handle_level_move(self, tag):
         """Helper to handle level movement based on mode."""
-        is_level_mode = self.rbLevel.IsChecked
-
-        if is_level_mode:
-            # Level mode - move to next level
+        tag = self._normalize_tag(tag)
+        target = tag["target"]
+        direction = tag["direction"]
+        elevation = tag["elevation"]
+        try:
+            distance = self._get_validated_nudge_amount(self.txtLevelNudgeAmount, 1)
             self.pending_action = {
                 "action": "level_move",
+                "target": target,
                 "direction": direction,
-                "is_level_mode": True,
+                "nudge_amount": distance,
+                "elevation": elevation,
             }
             self.event_handler.parameters = self.pending_action
             self.ext_event.Raise()
-        else:
-            # Nudge mode - move by amount
-            try:
-                distance = self._get_validated_nudge_amount(self.txtLevelNudgeAmount, 1)
-                self.pending_action = {
-                    "action": "level_move",
-                    "direction": direction,
-                    "is_level_mode": False,
-                    "nudge_amount": distance,
-                }
-                self.event_handler.parameters = self.pending_action
-                self.ext_event.Raise()
 
-            except ValueError:
-                self.show_status_message(1, self.get_locale_string("PleaseEnterValidNumber"), "warning")
-                return
-            except Exception as ex:
-                logger.error("Error in level nudge: {}".format(ex))
-                self.show_status_message(
-                    1, self.get_locale_string("AnErrorOccurredFormat").format(str(ex)), "error"
-                )
-                return
+        except ValueError:
+            self.show_status_message(1, self.get_locale_string("PleaseEnterValidNumber"), "warning")
+            return
+        except Exception as ex:
+            logger.error("Error in level nudge: {}".format(ex))
+            self.show_status_message(
+                1, self.get_locale_string("AnErrorOccurredFormat").format(str(ex)), "error"
+            )
+            return
 
-    def _handle_grid_move(self, direction):
+    def _handle_grid_move(self, tag):
         """Helper to handle grid movement."""
-        is_grid_mode = self.rbGrid.IsChecked
-
-        if is_grid_mode:
-            # Grid mode - move to next grid
+        tag = self._normalize_tag(tag)
+        target = tag["target"]
+        direction = tag["direction"]
+        try:
+            distance = self._get_validated_nudge_amount(self.txtGridNudgeAmount, 2)
             self.pending_action = {
                 "action": "grid_move",
+                "target": target,
                 "direction": direction,
-                "is_grid_mode": True,
+                "nudge_amount": distance,
             }
             self.event_handler.parameters = self.pending_action
             self.ext_event.Raise()
-        else:
-            # Nudge mode - move by amount
-            try:
-                distance = self._get_validated_nudge_amount(self.txtGridNudgeAmount, 2)
-                self.pending_action = {
-                    "action": "grid_move",
-                    "direction": direction,
-                    "is_grid_mode": False,
-                    "nudge_amount": distance,
-                }
-                self.event_handler.parameters = self.pending_action
-                self.ext_event.Raise()
 
-            except ValueError:
-                self.show_status_message(2, self.get_locale_string("PleaseEnterValidNumber"), "warning")
-                return
-            except Exception as ex:
-                logger.error("Error in horizontal nudge: {}".format(ex))
-                self.show_status_message(
-                    2, self.get_locale_string("AnErrorOccurredFormat").format(str(ex)), "error"
-                )
-                return
+        except ValueError:
+            self.show_status_message(2, self.get_locale_string("PleaseEnterValidNumber"), "warning")
+            return
+        except Exception as ex:
+            logger.error("Error in horizontal nudge: {}".format(ex))
+            self.show_status_message(
+                2, self.get_locale_string("AnErrorOccurredFormat").format(str(ex)), "error"
+            )
+            return
 
     def _get_validated_nudge_amount(self, text_control, column=None, unit=length_unit):
         """Extract and validate nudge amount from text control.
@@ -1239,7 +1363,31 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
             self.show_status_message(column, self.get_locale_string("PleaseEnterValidNumber"), "warning")
             return None
 
+    def _normalize_tag(self, tag):
+        # Dynamic Buttons
+        if isinstance(tag, dict):
+            return {
+                "target": tag.get("target"),
+                "direction": tag.get("direction"),
+                "elevation": tag.get("elevation")
+            }
+
+        # XAML hardcoded Buttons
+        if isinstance(tag, str):
+            parts = tag.split("-")
+
+            target = parts[0]
+            direction = parts[1]
+
+            return {
+                "target": target,
+                "direction": direction,
+                "elevation": None
+            }
+
+    # ----------
     # Button Handlers
+    # ----------
 
     def btn_top_up_click(self, sender, e):
         """Move top up."""
@@ -1263,6 +1411,10 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
 
     def btn_box_down_click(self, sender, e):
         """Move entire box down."""
+        self._handle_level_move(sender.Tag)
+
+    def btn_menu_item_click(self, sender, e):
+        """Menu item click handling."""
         self._handle_level_move(sender.Tag)
 
     def btn_expansion_top_up_click(self, sender, e):
@@ -1382,52 +1534,53 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
             return
 
         try:
-            tag = sender.Tag
+            tag = self._normalize_tag(sender.Tag)
 
-            # Determine button type from tag
-            is_level_button = any(word in tag for word in ["top", "bottom", "box"])
-            is_grid_button = any(
-                word in tag for word in ["north", "east", "south", "west"]
-            )
-            is_expansion_button = any(word in tag for word in ["expand", "shrink"])
-            is_toggle_button = "toggle" in tag
+            target = tag["target"]
+            direction = tag["direction"]
+            elevation = tag["elevation"]
+
+            is_level_button = target in ("top", "bottom", "both")
+            is_grid_button = target in ("north", "east", "south", "west")
+            is_expansion_button = target == "box"
+            is_toggle_button = direction == "toggle"
 
             box = None
 
             if is_level_button:
-                is_level_mode = self.rbLevel.IsChecked
                 distance = self._get_validated_nudge_amount(self.txtLevelNudgeAmount)
-                if not is_level_mode and distance is None:
+                if not self.rbLevel.IsChecked and distance is None:
                     return
 
                 params = {
-                    "direction": tag,
-                    "is_level_mode": is_level_mode,
+                    "target": target,
+                    "direction": direction,
                     "nudge_amount": distance,
                     "do_not_apply": True,
+                    "elevation": elevation,
                 }
                 box = self.do_level_move(params)
 
             elif is_grid_button:
-                is_grid_mode = self.rbGrid.IsChecked
                 distance = self._get_validated_nudge_amount(self.txtGridNudgeAmount)
-                if not is_grid_mode and distance is None:
+                if not self.rbGrid.IsChecked and distance is None:
                     return
 
                 params = {
-                    "direction": tag,
-                    "is_grid_mode": is_grid_mode,
+                    "target": target,
+                    "direction": direction,
                     "nudge_amount": distance,
                     "do_not_apply": True,
+                    "elevation": elevation,
                 }
                 box = self.do_grid_move(params)
 
-            elif is_expansion_button:
+            elif is_expansion_button and not is_toggle_button:
                 amount = self._get_validated_nudge_amount(self.txtExpandAmount)
                 if amount is None:
                     return
 
-                is_expand = "expand" in sender.Tag
+                is_expand = tag["direction"] == "expand"
                 adjustment = amount if is_expand else -amount
 
                 info = get_section_box_info(self.current_view, DATAFILENAME)
@@ -1450,7 +1603,7 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
                 self.show_preview("toggle")
 
         except Exception as ex:
-            logger.warning("Error in preview: {}".format(ex))
+            logger.exception("Error in preview: {}".format(ex))
 
     def btn_preview_leave(self, sender, e):
         """Hide preview when leaving buttons."""
@@ -1519,6 +1672,52 @@ class SectionBoxNavigatorForm(forms.WPFWindow):
     def btn_grid_east_in_click(self, sender, e):
         """Move east side inward (west direction)."""
         self._handle_grid_move(sender.Tag)
+
+    def btn_top_up_dropdown_click(self, sender, e):
+        """Show dropdown menu for top up levels."""
+        if not self.rbLevel.IsChecked:
+            return
+        self.populate_level_menu(self.menuTopUp, "up", "top")
+        self.popupTopUp.IsOpen = True
+
+    def btn_top_down_dropdown_click(self, sender, e):
+        """Show dropdown menu for top down levels."""
+        if not self.rbLevel.IsChecked:
+            return
+        self.populate_level_menu(self.menuTopDown, "down", "top")
+        self.popupTopDown.IsOpen = True
+
+    def btn_bottom_up_dropdown_click(self, sender, e):
+        """Show dropdown menu for bottom up levels."""
+        if not self.rbLevel.IsChecked:
+            return
+        self.populate_level_menu(self.menuBottomUp, "up", "bottom")
+        self.popupBottomUp.IsOpen = True
+
+    def btn_bottom_down_dropdown_click(self, sender, e):
+        """Show dropdown menu for bottom down levels."""
+        if not self.rbLevel.IsChecked:
+            return
+        self.populate_level_menu(self.menuBottomDown, "down", "bottom")
+        self.popupBottomDown.IsOpen = True
+
+    def btn_box_up_dropdown_click(self, sender, e):
+        """Show dropdown menu for box up levels."""
+        if not self.rbLevel.IsChecked:
+            return
+        self.populate_level_menu(self.menuBoxUp, "up", "both")
+        self.popupBoxUp.IsOpen = True
+
+    def btn_box_down_dropdown_click(self, sender, e):
+        """Show dropdown menu for box down levels."""
+        if not self.rbLevel.IsChecked:
+            return
+        self.populate_level_menu(self.menuBoxDown, "down", "both")
+        self.popupBoxDown.IsOpen = True
+
+    def rb_level_mode_changed(self, sender, e):
+        """Handle level/nudge mode radio button change."""
+        self.update_dropdown_visibility()
 
     def form_closed(self, sender, args):
         """Cleanup when form is closed."""

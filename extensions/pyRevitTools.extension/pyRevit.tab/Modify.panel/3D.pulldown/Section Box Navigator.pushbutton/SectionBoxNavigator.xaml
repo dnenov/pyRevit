@@ -41,6 +41,40 @@
             <Setter Property="BorderBrush" Value="#F0F0F0"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
+        
+        <!-- Style for dropdown button (the arrow part of split button) -->
+        <Style x:Key="DropdownButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        
+        <!-- Style for level menu items -->
+        <Style x:Key="LevelMenuItemStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Padding" Value="10,2"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFBEE6FD"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFB0D8F9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Grid Margin="15">
         <Grid.RowDefinitions>
@@ -83,37 +117,174 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Top Controls -->
-                        <Button Content="{DynamicResource TopUp}" Grid.Row="0" Grid.Column="0" 
-                                Height="30" Margin="2" Click="btn_top_up_click" Tag="top-up"
-                                MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"/>
-                        <Button Content="{DynamicResource TopDown}" Grid.Row="0" Grid.Column="1" 
-                                Height="30" Margin="2" Click="btn_top_down_click" Tag="top-down"
-                                MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"/>
+                        <!-- Top Controls with Split Button -->
+                        <Grid Grid.Row="0" Grid.Column="0" Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="btnTopUp" Content="{DynamicResource TopUp}" 
+                                    Height="30" Click="btn_top_up_click" Tag="top-up"
+                                    MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"
+                                    Grid.Column="0"/>
+                            <Button x:Name="btnTopUpDropdown" Content="▼" 
+                                    Style="{StaticResource DropdownButtonStyle}"
+                                    Height="30" Click="btn_top_up_dropdown_click"
+                                    Grid.Column="1" Margin="1,0,0,0"/>
+                            <Popup x:Name="popupTopUp" 
+                                   PlacementTarget="{Binding ElementName=btnTopUp}"
+                                   Placement="Bottom"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True">
+                                <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1">
+                                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="menuTopUp" Background="White"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        
+                        <Grid Grid.Row="0" Grid.Column="1" Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="btnTopDown" Content="{DynamicResource TopDown}" 
+                                    Height="30" Click="btn_top_down_click" Tag="top-down"
+                                    MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"
+                                    Grid.Column="0"/>
+                            <Button x:Name="btnTopDownDropdown" Content="▼" 
+                                    Style="{StaticResource DropdownButtonStyle}"
+                                    Height="30" Click="btn_top_down_dropdown_click"
+                                    Grid.Column="1" Margin="1,0,0,0"/>
+                            <Popup x:Name="popupTopDown" 
+                                   PlacementTarget="{Binding ElementName=btnTopDown}"
+                                   Placement="Bottom"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True">
+                                <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1">
+                                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="menuTopDown" Background="White"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
 
-                        <!-- Bottom Controls -->
-                        <Button Content="{DynamicResource BottomUp}" Grid.Row="1" Grid.Column="0" 
-                                Height="30" Margin="2" Click="btn_bottom_up_click" Tag="bottom-up"
-                                MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"/>
-                        <Button Content="{DynamicResource BottomDown}" Grid.Row="1" Grid.Column="1" 
-                                Height="30" Margin="2" Click="btn_bottom_down_click" Tag="bottom-down"
-                                MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"/>
+                        <!-- Bottom Controls with Split Button -->
+                        <Grid Grid.Row="1" Grid.Column="0" Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="btnBottomUp" Content="{DynamicResource BottomUp}" 
+                                    Height="30" Click="btn_bottom_up_click" Tag="bottom-up"
+                                    MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"
+                                    Grid.Column="0"/>
+                            <Button x:Name="btnBottomUpDropdown" Content="▼" 
+                                    Style="{StaticResource DropdownButtonStyle}"
+                                    Height="30" Click="btn_bottom_up_dropdown_click"
+                                    Grid.Column="1" Margin="1,0,0,0"/>
+                            <Popup x:Name="popupBottomUp" 
+                                   PlacementTarget="{Binding ElementName=btnBottomUp}"
+                                   Placement="Bottom"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True">
+                                <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1">
+                                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="menuBottomUp" Background="White"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        
+                        <Grid Grid.Row="1" Grid.Column="1" Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="btnBottomDown" Content="{DynamicResource BottomDown}" 
+                                    Height="30" Click="btn_bottom_down_click" Tag="bottom-down"
+                                    MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"
+                                    Grid.Column="0"/>
+                            <Button x:Name="btnBottomDownDropdown" Content="▼" 
+                                    Style="{StaticResource DropdownButtonStyle}"
+                                    Height="30" Click="btn_bottom_down_dropdown_click"
+                                    Grid.Column="1" Margin="1,0,0,0"/>
+                            <Popup x:Name="popupBottomDown" 
+                                   PlacementTarget="{Binding ElementName=btnBottomDown}"
+                                   Placement="Bottom"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True">
+                                <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1">
+                                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="menuBottomDown" Background="White"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
 
-                        <!-- Box Navigation -->
-                        <Button Content="{DynamicResource BoxUp}" Grid.Row="2" Grid.Column="0" 
-                                Height="30" Margin="2" Click="btn_box_up_click" Tag="box-up"
-                                MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"/>
-                        <Button Content="{DynamicResource BoxDown}" Grid.Row="2" Grid.Column="1" 
-                                Height="30" Margin="2" Click="btn_box_down_click" Tag="box-down"
-                                MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"/>
+                        <!-- Box Navigation with Split Button -->
+                        <Grid Grid.Row="2" Grid.Column="0" Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="btnBoxUp" Content="{DynamicResource BoxUp}" 
+                                    Height="30" Click="btn_box_up_click" Tag="both-up"
+                                    MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"
+                                    Grid.Column="0"/>
+                            <Button x:Name="btnBoxUpDropdown" Content="▼" 
+                                    Style="{StaticResource DropdownButtonStyle}"
+                                    Height="30" Click="btn_box_up_dropdown_click"
+                                    Grid.Column="1" Margin="1,0,0,0"/>
+                            <Popup x:Name="popupBoxUp" 
+                                   PlacementTarget="{Binding ElementName=btnBoxUp}"
+                                   Placement="Bottom"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True">
+                                <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1">
+                                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="menuBoxUp" Background="White"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        
+                        <Grid Grid.Row="2" Grid.Column="1" Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="btnBoxDown" Content="{DynamicResource BoxDown}" 
+                                    Height="30" Click="btn_box_down_click" Tag="both-down"
+                                    MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"
+                                    Grid.Column="0"/>
+                            <Button x:Name="btnBoxDownDropdown" Content="▼" 
+                                    Style="{StaticResource DropdownButtonStyle}"
+                                    Height="30" Click="btn_box_down_dropdown_click"
+                                    Grid.Column="1" Margin="1,0,0,0"/>
+                            <Popup x:Name="popupBoxDown" 
+                                   PlacementTarget="{Binding ElementName=btnBoxDown}"
+                                   Placement="Bottom"
+                                   StaysOpen="False"
+                                   AllowsTransparency="True">
+                                <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1">
+                                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel x:Name="menuBoxDown" Background="White"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
                     </Grid>
 
                     <!-- Mode Selection Radio Buttons -->
                     <StackPanel Orientation="Horizontal" Margin="0,5,0,5" HorizontalAlignment="Center">
                         <RadioButton x:Name="rbLevel" Content="{DynamicResource Level}" 
-                                    GroupName="LevelNudgeMode" IsChecked="True" Margin="0,0,15,0"/>
+                                    GroupName="LevelNudgeMode" IsChecked="True" Margin="0,0,15,0"
+                                    Checked="rb_level_mode_changed"/>
                         <RadioButton x:Name="rbLevelNudge" Content="{DynamicResource Nudge}" 
-                                    GroupName="LevelNudgeMode" Margin="0,0,0,0"/>
+                                    GroupName="LevelNudgeMode" Margin="0,0,0,0"
+                                    Checked="rb_level_mode_changed"/>
                     </StackPanel>
 
                     <!-- Nudge Amount Input (for Nudge mode) -->
@@ -151,6 +322,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+            
             <!-- Grid Navigation -->
             <GroupBox Grid.Row="0" Margin="0,0,0,10">
                 <GroupBox.Header>
@@ -214,9 +386,9 @@
                     <!-- Mode Selection Radio Buttons -->
                     <StackPanel Orientation="Horizontal" Margin="0,5,0,5" HorizontalAlignment="Center">
                         <RadioButton x:Name="rbGrid" Content="{DynamicResource Grid}" 
-                                     GroupName="GridNudgeMode" IsChecked="True" Margin="0,0,15,0"/>
+                                    GroupName="GridNudgeMode" IsChecked="True" Margin="0,0,15,0"/>
                         <RadioButton x:Name="rbGridNudge" Content="{DynamicResource Nudge}" 
-                                     GroupName="GridNudgeMode" Margin="0,0,0,0"/>
+                                    GroupName="GridNudgeMode" Margin="0,0,0,0"/>
                     </StackPanel>
 
                     <!-- Nudge Amount Input (for Nudge mode) -->
@@ -228,13 +400,13 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{DynamicResource Amount}" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBox x:Name="txtGridNudgeAmount" Grid.Column="1" 
-                                 Text="500" Height="25" VerticalContentAlignment="Center"/>
+                                Text="500" Height="25" VerticalContentAlignment="Center"/>
                         <TextBlock x:Name="txtGridNudgeUnit" Grid.Column="2" 
                                    Text="mm" VerticalAlignment="Center" Margin="5,0,0,0"/>
                     </Grid>
                 </StackPanel>
             </GroupBox>
-
+            
             <!-- Expansion Controls -->
             <GroupBox Grid.Row="1" Margin="0,0,0,10">
                 <GroupBox.Header>
@@ -252,9 +424,9 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{DynamicResource Amount}" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBox x:Name="txtExpandAmount" Grid.Column="1" 
-                                 Text="500" Height="25" VerticalContentAlignment="Center"/>
+                                Text="500" Height="25" VerticalContentAlignment="Center"/>
                         <TextBlock x:Name="txtExpandUnit" Grid.Column="2" 
-                                   Text="{DynamicResource Loading}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                Text="{DynamicResource Loading}" VerticalAlignment="Center" Margin="5,0,0,0"/>
                     </Grid>
                     
                     <Grid>
@@ -268,10 +440,10 @@
 
                         <!-- Buttons -->
                         <Button Content="{DynamicResource Expand}" Grid.Row="0" Grid.Column="0" 
-                                Height="30" Margin="2" Click="btn_expansion_top_up_click" Tag="expand"
+                                Height="30" Margin="2" Click="btn_expansion_top_up_click" Tag="box-expand"
                                 MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"/>
                         <Button Content="{DynamicResource Shrink}" Grid.Row="0" Grid.Column="1" 
-                                Height="30" Margin="2" Click="btn_expansion_top_down_click" Tag="shrink"
+                                Height="30" Margin="2" Click="btn_expansion_top_down_click" Tag="box-shrink"
                                 MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"/>
                     </Grid>
                 </StackPanel>
@@ -285,7 +457,7 @@
             </GroupBox.Header>
             <UniformGrid Columns="3" Margin="5,0,5,2" HorizontalAlignment="Stretch">
                 <Button x:Name="btnToggleBox" Content="{DynamicResource ToggleBox}" 
-                        Margin="2" Click="btn_toggle_box_click" Tag="toggle"
+                        Margin="2" Click="btn_toggle_box_click" Tag="box-toggle"
                         MouseEnter="btn_preview_enter" MouseLeave="btn_preview_leave"/>
                 <Button x:Name="btnHideBox" Content="{DynamicResource UnHideBox}" 
                         Margin="2" Click="btn_hide_box_click"/>

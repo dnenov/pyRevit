@@ -51,7 +51,7 @@ selected_switch = \
     forms.CommandSwitchWindow.show(sorted(switches),
                                    message='List elements of type:')
 
-
+output.freeze()
 if selected_switch == 'Graphic Styles':
     cl = DB.FilteredElementCollector(revit.doc)
     gstyles = [i for i in cl.OfClass(DB.GraphicsStyle).ToElements()]
@@ -490,3 +490,4 @@ elif selected_switch == 'Builtin Categories with No DB.Category':
         dbcat = revit.query.get_category(bic)
         if not dbcat:
             print(bic)
+output.unfreeze()

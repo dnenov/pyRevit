@@ -88,6 +88,39 @@ Filename: "{app}\bin\pyrevit.exe"; RunOnceId: "ClearCaches"; Parameters: "caches
 Filename: "{app}\bin\pyrevit.exe"; RunOnceId: "DetachClones"; Parameters: "detach --all"; Flags: runhidden runascurrentuser
 
 [Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ProgramDataPyRevit: String;
+  MarkerPath: String;
+begin
+  if CurStep = ssPostInstall then
+  begin
+    ProgramDataPyRevit := ExpandConstant('{commonappdata}\pyRevit');
+    MarkerPath := ProgramDataPyRevit + '\install_all_users';
+    if ForceDirectories(ProgramDataPyRevit) then
+      SaveStringToFile(MarkerPath, 'AllUsers', False)
+    else
+    begin
+      Log('Could not create ProgramData\pyRevit for install_all_users marker');
+      MsgBox('Warning: Could not create all-users marker file. Config will use per-user scope.', mbInformation, MB_OK);
+    end;
+  end;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  MarkerPath: String;
+begin
+  if CurUninstallStep = usPostUninstall then
+  begin
+    MarkerPath := ExpandConstant('{commonappdata}\pyRevit\install_all_users');
+    if FileExists(MarkerPath) and DeleteFile(MarkerPath) then
+      Log('Removed install_all_users marker')
+    else if FileExists(MarkerPath) then
+      Log('Could not remove install_all_users marker: ' + MarkerPath);
+  end;
+end;
+
 function InitializeSetup: Boolean;
 begin
   // .NET 8 for Revit 2025-2026

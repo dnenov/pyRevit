@@ -117,25 +117,29 @@ def _update_product_data_file(ver, key, cli=False):
 
 def set_product_data(_: Dict[str, str]):
     """Set new product uuid on installers and product uuid database"""
-    pyrevit_pc = _get_new_product_code()
-    pyrevitcli_pc = _get_new_product_code()
+    # Use stable GUIDs for Inno Setup installers (defined in .iss files)
+    # These must match the AppId values to ensure proper version detection and upgrades
+    pyrevit_inno_pc = configs.PYREVIT_INNO_PRODUCT_CODE
+    pyrevitcli_inno_pc = configs.PYREVIT_CLI_INNO_PRODUCT_CODE
+    
+    # MSI installers require new ProductCode per version (upgrade code stays same)
+    pyrevitcli_msi_pc = _get_new_product_code()
+
+    # Inno Setup installers use stable GUIDs defined in .iss files (not updated here)
 
     # update product info on MSI installer files
+    # Note: Only pyRevit CLI has MSI installers (PYREVIT_MSI_PROPS_FILES is empty)
     _msi_set_uuid(
-        pyrevit_pc,
-        configs.PYREVIT_UPGRADE_CODE,
-        configs.PYREVIT_MSI_PROPS_FILES,
-    )
-    _msi_set_uuid(
-        pyrevitcli_pc,
+        pyrevitcli_msi_pc,
         configs.PYREVIT_CLI_UPGRADE_CODE,
         configs.PYREVIT_CLI_MSI_PROPS_FILES,
     )
 
     build_version = props.get_version()
 
-    _update_product_data_file(build_version, pyrevit_pc)
-    _update_product_data_file(build_version, pyrevitcli_pc, cli=True)
+    # Save Inno Setup stable GUIDs to products database for version tracking
+    _update_product_data_file(build_version, pyrevit_inno_pc)
+    _update_product_data_file(build_version, pyrevitcli_inno_pc, cli=True)
 
 
 def _get_binaries():

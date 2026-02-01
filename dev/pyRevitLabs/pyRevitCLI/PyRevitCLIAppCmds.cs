@@ -178,7 +178,7 @@ namespace pyRevitCLI {
                 Console.WriteLine(string.Format("Installed .Net-Core Target Packs: {0}", targetPacks));
             }
             catch {
-                Console.WriteLine("No .Net-Core Target Packs are installed.");
+                Console.WriteLine("No .Ne-Core Target Packs are installed.");
             }
 
             Console.WriteLine(string.Format("Active CPython Engine Version: {0}",

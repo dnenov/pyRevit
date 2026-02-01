@@ -264,7 +264,7 @@ namespace pyRevitLabs.TargetApps.Revit {
                         if (revitProduct is null)
                         {
                             logger.Warn("Could not determine Revit product for \"{0}\" (version: {1}). This installation will be excluded from the list. " +
-                                       "This may occur if the version is not listed in pyrevit-hosts.json and the binary file information could not be read.",
+                                       "This may occur if the version is not listed in pyrevit-hosts.json or if product information could not be read from the binary file.",
                                        regName, regVersion);
                             continue;
                         }
@@ -334,7 +334,9 @@ namespace pyRevitLabs.TargetApps.Revit {
                 // If still not found in database, create from binary info
                 if (revitProduct is null)
                 {
-                    logger.Info("Creating Revit product entry from binary file information for version \"{0}\" (build: {1}).", regVersion, prodInfo.build);
+                    logger.Info("Version \"{0}\" (build: {1}) not found in pyrevit-hosts.json. Using product information from binary file. " +
+                               "Consider updating pyrevit-hosts.json if this version should be officially supported.", 
+                               regVersion, prodInfo.build);
                     revitProduct = new RevitProduct(prodInfo);
                 }
                 return revitProduct;

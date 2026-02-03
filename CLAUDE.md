@@ -51,7 +51,9 @@ pipenv run pyrevit set build wip      # Set as work-in-progress
 pipenv run pyrevit set build release  # Set as release build
 ```
 
-## Documentation Commands
+## Documentation
+
+Main documentation: https://docs.pyrevitlabs.io/ (built from `docs/` folder)
 
 ```bash
 pipenv run docs                       # Build documentation (mkdocs)

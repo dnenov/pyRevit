@@ -130,16 +130,33 @@ namespace pyRevitAssemblyBuilder.UIManager
         private static bool _staticInitialized;
         private static bool _staticInitializationFailed;
         private static readonly object _staticLock = new object();
-        
+
         private object _executor;
         private MethodInfo _executeMethod;
         private bool _instanceInitialized;
         private bool _instanceInitializationFailed;
 
+        // Debug file logging
+        private static readonly string _debugLogPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "pyRevit", "ComboBoxDebug.log");
+
+        private static void DebugLog(string message)
+        {
+            try
+            {
+                var dir = Path.GetDirectoryName(_debugLogPath);
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                File.AppendAllText(_debugLogPath, $"[{DateTime.Now:HH:mm:ss.fff}] {message}\r\n");
+            }
+            catch { }
+        }
+
         public ComboBoxScriptInitializer(UIApplication uiApp, ILogger logger)
         {
             _uiApp = uiApp;
             _logger = logger;
+            DebugLog("ComboBoxScriptInitializer constructor called");
             EnsureStaticInitialized();
         }
 
@@ -148,6 +165,8 @@ namespace pyRevitAssemblyBuilder.UIManager
         /// </summary>
         private void EnsureStaticInitialized()
         {
+            DebugLog($"EnsureStaticInitialized called. _staticInitialized={_staticInitialized}, _staticInitializationFailed={_staticInitializationFailed}");
+
             if (_staticInitialized || _staticInitializationFailed)
                 return;
 
@@ -158,27 +177,58 @@ namespace pyRevitAssemblyBuilder.UIManager
 
                 try
                 {
+                    DebugLog("Looking for pyRevitLoader assembly via AssemblyCache.GetByPrefix...");
+
+                    // List all loaded assemblies for debugging
+                    var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+                    DebugLog($"Total assemblies in AppDomain: {allAssemblies.Length}");
+                    foreach (var asm in allAssemblies)
+                    {
+                        try
+                        {
+                            var name = asm.GetName().Name;
+                            if (name != null && name.IndexOf("pyRevit", StringComparison.OrdinalIgnoreCase) >= 0)
+                                DebugLog($"  Found pyRevit-related assembly: {name}");
+                        }
+                        catch { }
+                    }
+
                     // Use AssemblyCache to find pyRevitLoader assembly
                     _pyRevitLoaderAssembly = SessionManager.AssemblyCache.GetByPrefix("pyRevitLoader");
 
                     if (_pyRevitLoaderAssembly == null)
                     {
+                        DebugLog("ERROR: pyRevitLoader assembly NOT FOUND via GetByPrefix");
                         _staticInitializationFailed = true;
                         return;
+                    }
+
+                    DebugLog($"Found pyRevitLoader assembly: {_pyRevitLoaderAssembly.GetName().Name}");
+
+                    // List all types in the assembly for debugging
+                    DebugLog("Listing types in pyRevitLoader assembly...");
+                    foreach (var type in _pyRevitLoaderAssembly.GetTypes())
+                    {
+                        if (type.Name.Contains("ComboBox") || type.Namespace?.Contains("PyRevitLoader") == true)
+                            DebugLog($"  Type: {type.FullName}");
                     }
 
                     // Get ComboBoxExecutor type
                     _executorType = _pyRevitLoaderAssembly.GetType("PyRevitLoader.ComboBoxExecutor");
                     if (_executorType == null)
                     {
+                        DebugLog("ERROR: ComboBoxExecutor type NOT FOUND in assembly");
                         _staticInitializationFailed = true;
                         return;
                     }
 
+                    DebugLog($"Found ComboBoxExecutor type: {_executorType.FullName}");
                     _staticInitialized = true;
+                    DebugLog("Static initialization completed successfully");
                 }
-                catch
+                catch (Exception ex)
                 {
+                    DebugLog($"ERROR in EnsureStaticInitialized: {ex.Message}\r\n{ex.StackTrace}");
                     _staticInitializationFailed = true;
                 }
             }
@@ -189,11 +239,14 @@ namespace pyRevitAssemblyBuilder.UIManager
         /// </summary>
         private void EnsureInstanceInitialized()
         {
+            DebugLog($"EnsureInstanceInitialized called. _instanceInitialized={_instanceInitialized}");
+
             if (_instanceInitialized || _instanceInitializationFailed)
                 return;
 
             if (_staticInitializationFailed || _executorType == null)
             {
+                DebugLog("ERROR: Static initialization failed or _executorType is null");
                 _logger.Warning("PyRevitLoader assembly or ComboBoxExecutor type not found");
                 _instanceInitializationFailed = true;
                 return;
@@ -201,18 +254,29 @@ namespace pyRevitAssemblyBuilder.UIManager
 
             try
             {
+                DebugLog("Creating ComboBoxExecutor instance via Activator.CreateInstance...");
+
                 // Create executor instance with logger
-                Action<string> logAction = msg => _logger.Debug(msg);
+                Action<string> logAction = msg =>
+                {
+                    DebugLog($"[ComboBoxExecutor] {msg}");
+                    _logger.Debug(msg);
+                };
                 _executor = Activator.CreateInstance(_executorType, _uiApp, logAction);
+
+                DebugLog($"ComboBoxExecutor instance created: {_executor != null}");
 
                 // Get ExecuteEventHandlerSetup method
                 _executeMethod = _executorType.GetMethod("ExecuteEventHandlerSetup");
+                DebugLog($"ExecuteEventHandlerSetup method found: {_executeMethod != null}");
 
                 _instanceInitialized = true;
                 _logger.Debug("ComboBoxScriptInitializer initialized successfully");
+                DebugLog("Instance initialization completed successfully");
             }
             catch (Exception ex)
             {
+                DebugLog($"ERROR creating instance: {ex.Message}\r\n{ex.StackTrace}");
                 _logger.Error($"Failed to initialize ComboBoxScriptInitializer: {ex.Message}");
                 _instanceInitializationFailed = true;
             }
@@ -223,15 +287,20 @@ namespace pyRevitAssemblyBuilder.UIManager
         /// </summary>
         public bool ExecuteEventHandlerSetup(ParsedComponent component, ComboBox comboBox)
         {
+            DebugLog($"ExecuteEventHandlerSetup called for component: {component?.DisplayName ?? "null"}");
+
             EnsureInstanceInitialized();
 
             if (_instanceInitializationFailed || _executor == null || _executeMethod == null)
             {
+                DebugLog($"ERROR: Instance not available. Failed={_instanceInitializationFailed}, Executor={_executor != null}, Method={_executeMethod != null}");
                 _logger.Debug("ComboBoxScriptInitializer not available. Skipping script execution.");
                 return false;
             }
 
             var scriptPath = FindScriptPath(component);
+            DebugLog($"Script path found: {scriptPath ?? "null"}");
+
             if (string.IsNullOrEmpty(scriptPath))
             {
                 _logger.Debug($"No script.py found for ComboBox '{component.DisplayName}'.");
@@ -258,19 +327,25 @@ namespace pyRevitAssemblyBuilder.UIManager
                 }
             }
 
+            DebugLog($"Additional paths: {string.Join(", ", additionalPaths)}");
+
             try
             {
+                DebugLog("Invoking ComboBoxExecutor.ExecuteEventHandlerSetup...");
                 // Call ComboBoxExecutor.ExecuteEventHandlerSetup(scriptPath, context, comboBox, additionalPaths)
                 var result = _executeMethod.Invoke(_executor, new object[] { scriptPath, context, comboBox, additionalPaths });
+                DebugLog($"ExecuteEventHandlerSetup returned: {result}");
                 return result is bool boolResult ? boolResult : true;
             }
             catch (TargetInvocationException ex)
             {
+                DebugLog($"TargetInvocationException: {ex.InnerException?.Message ?? ex.Message}\r\n{ex.InnerException?.StackTrace ?? ex.StackTrace}");
                 _logger.Error($"Error setting up event handlers: {ex.InnerException?.Message ?? ex.Message}");
                 return false;
             }
             catch (Exception ex)
             {
+                DebugLog($"Exception: {ex.Message}\r\n{ex.StackTrace}");
                 _logger.Error($"Error setting up event handlers: {ex.Message}");
                 return false;
             }

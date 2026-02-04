@@ -13,7 +13,11 @@ using pyRevitAssemblyBuilder.UIManager;
 namespace PyRevitLoader {
     /// <summary>
     /// Executes ComboBox event handler scripts using IronPython directly.
-    /// Supports: __cmb_on_change__, __cmb_dropdown_close__, __cmb_dropdown_open__
+    /// Supports: __selfinit__, __cmb_on_change__, __cmb_dropdown_close__, __cmb_dropdown_open__
+    ///
+    /// The __selfinit__(component, ui_item, uiapp) pattern allows scripts to perform
+    /// deferred initialization after the UI is ready. If __selfinit__ returns False,
+    /// the ComboBox is deactivated.
     /// </summary>
     public class ComboBoxExecutor {
         private readonly UIApplication _revit;
@@ -118,12 +122,124 @@ namespace PyRevitLoader {
                     return false;
                 }
 
+                // Check for __selfinit__ pattern (deferred initializer)
+                bool hasSelfInit = scope.ContainsVariable("__selfinit__");
+                if (hasSelfInit) {
+                    Log($"Found __selfinit__ for ComboBox '{context.name}', invoking...");
+                    try {
+                        // Create a ui_item wrapper that provides get_rvtapi_object() and other methods
+                        // This is done in Python to match the expected pyRevit API
+                        scope.SetVariable("__combobox_raw__", comboBox);
+                        _engine.Execute(@"
+class _ComboBoxUIItemWrapper:
+    def __init__(self, cmb):
+        self._cmb = cmb
+        # Storage for event handler references to prevent GC
+        self._handlers = {}
+
+    def get_rvtapi_object(self):
+        return self._cmb
+
+    @property
+    def current(self):
+        return self._cmb.Current
+
+    @current.setter
+    def current(self, value):
+        self._cmb.Current = value
+
+    @property
+    def name(self):
+        return self._cmb.Name
+
+    @property
+    def enabled(self):
+        return self._cmb.Enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self._cmb.Enabled = value
+
+    @property
+    def visible(self):
+        return self._cmb.Visible
+
+    @visible.setter
+    def visible(self, value):
+        self._cmb.Visible = value
+
+    def get_items(self):
+        return list(self._cmb.GetItems())
+
+    def get_title(self):
+        return getattr(self._cmb, 'ItemText', self._cmb.Name)
+
+    def set_title(self, text):
+        self._cmb.ItemText = text
+
+    def add_item(self, member_data):
+        return self._cmb.AddItem(member_data)
+
+    def add_items(self, member_data_list):
+        for md in member_data_list:
+            self._cmb.AddItem(md)
+
+    def add_separator(self):
+        self._cmb.AddSeparator()
+
+    def activate(self):
+        self._cmb.Enabled = True
+        self._cmb.Visible = True
+
+    def deactivate(self):
+        self._cmb.Enabled = False
+        self._cmb.Visible = False
+
+    def get_contexthelp(self):
+        try:
+            return self._cmb.GetContextualHelp()
+        except:
+            return None
+
+    def set_contexthelp(self, url):
+        from Autodesk.Revit.UI import ContextualHelp, ContextualHelpType
+        help_obj = ContextualHelp(ContextualHelpType.Url, url)
+        self._cmb.SetContextualHelp(help_obj)
+
+__ui_item_wrapper__ = _ComboBoxUIItemWrapper(__combobox_raw__)
+", scope);
+                        var uiItemWrapper = scope.GetVariable("__ui_item_wrapper__");
+
+                        var selfInitFunc = scope.GetVariable("__selfinit__");
+                        var selfInitOps = _engine.Operations;
+
+                        // Call __selfinit__(component, ui_item, uiapp)
+                        // component = context, ui_item = wrapper, uiapp = UIApplication
+                        var result = selfInitOps.Invoke(selfInitFunc, context, uiItemWrapper, _revit);
+
+                        // If __selfinit__ returns False, deactivate the ComboBox
+                        if (result is bool && (bool)result == false) {
+                            Log($"__selfinit__ returned False for ComboBox '{context.name}', deactivating.");
+                            return false;
+                        }
+
+                        Log($"__selfinit__ completed successfully for ComboBox '{context.name}'.");
+                        handlersWired = true; // Keep engine alive since __selfinit__ set up handlers
+                    }
+                    catch (Exception ex) {
+                        Message = $"Error in __selfinit__: {ex.Message}";
+                        Log(Message);
+                        return false;
+                    }
+                }
+
                 // Check for event handlers
                 bool hasOnChange = scope.ContainsVariable("__cmb_on_change__");
                 bool hasDropdownClose = scope.ContainsVariable("__cmb_dropdown_close__");
                 bool hasDropdownOpen = scope.ContainsVariable("__cmb_dropdown_open__");
 
-                if (!hasOnChange && !hasDropdownClose && !hasDropdownOpen) {
+                // If __selfinit__ was used, don't require __cmb_* handlers
+                if (!hasSelfInit && !hasOnChange && !hasDropdownClose && !hasDropdownOpen) {
                     Log($"No event handlers found in script for ComboBox '{context.name}'.");
                     return true;
                 }

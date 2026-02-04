@@ -54,6 +54,20 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
 
             _logger.Debug($"Created or retrieved panel '{panelText}' in tab '{tabName}'.");
 
+            try
+            {
+                var adwPanel = _styleManager.GetAdWindowsPanel(panel, tabName);
+                if (adwPanel != null)
+                {
+                    adwPanel.IsVisible = true;
+                    adwPanel.IsEnabled = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug($"Failed to re-enable panel '{panelText}' in tab '{tabName}'. Exception: {ex.Message}");
+            }
+
             return panel;
         }
 

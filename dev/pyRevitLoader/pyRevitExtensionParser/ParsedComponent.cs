@@ -32,7 +32,11 @@ namespace pyRevitExtensionParser
         public string Author { get; set; }
         public string Context { get; set; }
         public string Hyperlink { get; set; }
+        public string HelpUrl { get; set; }
         public string Highlight { get; set; }
+        public string MinRevitVersion { get; set; }
+        public string MaxRevitVersion { get; set; }
+        public bool IsBeta { get; set; }
         public string TargetAssembly { get; set; }
         public string CommandClass { get; set; }
         public string AvailabilityClass { get; set; }
@@ -134,6 +138,11 @@ namespace pyRevitExtensionParser
         public Dictionary<string, string> LocalizedTooltips { get; set; }
 
         /// <summary>
+        /// Localized help URLs from bundle.yaml (locale -> help URL)
+        /// </summary>
+        public Dictionary<string, string> LocalizedHelpUrls { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
         /// Gets the primary icon for this component (convenience property)
         /// </summary>
         public ComponentIcon PrimaryIcon => Icons?.PrimaryIcon;
@@ -203,6 +212,16 @@ namespace pyRevitExtensionParser
         public string GetLocalizedTooltip(string locale = null)
         {
             return GetLocalizedValue(LocalizedTooltips, locale) ?? Tooltip;
+        }
+
+        /// <summary>
+        /// Gets the localized help URL for the specified locale, with fallback logic
+        /// </summary>
+        /// <param name="locale">The preferred locale (e.g., "en_us", "fr_fr")</param>
+        /// <returns>The localized help URL or null if not available</returns>
+        public string GetLocalizedHelpUrl(string locale = null)
+        {
+            return GetLocalizedValue(LocalizedHelpUrls, locale) ?? HelpUrl;
         }
 
         /// <summary>

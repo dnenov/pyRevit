@@ -5,6 +5,7 @@ title:
   chinese_s: 查找所有已修订图纸
   es_es: Encontrar todas las hojas revisadas
   de_de: FInde alle geänderten Pläne
+  pt_br: Encontrar Todas as Folhas Revisadas
 tooltip:
   en_us: Lists all sheets revised under any revision
   fr_fr: Liste toutes les feuilles révisées comportant n'importe qu'elle révision
@@ -12,3 +13,4 @@ tooltip:
   chinese_s: 列出在任何修订下被修订的所有图纸
   es_es: Lista todas las hojas revisadas bajo cualquier revisión
   de_de: Es werden alle Pläne aufgelistet die mit einer beliebigen Änderung markiert wurden
+  pt_br: Lista todas as folhas revisadas sob qualquer revisão

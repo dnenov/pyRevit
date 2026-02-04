@@ -64,6 +64,9 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                 // Apply tooltip (text + media)
                 _tooltipManager.ApplyTooltip(ribbonItem, component);
 
+                // Apply contextual help (F1 help URL)
+                ApplyContextualHelp(ribbonItem, component);
+
                 // Apply highlight (new/updated badge)
                 ApplyHighlight(ribbonItem, component);
             }
@@ -118,6 +121,34 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
             catch (Exception ex)
             {
                 _logger.Debug($"Failed to apply highlight to button '{ribbonItem?.ItemText ?? "unknown"}'. Exception: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Sets contextual help (F1 help URL) on a RibbonItem.
+        /// When F1 is pressed while hovering over the button, Revit will open this URL.
+        /// </summary>
+        private void ApplyContextualHelp(RibbonItem ribbonItem, ParsedComponent component)
+        {
+            // Early exit if no help URL is configured
+            if (component == null || ribbonItem == null)
+                return;
+            
+            try
+            {
+                var helpUrl = component.GetLocalizedHelpUrl();
+                if (string.IsNullOrEmpty(helpUrl))
+                    return;
+
+                // Use direct API call - this is the same as the Python implementation.
+                var contextualHelp = new ContextualHelp(ContextualHelpType.Url, helpUrl);
+                ribbonItem.SetContextualHelp(contextualHelp);
+                _logger.Debug($"Successfully set contextual help for '{component.DisplayName}' to URL: {helpUrl}");
+            }
+            catch (Exception ex)
+            {
+                // Log but don't re-throw to prevent session loading failure
+                _logger.Debug($"Failed to set contextual help for '{component.DisplayName}'. Exception: {ex.Message}");
             }
         }
 

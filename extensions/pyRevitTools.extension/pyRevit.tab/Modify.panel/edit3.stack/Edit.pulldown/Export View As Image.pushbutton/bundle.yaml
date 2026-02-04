@@ -5,6 +5,7 @@ title:
   chinese_s: 将视图导出为图像
   es_es: Exportar vista como imagen
   de_de: Exportiere aktive Ansicht als Bild
+  pt_br: Exportar Vista Como Imagem
 tooltip:
   en_us: Exports the current view to a 600DPI PNG image
   fr_fr: Exporter la vue actuelle au format PNG avec une résolution de 600DPI
@@ -13,3 +14,4 @@ tooltip:
   es_es: Exporta la vista actual a una imagen PNG de 600 DPI
   de_de: >-
     Dieses Werkzeug exportiert die aktive Ansicht in ein PNG Bild mit 600 DPI.  Es wird dabei der auf dem Bildschirm sichtbare Bereich des Ansichtsfensters  ausgegeben.
+  pt_br: Exporta a vista atual para uma imagem PNG de 600 DPI

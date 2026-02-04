@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using pyRevitLabs.NLog;
 
 namespace pyRevitExtensionParser
 {
@@ -20,6 +21,7 @@ namespace pyRevitExtensionParser
     /// </remarks>
     public class BundleParser
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// Cached parsed bundles with file modification tracking for invalidation.
         /// Key: file path, Value: (ParsedBundle, LastWriteTimeUtc)
@@ -36,24 +38,11 @@ namespace pyRevitExtensionParser
         );
 
         /// <summary>
-        /// Regex pattern for matching valid language codes.
-        /// Matches patterns like: en_us, fr_fr, de_de, ru, es, chinese_s, chinese_t
-        /// </summary>
-        private static readonly Regex _languageCodePattern = new Regex(
-            @"^[a-z]{2,10}(_[a-z]{1,4})?$",
-            RegexOptions.Compiled
-        );
-
-        /// <summary>
-        /// Checks if a potential key looks like a valid language code.
-        /// Language codes follow patterns like: en_us, fr_fr, de_de, ru, chinese_s, chinese_t
+        /// Checks if a potential key is a supported language code or alias.
         /// </summary>
         private static bool IsValidLanguageCode(string key)
         {
-            if (string.IsNullOrEmpty(key) || key.Length > 12 || key.Contains(" "))
-                return false;
-
-            return _languageCodePattern.IsMatch(key);
+            return LocaleSupport.IsSupportedLocale(key);
         }
 
         /// <summary>
@@ -172,7 +161,8 @@ namespace pyRevitExtensionParser
             var lines = File.ReadAllLines(filePath);
             
             // Parser state
-            var state = new ParserState();
+                var state = new ParserState();
+                state.SourcePath = filePath;
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -339,6 +329,9 @@ namespace pyRevitExtensionParser
                 case "min_revit_version":
                     parsed.MinRevitVersion = value;
                     break;
+                case "max_revit_version":
+                    parsed.MaxRevitVersion = value;
+                    break;
                 case "context":
                     // Context can be a simple string or a list
                     // If there's a value on this line, it's a simple string
@@ -352,8 +345,41 @@ namespace pyRevitExtensionParser
                 case "hyperlink":
                     parsed.Hyperlink = StripQuotes(value);
                     break;
+                case "help_url":
+                    // Handle multiline indicators or simple help_url string
+                    if (value == "|-")
+                    {
+                        // Literal multiline (preserve line breaks)
+                        state.IsInMultilineValue = true;
+                        state.IsLiteralMultiline = true;
+                        state.CurrentLanguageKey = "_help_url_";
+                    }
+                    else if (value == ">-")
+                    {
+                        // Folded multiline (join lines)
+                        state.IsInMultilineValue = true;
+                        state.IsFoldedMultiline = true;
+                        state.CurrentLanguageKey = "_help_url_";
+                    }
+                    else if (value == "|" || value == ">")
+                    {
+                        // Legacy multiline
+                        state.IsInMultilineValue = true;
+                        state.CurrentLanguageKey = "_help_url_";
+                    }
+                    else if (!string.IsNullOrEmpty(value))
+                    {
+                        // Single-line scalar URL
+                        parsed.HelpUrl = StripQuotes(value);
+                    }
+                    // If value is empty, allow localized-dictionary form under help_url
+                    break;
+
                 case "highlight":
                     parsed.Highlight = value?.ToLowerInvariant();
+                    break;
+                case "beta":
+                    parsed.IsBeta = value.Equals("true", StringComparison.InvariantCultureIgnoreCase);
                     break;
                 case "content":
                     // Content path for .content bundles (family .rfa files)
@@ -515,9 +541,10 @@ namespace pyRevitExtensionParser
                 return;
             }
 
-            // Localized titles/tooltips
+            // Localized titles/tooltips/help_url
             if ((state.CurrentSection == "title" || state.CurrentSection == "titles" ||
-                 state.CurrentSection == "tooltip" || state.CurrentSection == "tooltips") && line.Contains(":"))
+                 state.CurrentSection == "tooltip" || state.CurrentSection == "tooltips" ||
+                 state.CurrentSection == "help_url") && line.Contains(":"))
             {
                 ParseLocalizedText(line, parsed, state);
                 return;
@@ -696,7 +723,17 @@ namespace pyRevitExtensionParser
         private static void ParseLocalizedText(string line, ParsedBundle parsed, ParserState state)
         {
             var colonIndex = line.IndexOf(':');
-            state.CurrentLanguageKey = line.Substring(0, colonIndex).Trim();
+            var rawLanguageKey = line.Substring(0, colonIndex).Trim();
+            state.CurrentLanguageKey = LocaleSupport.NormalizeLocaleKey(rawLanguageKey);
+            if (state.CurrentLanguageKey == null)
+            {
+                logger.Warn(
+                    "Unsupported locale key '{0}' in bundle.yaml{1}",
+                    rawLanguageKey,
+                    string.IsNullOrEmpty(state.SourcePath) ? "" : string.Format(" ({0})", state.SourcePath)
+                );
+                return;
+            }
             var value = line.Substring(colonIndex + 1).Trim();
 
             if (value == "|-")
@@ -724,6 +761,8 @@ namespace pyRevitExtensionParser
                     parsed.Titles[state.CurrentLanguageKey] = value;
                 else if (state.CurrentSection == "tooltip" || state.CurrentSection == "tooltips")
                     parsed.Tooltips[state.CurrentLanguageKey] = value;
+                else if (state.CurrentSection == "help_url")
+                    parsed.HelpUrls[state.CurrentLanguageKey] = value;
             }
             else
             {
@@ -920,6 +959,17 @@ namespace pyRevitExtensionParser
                 parsed.Tooltips[state.CurrentLanguageKey] = processedValue;
             else if (state.CurrentSection == "author")
                 parsed.Author = processedValue;
+            else if (state.CurrentSection == "help_url")
+            {
+                if (state.CurrentLanguageKey == "_help_url_")
+                {
+                    parsed.HelpUrl = processedValue;
+                }
+                else
+                {
+                    parsed.HelpUrls[state.CurrentLanguageKey] = processedValue;
+                }
+            }
         }
 
         /// <summary>
@@ -993,6 +1043,7 @@ namespace pyRevitExtensionParser
         {
             public string CurrentSection { get; set; }
             public string CurrentLanguageKey { get; set; }
+            public string SourcePath { get; set; }
             public bool IsInMultilineValue { get; set; }
             public bool IsLiteralMultiline { get; set; }
             public bool IsFoldedMultiline { get; set; }

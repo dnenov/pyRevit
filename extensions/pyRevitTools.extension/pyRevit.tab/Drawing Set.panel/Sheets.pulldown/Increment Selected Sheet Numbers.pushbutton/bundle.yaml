@@ -5,6 +5,7 @@ title:
   chinese_s: 递增选定图纸编号
   es_es: Incrementar números de hojas seleccionadas
   de_de: Erhöhe die ausgewählten Plannummern
+  pt_br: Aumentar Números das Folhas Selecionadas
 tooltip:
   en_us: >-
     Increases the sheet number of the selected sheets by one. The sheet name
@@ -22,3 +23,6 @@ tooltip:
   de_de: >-
     Erhöht die Plannummer des ausgewählten Plans um eins. Die Änderung des Plannamens
     wird gedruckt, wenn die Protokollierung in den pyRevit-Einstellungen auf Verbose eingestellt ist.
+  pt_br: >-
+    Aumenta o número da folha das folhas selecionadas em um. a alteração do nome da folha 
+    será impressa se o log estiver definido como Verbose nas configurações do pyRevit.

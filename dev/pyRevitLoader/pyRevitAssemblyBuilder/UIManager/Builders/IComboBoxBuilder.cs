@@ -15,5 +15,12 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
         /// <param name="component">The ComboBox component definition.</param>
         /// <param name="parentPanel">The panel to add the ComboBox to.</param>
         void CreateComboBox(ParsedComponent component, RibbonPanel parentPanel);
+
+        /// <summary>
+        /// Updates an existing ComboBox control in the ribbon panel.
+        /// </summary>
+        /// <param name="component">The ComboBox component definition.</param>
+        /// <param name="parentPanel">The panel containing the ComboBox.</param>
+        void UpdateComboBox(ParsedComponent component, RibbonPanel parentPanel);
     }
 }

@@ -5,6 +5,7 @@ title:
   chinese_s: 列出族大小
   es_es: Lista todos los tamaños de familias
   de_de: Liste alle Familien Dateigrößen auf
+  pt_br: Listar Tamanho das Famílias
 tooltip:
   en_us: List all families and their sizes
   fr_fr: Liste toutes les familles et leur taille
@@ -12,6 +13,7 @@ tooltip:
   chinese_s: 列出所有族及其大小
   es_es: Se listan todas las familias y sus tamaños.
   de_de: Es werden von alle Familien im Projekt die Dateigröße ermittelt. In der Kopfzeile von Revit erscheint eine Fortschrittsanzeige. Achtung, je nach Anzahl der Familien im Projekt kann dieser Vorgang einige Minuten dauern!
+  pt_br: Lista todas as famílias e seus tamanhos
 author: 'Frederic Beaupere, Alex Melnikov, Jean-Marc Couffin'
 contact: 'https://github.com/frederic-beaupere'
 

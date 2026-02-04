@@ -52,6 +52,22 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
 
             // Mark the tab as a pyRevit tab so toggle_icon can find it at runtime
             TagTabAsPyRevit(tabText);
+
+            // Ensure existing tab is visible/enabled on reload
+            try
+            {
+                var ribbon = ComponentManager.Ribbon;
+                var existingTab = ribbon?.Tabs?.FirstOrDefault(t => t.Title == tabText || t.Id == tabText);
+                if (existingTab != null)
+                {
+                    existingTab.IsVisible = true;
+                    existingTab.IsEnabled = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug($"Failed to re-enable tab '{tabText}'. Exception: {ex.Message}");
+            }
         }
 
         /// <inheritdoc/>

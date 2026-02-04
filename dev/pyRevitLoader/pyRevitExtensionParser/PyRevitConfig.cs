@@ -89,9 +89,28 @@ namespace pyRevitExtensionParser
                 _ini.IniWriteValue("core", "new_loader", value ? TrueString : FalseString);
             }
         }
+
         /// <summary>
-        /// Gets or sets whether the Roslyn-based C# script loader is enabled.
+        /// Gets or sets whether to load beta/experimental commands.
         /// </summary>
+        /// <remarks>
+        /// When false (default), commands marked as beta (__beta__ = True) will not be loaded.
+        /// When true, beta commands will be visible in the UI.
+        /// Defaults to false if not configured or if the value cannot be parsed.
+        /// </remarks>
+        public bool LoadBeta
+        {
+            get
+            {
+                var value = _ini.IniReadValue("core", "load_beta");
+                return bool.TryParse(value, out var result) ? result : false;
+            }
+            set
+            {
+                _ini.IniWriteValue("core", "load_beta", value ? TrueString : FalseString);
+            }
+        }
+
         /// <summary>
         /// Gets or sets the timeout (in seconds) for displaying startup log messages.
         /// </summary>

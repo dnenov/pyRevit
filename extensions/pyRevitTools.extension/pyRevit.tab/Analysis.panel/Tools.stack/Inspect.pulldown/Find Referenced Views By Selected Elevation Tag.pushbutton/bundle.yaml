@@ -6,6 +6,7 @@ title:
   chinese_s: 查找立面标记引用的视图
   es_es: Encontrar vistas referenciadas por la etiqueta de elevación seleccionada
   de_de: Suche referenzierte Ansichten der ausgewählten Ansichtsbeschriftung
+  pt_br: Encontrar Vistas Referenciadas pelo Identificador de Elevação Selecionado
 tooltip:
   en_us: Lists all the views referenced by the selected elevation tag
   fr_fr: Lister toutes les vues référencées par l'étiquette d'élévation sélectionnée
@@ -13,3 +14,4 @@ tooltip:
   chinese_s: 列出所选立面标记引用的所有视图
   es_es: Lista todas las vistas referenciadas por la etiqueta de elevación seleccionada
   de_de: Es werden alle Ansichten aufgelistet, die von der ausgewählten Ansichtsbeschriftung referenziert werden
+  pt_br: Lista todas as vistas referenciadas pelo identificador de elevação selecionado

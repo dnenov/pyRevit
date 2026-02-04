@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +13,8 @@ namespace pyRevitExtensionParser
         public new string Directory { get; set; }
         public Dictionary<string, string> Titles { get; set; }
         public Dictionary<string, string> Tooltips { get; set; }
-        public string MinRevitVersion { get; set; }
+        public new string MinRevitVersion { get; set; }
+        public new string MaxRevitVersion { get; set; }
         public ExtensionConfig Config { get; set; }
         
         // Cache directory existence checks to avoid repeated file system calls
@@ -45,6 +46,28 @@ namespace pyRevitExtensionParser
         
         // Cached hash value to avoid recalculation
         private Dictionary<string, string> _cachedHashes = new Dictionary<string, string>();
+
+        private static readonly HashSet<string> _hashDirSuffixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".tab",
+            ".panel",
+            ".pulldown",
+            ".splitbutton",
+            ".splitpushbutton",
+            ".stack",
+            ".pushbutton",
+            ".smartbutton",
+            ".linkbutton",
+            ".panelbutton",
+            ".content",
+            ".combobox"
+        };
+
+        private static readonly HashSet<string> _hashDirNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "lib",
+            "hooks"
+        };
         
         /// <summary>
         /// Calculates a hash based on the modification times of all relevant files in the extension directory.
@@ -65,27 +88,85 @@ namespace pyRevitExtensionParser
             {
                 long mtimeSum = 0;
 
-                // Use EnumerateDirectories for lazy evaluation - doesn't load all paths into memory at once
-                foreach (var dir in System.IO.Directory.EnumerateDirectories(Directory, "*", SearchOption.AllDirectories))
-                {
-                    var dirName = Path.GetFileName(dir);
-                    
-                    // Skip directories with .extension in name (like Python's dir_filter)
-                    if (!dirName.EndsWith(".extension", StringComparison.OrdinalIgnoreCase))
-                    {
-                        mtimeSum += System.IO.Directory.GetLastWriteTimeUtc(dir).Ticks;
-                    }
-                }
+                var pending = new Stack<string>();
+                var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                pending.Push(Directory);
 
-                // Use EnumerateFiles for lazy evaluation - processes files as they're found
-                foreach (var file in System.IO.Directory.EnumerateFiles(Directory, "*.*", SearchOption.AllDirectories))
+                while (pending.Count > 0)
                 {
-                    var ext = Path.GetExtension(file);
-                    
-                    // Use HashSet.Contains for O(1) lookup instead of multiple string comparisons
-                    if (_scriptExtensions.Contains(ext))
+                    var currentDir = pending.Pop();
+                    if (string.IsNullOrEmpty(currentDir))
+                        continue;
+
+                    string fullPath;
+                    try
                     {
-                        mtimeSum += File.GetLastWriteTimeUtc(file).Ticks;
+                        fullPath = Path.GetFullPath(currentDir);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    if (!visited.Add(fullPath))
+                        continue;
+
+                    DirectoryInfo dirInfo;
+                    try
+                    {
+                        dirInfo = new DirectoryInfo(fullPath);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    if (!dirInfo.Exists)
+                        continue;
+
+                    try
+                    {
+                        if ((dirInfo.Attributes & FileAttributes.ReparsePoint) != 0)
+                            continue;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    var dirName = dirInfo.Name;
+                    var includeDir = IsHashDirectory(dirName);
+
+                    if (includeDir)
+                    {
+                        mtimeSum += dirInfo.LastWriteTimeUtc.Ticks;
+
+                        try
+                        {
+                            foreach (var fileInfo in dirInfo.EnumerateFiles())
+                            {
+                                if (_scriptExtensions.Contains(fileInfo.Extension))
+                                {
+                                    mtimeSum += fileInfo.LastWriteTimeUtc.Ticks;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // Ignore file enumeration errors
+                        }
+                    }
+
+                    try
+                    {
+                        foreach (var subDir in dirInfo.EnumerateDirectories())
+                        {
+                            pending.Push(subDir.FullName);
+                        }
+                    }
+                    catch
+                    {
+                        // Ignore directory enumeration errors
                     }
                 }
 
@@ -106,6 +187,18 @@ namespace pyRevitExtensionParser
                 // Fallback to simple hash if directory scanning fails
                 return Directory.GetHashCode().ToString("X");
             }
+        }
+
+        private static bool IsHashDirectory(string dirName)
+        {
+            if (string.IsNullOrEmpty(dirName))
+                return false;
+
+            if (_hashDirNames.Contains(dirName))
+                return true;
+
+            var ext = Path.GetExtension(dirName);
+            return !string.IsNullOrEmpty(ext) && _hashDirSuffixes.Contains(ext);
         }
         
         // Cached startup script path to avoid repeated file system checks

@@ -166,6 +166,19 @@ namespace pyRevitExtensionParser
         public string MinRevitVersion { get; set; }
 
         /// <summary>
+        /// Gets or sets the maximum Revit version required to run this bundle.
+        /// </summary>
+        /// <remarks>
+        /// <para>Format: "YYYY" (e.g., "2020", "2021", "2024")</para>
+        /// <para>If the current Revit version is higher than specified, the command
+        /// will not be loaded or will be disabled.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>max_revit_version: 2024</code>
+        /// </example>
+        public string MaxRevitVersion { get; set; }
+
+        /// <summary>
         /// Gets or sets the context filter determining when this bundle is available.
         /// </summary>
         /// <remarks>
@@ -283,6 +296,39 @@ namespace pyRevitExtensionParser
         public string Hyperlink { get; set; }
 
         /// <summary>
+        /// Gets or sets the help URL for F1 help support.
+        /// </summary>
+        /// <remarks>
+        /// <para>When specified, pressing F1 while hovering over the button will open this URL
+        /// in the default browser. This provides contextual help for the command.</para>
+        /// <para>Supports localization through dictionary format (e.g., help_url: {en_us: "url", de_de: "url"}).</para>
+        /// <para>Revit will show a tip at the bottom of the tooltip indicating F1 help is available.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// help_url: "https://docs.example.com/my-command"
+        /// </code>
+        /// </example>
+        public string HelpUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the localized help URLs for this bundle, keyed by language code.
+        /// </summary>
+        /// <remarks>
+        /// <para>Language codes should follow ISO format (e.g., "en_us", "de_de", "fr_fr").</para>
+        /// <para>If a specific language is not found, pyRevit falls back to the default HelpUrl.</para>
+        /// <para>This is populated when help_url is specified as a dictionary in bundle.yaml.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// help_url:
+        ///   en_us: "https://docs.example.com/my-command"
+        ///   de_de: "https://docs.example.com/de/my-command"
+        /// </code>
+        /// </example>
+        public Dictionary<string, string> HelpUrls { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
         /// Gets or sets the highlight color for this bundle's button.
         /// </summary>
         /// <remarks>
@@ -290,6 +336,15 @@ namespace pyRevitExtensionParser
         /// <para>Used to visually emphasize important or frequently-used commands.</para>
         /// </remarks>
         public string Highlight { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this bundle contains beta tools.
+        /// </summary>
+        /// <remarks>
+        /// <para>When true, indicates that this bundle contains experimental or beta functionality.</para>
+        /// <para>Beta tools may be hidden from the UI unless beta mode is enabled in settings.</para>
+        /// </remarks>
+        public bool IsBeta { get; set; }
 
         /// <summary>
         /// Gets or sets the background color for the panel containing this bundle.

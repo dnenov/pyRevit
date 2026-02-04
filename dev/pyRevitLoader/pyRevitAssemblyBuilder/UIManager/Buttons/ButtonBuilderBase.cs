@@ -82,6 +82,31 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
         }
 
         /// <summary>
+        /// Updates command binding for an existing push button.
+        /// </summary>
+        protected void UpdatePushButtonCommandBinding(PushButton? button, ParsedComponent component, ExtensionAssemblyInfo assemblyInfo)
+        {
+            if (button == null || component == null || assemblyInfo == null)
+                return;
+
+            try
+            {
+                var className = SanitizeClassName(component.UniqueId);
+                button.AssemblyName = assemblyInfo.Location;
+                button.ClassName = className;
+
+                if (!string.IsNullOrEmpty(component.Context))
+                {
+                    button.AvailabilityClassName = className + "_avail";
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug($"Failed to update command binding for '{component.DisplayName}'. Exception: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Checks if a ribbon item with the specified name already exists in the panel.
         /// </summary>
         protected bool ItemExistsInPanel(RibbonPanel? panel, string itemName)

@@ -5,6 +5,7 @@ title:
   chinese_s: 将图例构件设置为剖面方向
   es_es: Establecer componente de leyenda a orientación de sección
   de_de: Legendenbauteile auf Ansichtsrichtung "Schnitt" umstellen
+  pt_br: Definir Componente de Legenda para Orientação de Corte
 tooltip:
   en_us: Legend Component Section view !!! Not all legend components support any type of view orientation !!!
   fr_fr: Vue en Coupe du composant de légende !!! Tous les composants de la légende ne supportent pas n'importe quel type d'orientation de vue !!!
@@ -14,5 +15,8 @@ tooltip:
   de_de: >-
     Im Register Beschriften > Befehlsgruppe Detail > Legendendenbauteil können  in einer Legende Legendenbauteile von Familien platziert werden. Je nachdem  ob die auf der Legende platzierten Legendenbauteile eine Ansichtsrichtung "Schnitt" unterstützen  oder nicht, kann dieses Skript angewendet werden. Die ausgewählten Legendenbauteile  werden in auf die Ansichtsrichtung "Schnitt" umgestellt. Nicht alle Legendenbauteile
     unterstützen jede Art von Ansichtsrichtung !!!
+  pt_br: >-
+    Vista de corte do componente de legenda !!! 
+    Nem todos os componentes de legenda suportam qualquer tipo de orientação de vista !!!
 author: Jean-Marc Couffin
 context: selection

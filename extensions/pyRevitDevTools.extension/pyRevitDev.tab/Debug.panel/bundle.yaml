@@ -5,6 +5,7 @@ title:
   chinese_s: 调试
   es_es: Depuración
   de_de: Debuggen
+  pt_br: Depurar
 layout:
   - Logs
   - -----

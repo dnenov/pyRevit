@@ -5,6 +5,7 @@ title:
   chinese_s: 着色组类型
   es_es: Colorear tipos de grupos
   de_de: Gruppentypen einfärben
+  pt_br: Colorir Tipos de Grupo
 tooltip:
   en_us: |-
     Overrides graphics of groups instances on selected views or
@@ -48,3 +49,11 @@ tooltip:
 
     Hinweis:
     Gruppentypen von denen nur 1 Exemplar in der Ansicht exitiert, werden grau eingefärbt.
+  pt_br: >-
+    Substitui os gráficos de instâncias de grupos nas vistas selecionadas ou
+    na vista ativa de forma que todas as instâncias do mesmo tipo de grupo
+    sejam marcadas com a mesma cor. Você pode selecionar várias vistas antes
+    de executar a ferramenta para colorir os tipos de grupo em todas elas de uma vez
+    
+    Nota:
+    Grupos com apenas 1 instância nas vistas serão coloridos em cinza

@@ -5,6 +5,7 @@ title:
   chinese_s: 剖面框
   es_es: Caja de sección
   de_de: 3D-Schnittbereich
+  pt_br: Caixa de Corte
 tooltip:
   en_us: >-
     Toggles either the visibility or the active state of the section box in the current 3D view — depending on configuration. In active mode, the current box is saved when disabled and restored when re-enabled.
@@ -17,3 +18,5 @@ tooltip:
     Alterna la visibilidad o el estado activo de la caja de sección en la vista 3D actual — según la configuración. En modo activo, la caja actual se guarda cuando se desactiva y se restaura cuando se vuelve a activar.
   de_de: >-
     Dieses Werkzeug schaltet entweder die Sichtbarkeit oder den aktiven Zustand des 3D-Schnittbereichs in der aktuellen 3D-Ansicht um — je nach Konfiguration. Im Aktivmodus wird der aktuelle Bereich beim Deaktivieren gespeichert und beim erneuten Aktivieren wiederhergestellt.
+  pt_br: >-
+    Alterna a visibilidade ou o estado ativo da caixa de corte na vista 3D atual — dependendo da configuração. No modo ativo, a caixa atual é salva quando desabilitada e restaurada quando reabilitada.

@@ -5,6 +5,7 @@ title:
   chinese_s: 保留已镜像图元
   es_es: Mantener reflejados
   de_de: Nur gespiegelte Elemente in aktueller Auswahl belassen
+  pt_br: Manter Espelhados
 tooltip:
   en_us: >-
     Keep only mirrored elements in current selection
@@ -37,4 +38,10 @@ tooltip:
     Shift-Click:
 
     Die aktuelle Elementauswahl wird so vermindert,  dass nur NICHT-gespiegelte Elemente in der Auswahl verbleiben.
+  pt_br: >-
+    Manter apenas elementos espelhados na seleção atual
+    
+    Shift-Clique:
+    
+    Manter apenas não espelhados
 context: selection

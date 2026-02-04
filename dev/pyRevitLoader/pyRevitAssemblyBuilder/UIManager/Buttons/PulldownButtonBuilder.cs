@@ -99,6 +99,9 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                 // Re-apply post-processing (icon, tooltip, etc.)
                 ButtonPostProcessor.Process(pdBtn, component);
 
+                pdBtn.Enabled = true;
+                pdBtn.Visible = true;
+
                 // Update children
                 AddChildrenToPulldown(pdBtn, component, assemblyInfo);
 
@@ -156,7 +159,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
             if (existingItems.Count > 0)
             {
                 Logger.Debug($"Pulldown button '{component.DisplayName}' already has {existingItems.Count} children - updating existing buttons.");
-                UpdateExistingChildren(pdBtn, component, existingItems);
+                UpdateExistingChildren(pdBtn, component, existingItems, assemblyInfo);
                 return;
             }
 
@@ -252,7 +255,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
         /// <summary>
         /// Updates existing child buttons in a pulldown button during reload.
         /// </summary>
-        private void UpdateExistingChildren(PulldownButton pdBtn, ParsedComponent component, List<RibbonItem> existingItems)
+        private void UpdateExistingChildren(PulldownButton pdBtn, ParsedComponent component, List<RibbonItem> existingItems, ExtensionAssemblyInfo assemblyInfo)
         {
             // Build a dictionary of existing items by name for quick lookup
             var existingByName = new Dictionary<string, PushButton>(StringComparer.OrdinalIgnoreCase);
@@ -280,6 +283,17 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                     // Update existing button properties
                     try
                     {
+                        if (sub.Type == CommandComponentType.LinkButton)
+                        {
+                            _linkButtonBuilder.UpdateExistingLinkButton(existingBtn, sub);
+                            Logger.Debug($"Updated existing link button '{sub.DisplayName}' in pulldown '{component.DisplayName}'.");
+                            continue;
+                        }
+                        else
+                        {
+                            UpdatePushButtonCommandBinding(existingBtn, sub, assemblyInfo);
+                        }
+
                         // Update display text
                         var buttonText = ButtonPostProcessor.GetButtonText(sub);
                         existingBtn.ItemText = buttonText;

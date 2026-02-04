@@ -109,6 +109,64 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
         }
 
         /// <summary>
+        /// Updates an existing ComboBox to reflect new configuration.
+        /// </summary>
+        public void UpdateComboBox(ParsedComponent component, RibbonPanel parentPanel)
+        {
+            if (parentPanel == null)
+                return;
+
+            try
+            {
+                var comboBox = GetExistingComboBox(parentPanel, component.DisplayName);
+                if (comboBox == null)
+                    return;
+
+                var comboBoxText = ExtensionParser.GetComponentTitle(component);
+                if (!string.IsNullOrEmpty(comboBoxText))
+                {
+                    try
+                    {
+                        comboBox.ItemText = comboBoxText;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Debug($"Could not set ItemText for ComboBox '{comboBoxText}'. Exception: {ex.Message}");
+                    }
+                }
+
+                var localizedTooltip = ExtensionParser.GetComponentTooltip(component);
+                if (!string.IsNullOrEmpty(localizedTooltip))
+                {
+                    comboBox.ToolTip = localizedTooltip;
+                }
+
+                _buttonPostProcessor.IconManager.ApplyIcon(comboBox, component, null, IconMode.SmallOnly);
+
+                comboBox.Enabled = true;
+                comboBox.Visible = true;
+
+                if (_comboBoxScriptInitializer != null)
+                {
+                    try
+                    {
+                        _comboBoxScriptInitializer.ExecuteEventHandlerSetup(component, comboBox);
+                    }
+                    catch (Exception scriptEx)
+                    {
+                        _logger.Warning($"ComboBox event handler setup failed for '{comboBoxText}'. Exception: {scriptEx.Message}");
+                    }
+                }
+
+                _logger.Debug($"Updated existing ComboBox '{comboBoxText}'.");
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug($"Failed to update ComboBox '{component.DisplayName}'. Exception: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Adds members to a ComboBox.
         /// </summary>
         private void AddMembersToComboBox(ComboBox comboBox, ParsedComponent component, string comboBoxText)
@@ -172,6 +230,27 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
                     _logger.Debug($"Could not set current item for ComboBox '{comboBoxText}'. Exception: {ex.Message}");
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets an existing ComboBox from the panel by name.
+        /// </summary>
+        private ComboBox? GetExistingComboBox(RibbonPanel panel, string comboBoxName)
+        {
+            try
+            {
+                var items = panel.GetItems();
+                foreach (var item in items)
+                {
+                    if (item.Name == comboBoxName && item is ComboBox cb)
+                        return cb;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug($"Error getting existing ComboBox '{comboBoxName}': {ex.Message}");
+            }
+            return null;
         }
 
         /// <summary>

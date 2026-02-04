@@ -42,9 +42,10 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                 return;
             }
 
-            if (ItemExistsInPanel(parentPanel, component.DisplayName))
+            var existingBtn = GetExistingButton(parentPanel, component.DisplayName);
+            if (existingBtn != null)
             {
-                Logger.Debug($"Panel button '{component.DisplayName}' already exists in panel.");
+                UpdateExistingPanelButton(existingBtn, component, assemblyInfo, tabName, parentPanel);
                 return;
             }
 
@@ -57,12 +58,67 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                 {
                     ButtonPostProcessor.Process(panelBtn, component);
                     ModifyToPanelButton(tabName, parentPanel, panelBtn);
+                    
+                    // Note: We cannot re-apply contextual help after conversion because
+                    // the DialogLauncher is a RibbonButton (Autodesk.Windows) which doesn't
+                    // have the SetContextualHelp method. The contextual help applied
+                    // in ButtonPostProcessor.Process() before conversion should remain.
+                    
                     Logger.Debug($"Created panel button '{component.DisplayName}'.");
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error($"Failed to create panel button '{component.DisplayName}'. Exception: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Gets an existing panel button from the panel by name.
+        /// </summary>
+        private PushButton? GetExistingButton(RibbonPanel panel, string buttonName)
+        {
+            try
+            {
+                var items = panel.GetItems();
+                foreach (var item in items)
+                {
+                    if (item.Name == buttonName && item is PushButton pb)
+                        return pb;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug($"Error getting existing panel button '{buttonName}': {ex.Message}");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Updates an existing panel button's properties and binding.
+        /// </summary>
+        private void UpdateExistingPanelButton(PushButton panelBtn, ParsedComponent component, ExtensionAssemblyInfo assemblyInfo, string tabName, RibbonPanel parentPanel)
+        {
+            try
+            {
+                UpdatePushButtonCommandBinding(panelBtn, component, assemblyInfo);
+
+                var buttonText = ButtonPostProcessor.GetButtonText(component);
+                panelBtn.ItemText = buttonText;
+
+                ButtonPostProcessor.Process(panelBtn, component);
+
+                panelBtn.Enabled = true;
+                panelBtn.Visible = true;
+
+                // Ensure it is set as dialog launcher if needed
+                ModifyToPanelButton(tabName, parentPanel, panelBtn);
+
+                Logger.Debug($"Updated existing panel button '{component.DisplayName}'.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug($"Failed to update panel button '{component.DisplayName}': {ex.Message}");
             }
         }
 

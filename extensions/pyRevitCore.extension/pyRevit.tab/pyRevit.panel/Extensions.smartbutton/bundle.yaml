@@ -5,6 +5,7 @@ title:
   chinese_s: 扩展
   es_es: Extensiones
   de_de: Erweiterungen
+  pt_br: Extensões
 tooltip:
   en_us: Add or remove pyRevit extensions
   fr_fr: Ajouter ou supprimer des extensions pyRevit
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 添加或删除 pyRevit 扩展
   es_es: Agrega o quita extensiones de pyRevit
   de_de: Erweiterungen hinzufügen oder entfernen
+  pt_br: Adicionar ou remover extensões do pyRevit
 context: zero-doc

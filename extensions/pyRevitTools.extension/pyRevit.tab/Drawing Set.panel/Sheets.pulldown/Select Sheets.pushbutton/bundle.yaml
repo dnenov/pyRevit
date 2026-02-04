@@ -5,6 +5,7 @@ title:
   chinese_s: 选择图纸
   es_es: Seleccionar hojas
   de_de: Pläne auswählen
+  pt_br: Selecionar Folhas
 tooltip:
   en_us: Select multiple sheets from a list
   fr_fr: Sélectionnez plusieurs feuilles depusi une liste
@@ -13,3 +14,4 @@ tooltip:
   es_es: Seleccionar múltiples hojas de una lista
   de_de: >-
     Es öffnet sich ein Dialog, in dem man Pläne auswählen kann.  Diese Funktion ist vergleichbar, mit der Auswahl von Plänen im Projektbrowser.
+  pt_br: Selecione várias folhas de uma lista

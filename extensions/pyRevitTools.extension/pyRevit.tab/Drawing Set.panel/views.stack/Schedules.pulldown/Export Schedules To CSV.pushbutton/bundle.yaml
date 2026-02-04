@@ -10,6 +10,7 @@ title:
     Exportar tablas a CSV
   de_de: |-
     Exportiere Bauteilliste in eine CSV
+  pt_br: Exportar Tabelas para CSV
 tooltip:
   en_us: |-
     Exports selected schedules to CSV files
@@ -44,3 +45,9 @@ tooltip:
     Shift-Click:
 
     Es erscheint ein Dialog in dem man häufig genutzte Speichereorte auswählen kann,  z.B. Desktop, Projektspeicherort, Downloads usw. Zudem kann man angeben,  ob die CSV Datei nach dem Speichern geöffnet werden soll und ob die Kopfzeile  übertragen werden soll.
+  pt_br: >-
+    Exporta tabelas selecionadas para arquivos CSV
+    
+    Shift-Clique:
+    
+    Escolher locais de saída padrão

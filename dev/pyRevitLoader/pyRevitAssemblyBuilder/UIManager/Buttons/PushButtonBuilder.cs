@@ -53,7 +53,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
             var existingBtn = GetExistingButton(parentPanel, component.DisplayName);
             if (existingBtn != null)
             {
-                UpdateExistingButton(existingBtn, component);
+                UpdateExistingButton(existingBtn, component, assemblyInfo);
                 return;
             }
 
@@ -110,10 +110,13 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
         /// Updates an existing button's properties (title, icon, tooltip) to match the component.
         /// Mirrors Python's existing_item.set_title() + existing_item.activate() behavior.
         /// </summary>
-        private void UpdateExistingButton(PushButton btn, ParsedComponent component)
+        private void UpdateExistingButton(PushButton btn, ParsedComponent component, ExtensionAssemblyInfo assemblyInfo)
         {
             try
             {
+                // Update command binding to point at the latest assembly
+                UpdatePushButtonCommandBinding(btn, component, assemblyInfo);
+
                 // Update button text (title) - matches Python's existing_item.set_title(ui_title)
                 var buttonText = ButtonPostProcessor.GetButtonText(component);
                 btn.ItemText = buttonText;

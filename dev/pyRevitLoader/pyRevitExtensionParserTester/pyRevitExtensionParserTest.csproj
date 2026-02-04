@@ -54,6 +54,8 @@
     <Compile Include="ControlIdTests.cs" />
     <Compile Include="MultilineTitleTest.cs" />
     <Compile Include="UrlButtonTests.cs" />
+    <Compile Include="HelpUrlTests.cs" />
+    <Compile Include="ScriptMetadataParsingTest.cs" />
   </ItemGroup>
 
   <ItemGroup>

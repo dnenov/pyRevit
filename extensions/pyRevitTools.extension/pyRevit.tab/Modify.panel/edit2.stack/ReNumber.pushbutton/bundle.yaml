@@ -5,6 +5,7 @@ title:
   chinese_s: 重新编号
   es_es: Renumerar
   de_de: Umummerieren
+  pt_br: Renumerar
 tooltip:
   en_us: ReNumber numbered elements in order of selection
   fr_fr: Renuméroter les éléments dans l'ordre de sélection
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 按照选择顺序，为已编号的图元重新编号
   es_es: Renumerar elementos numerados en orden de selección
   de_de: Elemente werden mit der Reihenfolge der Auswahl neu nummeriert
+  pt_br: Renumerar elementos numerados na ordem de seleção
 author: '{{author}}'

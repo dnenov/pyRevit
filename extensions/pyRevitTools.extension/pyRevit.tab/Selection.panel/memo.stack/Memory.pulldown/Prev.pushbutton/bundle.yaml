@@ -5,6 +5,7 @@ title:
   chinese_s: 上一个
   es_es: Anterior
   de_de: Vorheriges Element im Speicher wählen
+  pt_br: Anterior
 tooltip:
   en_us: >-
     Select previous element in selection memory.
@@ -38,3 +39,9 @@ tooltip:
 
     Shift+Click +10
     Wählt das 10. Element im Speicher aus
+  pt_br: >-
+    Selecionar elemento anterior na memória de seleção.
+    
+    Clique +1
+    
+    Shift-Clique +10

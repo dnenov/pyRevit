@@ -6,6 +6,7 @@ title:
   chinese_s: 将 ACIS 实体转换为自由形状
   es_es: Convertir sólido ACIS a forma libre
   de_de: Konvertiere ACIS Solid in FreeForm
+  pt_br: Converter Sólido ACIS para Freeform
 tooltip:
   en_us: >-
     Convert ACIS Solid to FreeForm Element creates FreeForm elements from your
@@ -29,6 +30,10 @@ tooltip:
     Dadurch kann es in ein Körper bzw. Abzugskörper umgewandelt werden und
     Materialien können leichter vergeben werden. Zudem hat man dadurch Zugriff auf die
     Geometrie Formgriffe.
+  pt_br: >-
+    Converter Sólido ACIS para Elemento FreeForm cria elementos FreeForm a partir da 
+    geometria sólida acis SAT importada selecionada, para que você possa transformá-lo 
+    em Vazio/Sólido, aplicar materiais facilmente e obter acesso às suas alças de forma
 authors:
   - '{{author}}'
   - Frederic Beaupere

@@ -5,6 +5,7 @@ title:
   chinese_s: 锁定所有视口
   es_es: Fijar todas las ventanas gráficas
   de_de: Ansichtsfenster auf Plänen pinnen
+  pt_br: Fixar Todas as Viewports
 tooltip:
   en_us: |-
     Pins all viewports on selected sheets.
@@ -35,3 +36,8 @@ tooltip:
 
     Shift-Click:
     Sperre (Pin-Werkzeug) alle Ansichtsfenster auf dem aktiven Plan
+  pt_br: >-
+    Fixa todas as viewports nas folhas selecionadas.
+    
+    Shift-Clique:
+    Fixar todas as viewports na folha ativa

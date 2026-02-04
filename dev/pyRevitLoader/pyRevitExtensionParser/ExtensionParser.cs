@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using pyRevitLabs.Json.Linq;
+using pyRevitLabs.NLog;
 
 namespace pyRevitExtensionParser
 {
@@ -13,6 +14,8 @@ namespace pyRevitExtensionParser
         /// Default locale used for localization fallback
         /// </summary>
         public static string DefaultLocale { get; set; } = "en_us";
+
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         
         // Cache file existence checks to avoid repeated file system calls
         private static Dictionary<string, bool> _fileExistsCache = new Dictionary<string, bool>();
@@ -59,6 +62,11 @@ namespace pyRevitExtensionParser
         private static bool _localeInitialized = false;
         
         /// <summary>
+        /// Cached locale value for cache invalidation when locale changes
+        /// </summary>
+        private static string _cachedLocale = null;
+        
+        /// <summary>
         /// Clears all static caches to force re-parsing of extensions.
         /// This should be called before reloading pyRevit to ensure newly installed
         /// or enabled extensions are discovered.
@@ -80,18 +88,26 @@ namespace pyRevitExtensionParser
         /// <summary>
         /// Initializes the DefaultLocale from user configuration if not already set.
         /// Should be called before parsing extensions to ensure locale-aware localization.
+        /// If locale has changed since last initialization, all caches are cleared.
         /// </summary>
         private static void InitializeLocaleFromConfig()
         {
-            if (_localeInitialized)
-                return;
-                
             var config = GetConfig();
             var userLocale = config.UserLocale;
+            
+            // Check if locale has changed since last initialization
+            // If locale changed, we need to invalidate all caches to force re-parsing
+            if (_localeInitialized && userLocale != _cachedLocale)
+            {
+                logger.Debug("Locale changed from '{0}' to '{1}'. Clearing caches...", _cachedLocale, userLocale);
+                ClearAllCaches();
+            }
+            
             if (!string.IsNullOrEmpty(userLocale))
             {
                 DefaultLocale = userLocale;
             }
+            _cachedLocale = userLocale;
             _localeInitialized = true;
         }
         
@@ -274,6 +290,7 @@ namespace pyRevitExtensionParser
                 Titles = parsedBundle?.Titles,
                 Tooltips = parsedBundle?.Tooltips,
                 MinRevitVersion = parsedBundle?.MinRevitVersion,
+                MaxRevitVersion = parsedBundle?.MaxRevitVersion,
                 Context = parsedBundle?.GetFormattedContext(),
                 Engine = parsedBundle?.Engine,
                 Config = extConfig
@@ -401,25 +418,34 @@ namespace pyRevitExtensionParser
                 roots.Add(thirdPartyExtensionsPath);
             }
 
-            var configPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "pyRevit",
-                "pyRevit_config.ini");
-
-            if (FileExists(configPath))
+            var userExtensions = GetConfig().UserExtensionsList;
+            foreach (var extPath in userExtensions)
             {
-                foreach (var line in File.ReadAllLines(configPath))
+                if (string.IsNullOrWhiteSpace(extPath))
                 {
-                    if (line.StartsWith("userextensions =", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = line.Substring("userextensions =".Length).Split(';');
-                        foreach (var part in parts)
-                        {
-                            var path = part.Trim();
-                            if (!string.IsNullOrWhiteSpace(path))
-                                roots.Add(path);
-                        }
-                    }
+                    logger.Debug("Skipping empty userextensions path");
+                    continue;
+                }
+
+                try
+                {
+                    var normalizedPath = Path.GetFullPath(extPath);
+                    if (Directory.Exists(normalizedPath))
+                        roots.Add(normalizedPath);
+                    else
+                        logger.Debug("Skipping non-existent userextensions path: {0}", normalizedPath);
+                }
+                catch (ArgumentException ex)
+                {
+                    logger.Debug("Skipping invalid userextensions path '{0}': {1}", extPath, ex.Message);
+                }
+                catch (PathTooLongException ex)
+                {
+                    logger.Debug("Skipping too long userextensions path '{0}': {1}", extPath, ex.Message);
+                }
+                catch (NotSupportedException ex)
+                {
+                    logger.Debug("Skipping unsupported userextensions path '{0}': {1}", extPath, ex.Message);
                 }
             }
 
@@ -687,8 +713,11 @@ namespace pyRevitExtensionParser
                 // First, get values from Python script
                 string title = null, author = null, doc = null;
                 string scriptContext = null, scriptHelpUrl = null, scriptHighlight = null;
+                string scriptMinRevitVersion = null, scriptMaxRevitVersion = null;
+                bool scriptIsBeta = false, scriptCleanEngine = false, scriptFullFrameEngine = false, scriptPersistentEngine = false;
                 Dictionary<string, string> scriptLocalizedTitles = null;
                 Dictionary<string, string> scriptLocalizedTooltips = null;
+                Dictionary<string, string> scriptLocalizedHelpUrls = null;
                 
                 if (scriptPath != null && scriptPath.EndsWith(".py", StringComparison.OrdinalIgnoreCase))
                 {
@@ -700,7 +729,14 @@ namespace pyRevitExtensionParser
                     scriptLocalizedTooltips = scriptConstants.LocalizedTooltips;
                     scriptContext = scriptConstants.Context;
                     scriptHelpUrl = scriptConstants.HelpUrl;
+                    scriptLocalizedHelpUrls = scriptConstants.LocalizedHelpUrls;
                     scriptHighlight = scriptConstants.Highlight;
+                    scriptMinRevitVersion = scriptConstants.MinRevitVersion;
+                    scriptMaxRevitVersion = scriptConstants.MaxRevitVersion;
+                    scriptIsBeta = scriptConstants.IsBeta;
+                    scriptCleanEngine = scriptConstants.CleanEngine;
+                    scriptFullFrameEngine = scriptConstants.FullFrameEngine;
+                    scriptPersistentEngine = scriptConstants.PersistentEngine;
                 }
 
                 // Override script values with bundle values (bundle takes precedence)
@@ -723,6 +759,7 @@ namespace pyRevitExtensionParser
                 // Merge localized values: bundle takes precedence over script
                 var finalLocalizedTitles = scriptLocalizedTitles ?? new Dictionary<string, string>();
                 var finalLocalizedTooltips = scriptLocalizedTooltips ?? new Dictionary<string, string>();
+                var finalLocalizedHelpUrls = scriptLocalizedHelpUrls ?? new Dictionary<string, string>();
                 
                 // If bundle has localized values, they override script values
                 if (bundleInComponent?.Titles != null)
@@ -740,6 +777,14 @@ namespace pyRevitExtensionParser
                         finalLocalizedTooltips[kvp.Key] = kvp.Value;
                     }
                 }
+                
+                if (bundleInComponent?.HelpUrls != null)
+                {
+                    foreach (var kvp in bundleInComponent.HelpUrls)
+                    {
+                        finalLocalizedHelpUrls[kvp.Key] = kvp.Value;
+                    }
+                }
 
                 // Apply template substitution to string values
                 title = SubstituteTemplates(title, mergedTemplates);
@@ -751,6 +796,7 @@ namespace pyRevitExtensionParser
                 // Apply template substitution to localized values
                 finalLocalizedTitles = SubstituteTemplatesInDict(finalLocalizedTitles, mergedTemplates);
                 finalLocalizedTooltips = SubstituteTemplatesInDict(finalLocalizedTooltips, mergedTemplates);
+                finalLocalizedHelpUrls = SubstituteTemplatesInDict(finalLocalizedHelpUrls, mergedTemplates);
 
                 // Determine final context: bundle takes precedence over script
                 // bundleInComponent?.GetFormattedContext() returns "(zero-doc)" when no context in bundle
@@ -781,8 +827,34 @@ namespace pyRevitExtensionParser
                     ? bundleInComponent.Highlight 
                     : scriptHighlight;
 
+                // Determine final help URL: bundle helpurl takes precedence over script helpurl
+                string finalHelpUrl = !string.IsNullOrEmpty(bundleInComponent?.HelpUrl)
+                    ? bundleInComponent.HelpUrl
+                    : scriptHelpUrl;
+
                 // Determine final help URL: bundle hyperlink takes precedence over script helpurl
                 string finalHyperlink = !string.IsNullOrEmpty(hyperlink) ? hyperlink : scriptHelpUrl;
+
+                // Determine final min Revit version: bundle takes precedence over script
+                string finalMinRevitVersion = !string.IsNullOrEmpty(bundleInComponent?.MinRevitVersion)
+                    ? bundleInComponent.MinRevitVersion
+                    : scriptMinRevitVersion;
+
+                // Determine final max Revit version: bundle takes precedence over script
+                string finalMaxRevitVersion = !string.IsNullOrEmpty(bundleInComponent?.MaxRevitVersion)
+                    ? bundleInComponent.MaxRevitVersion
+                    : scriptMaxRevitVersion;
+
+                // Determine final beta status: bundle takes precedence over script
+                bool finalIsBeta = bundleInComponent != null && bundleInComponent.IsBeta 
+                    ? bundleInComponent.IsBeta 
+                    : scriptIsBeta;
+
+                // Determine final engine config: bundle takes precedence, but script can add flags
+                var finalEngine = bundleInComponent?.Engine ?? new EngineConfig();
+                if (scriptCleanEngine) finalEngine.Clean = true;
+                if (scriptFullFrameEngine) finalEngine.FullFrame = true;
+                if (scriptPersistentEngine) finalEngine.Persistent = true;
 
                 components.Add(new ParsedComponent
                 {
@@ -801,7 +873,11 @@ namespace pyRevitExtensionParser
                     Author = author,
                     Context = finalContext,
                     Hyperlink = finalHyperlink,
+                    HelpUrl = finalHelpUrl,
                     Highlight = finalHighlight,
+                    MinRevitVersion = finalMinRevitVersion,
+                    MaxRevitVersion = finalMaxRevitVersion,
+                    IsBeta = finalIsBeta,
                     PanelBackground = bundleInComponent?.PanelBackground,
                     TitleBackground = bundleInComponent?.TitleBackground,
                     SlideoutBackground = bundleInComponent?.SlideoutBackground,
@@ -812,8 +888,9 @@ namespace pyRevitExtensionParser
                     Modules = bundleInComponent?.Modules ?? new List<string>(),
                     LocalizedTitles = finalLocalizedTitles.Count > 0 ? finalLocalizedTitles : null,
                     LocalizedTooltips = finalLocalizedTooltips.Count > 0 ? finalLocalizedTooltips : null,
+                    LocalizedHelpUrls = finalLocalizedHelpUrls.Count > 0 ? finalLocalizedHelpUrls : null,
                     Directory = dir,
-                    Engine = bundleInComponent?.Engine,
+                    Engine = finalEngine,
                     Members = bundleInComponent?.Members ?? new List<ComboBoxMember>(),
                     OnIconPath = onIconPath,
                     OnIconDarkPath = onIconDarkPath,
@@ -960,9 +1037,16 @@ namespace pyRevitExtensionParser
             public string Doc;
             public Dictionary<string, string> LocalizedTooltips;
             public string HelpUrl;
+            public Dictionary<string, string> LocalizedHelpUrls;
             public string Context;
             public List<string> ContextItems;
             public string Highlight;
+            public string MinRevitVersion;
+            public string MaxRevitVersion;
+            public bool IsBeta;
+            public bool CleanEngine;
+            public bool FullFrameEngine;
+            public bool PersistentEngine;
         }
 
         // Cache Python script constant parsing to avoid re-reading files
@@ -977,7 +1061,11 @@ namespace pyRevitExtensionParser
                 
             var result = new PythonScriptConstants();
 
-            foreach (var line in File.ReadLines(scriptPath))
+            // Read all lines to handle multiline strings properly
+            var allLines = File.ReadAllLines(scriptPath);
+            var lineIndex = 0;
+            
+            foreach (var line in allLines)
             {
                 var trimmedLine = line.TrimStart();
                 
@@ -987,13 +1075,22 @@ namespace pyRevitExtensionParser
                     var dictValue = ExtractPythonDictionary(trimmedLine);
                     if (dictValue != null)
                     {
-                        result.LocalizedTitles = dictValue;
+                        result.LocalizedTitles = LocaleSupport.NormalizeLocaleDict(dictValue);
                         // Get default locale value for backward compatibility
                         result.Title = GetLocalizedValue(result.LocalizedTitles);
                     }
                     else
                     {
-                        result.Title = ExtractPythonConstantValue(trimmedLine);
+                        // Check if it's a multiline triple-quoted string
+                        if (trimmedLine.Contains("\"\"\""))
+                        {
+                            var remainingLines = allLines.Skip(lineIndex + 1).ToList();
+                            result.Title = ExtractPythonMultilineString(trimmedLine, remainingLines);
+                        }
+                        else
+                        {
+                            result.Title = ExtractPythonConstantValue(trimmedLine);
+                        }
                     }
                 }
                 else if (trimmedLine.StartsWith("__authors__"))
@@ -1019,18 +1116,38 @@ namespace pyRevitExtensionParser
                     var dictValue = ExtractPythonDictionary(trimmedLine);
                     if (dictValue != null)
                     {
-                        result.LocalizedTooltips = dictValue;
+                        result.LocalizedTooltips = LocaleSupport.NormalizeLocaleDict(dictValue);
                         // Get default locale value for backward compatibility
                         result.Doc = GetLocalizedValue(result.LocalizedTooltips);
                     }
                     else
                     {
-                        result.Doc = ExtractPythonConstantValue(trimmedLine);
+                        // Check if it's a multiline triple-quoted string
+                        if (trimmedLine.Contains("\"\"\""))
+                        {
+                            var remainingLines = allLines.Skip(lineIndex + 1).ToList();
+                            result.Doc = ExtractPythonMultilineString(trimmedLine, remainingLines);
+                        }
+                        else
+                        {
+                            result.Doc = ExtractPythonConstantValue(trimmedLine);
+                        }
                     }
                 }
                 else if (trimmedLine.StartsWith("__helpurl__"))
                 {
-                    result.HelpUrl = ExtractPythonConstantValue(trimmedLine);
+                    // Check if it's a dictionary for multi-language help URL
+                    var dictValue = ExtractPythonDictionary(trimmedLine);
+                    if (dictValue != null)
+                    {
+                        result.LocalizedHelpUrls = LocaleSupport.NormalizeLocaleDict(dictValue);
+                        // Get default locale value for backward compatibility
+                        result.HelpUrl = GetLocalizedValue(result.LocalizedHelpUrls);
+                    }
+                    else
+                    {
+                        result.HelpUrl = ExtractPythonConstantValue(trimmedLine);
+                    }
                 }
                 else if (trimmedLine.StartsWith("__context__"))
                 {
@@ -1044,18 +1161,39 @@ namespace pyRevitExtensionParser
                     }
                     else
                     {
-                        // Simple string context
-                        var contextValue = ExtractPythonConstantValue(trimmedLine);
-                        if (!string.IsNullOrEmpty(contextValue))
-                        {
-                            result.Context = contextValue.StartsWith("(") ? contextValue : "(" + contextValue + ")";
-                        }
+                        result.Context = NormalizeContextString(ExtractPythonConstantValue(trimmedLine));
                     }
                 }
                 else if (trimmedLine.StartsWith("__highlight__"))
                 {
                     result.Highlight = ExtractPythonConstantValue(trimmedLine);
                 }
+                else if (trimmedLine.StartsWith("__min_revit_ver__"))
+                {
+                    result.MinRevitVersion = ExtractPythonValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__max_revit_ver__"))
+                {
+                    result.MaxRevitVersion = ExtractPythonValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__beta__"))
+                {
+                    result.IsBeta = ExtractPythonBoolValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__cleanengine__"))
+                {
+                    result.CleanEngine = ExtractPythonBoolValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__fullframeengine__"))
+                {
+                    result.FullFrameEngine = ExtractPythonBoolValue(trimmedLine);
+                }
+                else if (trimmedLine.StartsWith("__persistentengine__"))
+                {
+                    result.PersistentEngine = ExtractPythonBoolValue(trimmedLine);
+                }
+                
+                lineIndex++;
             }
 
             _pythonScriptCache[scriptPath] = result;
@@ -1121,15 +1259,177 @@ namespace pyRevitExtensionParser
             return null;
         }
 
+        private static string NormalizeContextString(string context)
+        {
+            if (string.IsNullOrWhiteSpace(context))
+                return context;
+
+            var trimmed = context.Trim();
+            if (trimmed.IndexOf('(') >= 0 || trimmed.IndexOf(')') >= 0)
+                return trimmed;
+
+            return "(" + trimmed + ")";
+        }
+
+        /// <summary>
+        /// Extracts a multiline Python string literal (triple-quoted) from the remaining lines.
+        /// Handles docstrings and other multiline string content.
+        /// </summary>
+        private static string ExtractPythonMultilineString(string firstLine, IEnumerable<string> remainingLines)
+        {
+            // Find the opening triple quote position in the first line
+            var firstLineTrimmed = firstLine.TrimStart();
+            int firstQuotePos = firstLineTrimmed.IndexOf("\"\"\"");
+            if (firstQuotePos == -1)
+                return null;
+            
+            int contentStart = firstQuotePos + 3;
+            string partialContent = firstLineTrimmed.Substring(contentStart);
+            
+            // Check if the closing quote is on the same line
+            int closingQuotePos = partialContent.IndexOf("\"\"\"");
+            if (closingQuotePos != -1)
+            {
+                // Single-line multiline string
+                return partialContent.Substring(0, closingQuotePos);
+            }
+            
+            // Need to read more lines to find the closing triple quote
+            var content = new StringBuilder();
+            content.Append(partialContent);
+            content.Append("\n");
+            
+            foreach (var line in remainingLines)
+            {
+                content.Append(line);
+                content.Append("\n");
+                
+                // Check if this line contains the closing triple quote
+                if (line.Contains("\"\"\""))
+                {
+                    // Find the last occurrence of triple quotes in this line
+                    var lastQuotePos = line.LastIndexOf("\"\"\"");
+                    if (lastQuotePos > 0)
+                    {
+                        // Remove the content after the closing triple quote (including the quote itself)
+                        var beforeClosing = line.Substring(0, lastQuotePos);
+                        // Remove the content we just added and replace with proper content
+                        content.Length -= line.Length + 1; // Remove the last line + newline
+                        content.Append(beforeClosing);
+                    }
+                    break;
+                }
+            }
+            
+            // Process escape sequences in the collected content
+            return ProcessPythonEscapeSequences(content.ToString());
+        }
+
         private static string ExtractPythonConstantValue(string line)
         {
             var parts = line.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 2)
             {
-                var value = parts[1].Trim().Trim('\'', '"');
+                var value = ExtractPythonStringContent(parts[1]);
                 // Process Python escape sequences to match runtime behavior
                 return ProcessPythonEscapeSequences(value);
             }
+            return null;
+        }
+
+        /// <summary>
+        /// Extracts a Python value that can be either quoted string or unquoted (like numbers).
+        /// For example: '__min_revit_ver__ = 2021' returns '2021'
+        /// </summary>
+        private static string ExtractPythonValue(string line)
+        {
+            var parts = line.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 2)
+            {
+                var value = parts[1].Trim();
+                
+                // Try to extract quoted string first
+                var quotedValue = ExtractPythonStringContent(value);
+                if (quotedValue != null)
+                    return ProcessPythonEscapeSequences(quotedValue);
+                
+                // If no quotes, return the value as-is (for unquoted numbers, etc.)
+                // Remove any trailing comments
+                var commentIndex = value.IndexOf('#');
+                if (commentIndex >= 0)
+                    value = value.Substring(0, commentIndex).Trim();
+                
+                return string.IsNullOrEmpty(value) ? null : value;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Extracts a Python boolean value (True/False) from a line like: __beta__ = True
+        /// </summary>
+        private static bool ExtractPythonBoolValue(string line)
+        {
+            var parts = line.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 2)
+            {
+                var value = parts[1].Trim().ToLowerInvariant();
+                if (value == "true")
+                    return true;
+                if (value == "false")
+                    return false;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Extracts the content of a Python string literal, properly handling quotes, escape sequences, and trailing comments.
+        /// For example: '"Hello World"   # comment' returns 'Hello World'
+        /// </summary>
+        private static string ExtractPythonStringContent(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return null;
+
+            var trimmedValue = value.TrimStart();
+            
+            // Find the first quote (either single or double)
+            int startIndex = -1;
+            char quoteChar = '\0';
+            
+            for (int i = 0; i < trimmedValue.Length; i++)
+            {
+                if (trimmedValue[i] == '"' || trimmedValue[i] == '\'')
+                {
+                    startIndex = i;
+                    quoteChar = trimmedValue[i];
+                    break;
+                }
+            }
+
+            if (startIndex == -1)
+                return null;
+
+            // Find the closing quote, handling escaped quotes
+            int endIndex = startIndex + 1;
+            while (endIndex < trimmedValue.Length)
+            {
+                if (trimmedValue[endIndex] == '\\' && endIndex + 1 < trimmedValue.Length)
+                {
+                    // Skip the escaped character
+                    endIndex += 2;
+                    continue;
+                }
+                
+                if (trimmedValue[endIndex] == quoteChar)
+                {
+                    // Found the closing quote
+                    return trimmedValue.Substring(startIndex + 1, endIndex - startIndex - 1);
+                }
+                
+                endIndex++;
+            }
+
+            // No closing quote found, return null
             return null;
         }
 
@@ -1300,8 +1600,7 @@ namespace pyRevitExtensionParser
             }
             catch (Exception ex)
             {
-                // Log error if needed, but don't fail the parsing
-                System.Diagnostics.Debug.WriteLine($"Error parsing icons for {componentDirectory}: {ex.Message}");
+                logger.Debug("Error parsing icons for {0}: {1}", componentDirectory, ex.Message);
             }
 
             // Cache the result

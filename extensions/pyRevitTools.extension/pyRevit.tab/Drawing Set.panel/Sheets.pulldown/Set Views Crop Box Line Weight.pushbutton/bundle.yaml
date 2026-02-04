@@ -5,6 +5,7 @@ title:
   chinese_s: 设置裁剪框线宽
   es_es: Establecer grosor de línea de caja de recorte
   de_de: Linienstärke vom Zuschneidebereich ändern
+  pt_br: Definir Espessura de Linha da Caixa de Recorte
 tooltip:
   en_us: Set Crop Box Line Weight for selected views and views placed on sheets
   fr_fr: Changer l'épaisseur de la Zone Cadrée pour les vues sélectionnées et placées sur les feuilles
@@ -16,4 +17,5 @@ tooltip:
     die man ändern möchte. Anschließend muss man in einem weiteren Dialogfenster
     die Liniestärke auswählen. Achtung: Wenn man viele Ansichten auswählt, kann
     dieser Prozess sehr lange dauern! Der Prozess kann nicht unterbrochen werden!
+  pt_br: Definir espessura de linha da caixa de recorte para vistas selecionadas e vistas colocadas em folhas
 author: Jean-Marc Couffin

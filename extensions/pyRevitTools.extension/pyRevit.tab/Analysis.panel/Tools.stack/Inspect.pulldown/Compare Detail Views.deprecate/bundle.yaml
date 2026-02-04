@@ -5,6 +5,7 @@ title:
   chinese_s: 比较详图视图
   es_es: Comparar vistas de detalle
   de_de: Detailansichten vergleichen
+  pt_br: Comparar Vistas de Detalhe
 tooltip:
   en_us: >-
     Compared two views by comparing the contents against each other. By default
@@ -57,3 +58,14 @@ tooltip:
     SHIFT-Click:
 
     Ziehe Element Typen beim Vergleich mit ein
+  pt_br: >-
+    Compara duas vistas comparando o conteúdo uma contra a outra. 
+    Por padrão, esta ferramenta não considera os tipos de elemento. 
+    Por exemplo, dois elementos de texto com o mesmo conteúdo, 
+    mas com estilos diferentes, são considerados iguais. 
+    No entanto, isso pode ser substituído usando SHIFT-Clique. 
+    Se as vistas não coincidirem, todos os elementos diferentes serão selecionados. 
+    Esta ferramenta é útil ao comparar vistas de detalhe duplicadas
+    
+    SHIFT-Clique:
+    Incluir Tipos de Elemento na comparação de vistas

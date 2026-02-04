@@ -17,19 +17,16 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>5.3.1.25308+1755</Version>
+    <Version>6.0.0.26032+2040</Version>
     <Copyright>Copyright © 2014-2025</Copyright>
     <Company>pyRevitLabs.io</Company>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UseRevit)' == 'true'">
-    <PackageReference Include="Autodesk.Revit.Sdk.Refs" Version="*" />
-    <PackageReference Include="Autodesk.Revit.Sdk.Refs.$(RevitVersion)" Version="*" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference
-            Condition="'$(RevitVersion)' != '' and $(RevitVersion) &gt;= 2018"
-            Include="Xceed.Wpf.AvalonDock"
-            HintPath="$(RevitDevDir)\$(RevitVersion)\Xceed.Wpf.AvalonDock.dll"/>
+    <PackageReference Include="Nice3point.Revit.Api.RevitAPI" Version="$(RevitVersion).*" />
+    <PackageReference Include="Nice3point.Revit.Api.RevitAPIUI" Version="$(RevitVersion).*" />
+    <PackageReference Include="Nice3point.Revit.Api.AdWindows" Version="$(RevitVersion).*" />
+    <PackageReference Include="Nice3point.Revit.Api.UIFramework" Version="$(RevitVersion).*" />
+    <PackageReference Include="Nice3point.Revit.Api.UIFrameworkServices" Version="$(RevitVersion).*" />
   </ItemGroup>
 </Project>

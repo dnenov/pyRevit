@@ -5,6 +5,7 @@ title:
   chinese_s: 将参数导出到 Excel
   es_es: Exportar parámetros a Excel
   de_de: Parameter nach Excel exportieren
+  pt_br: Exportar Parâmetros para Excel
 tooltip:
   en_us: |
     Exports element parameters of schedules to an Excel file.
@@ -67,5 +68,17 @@ tooltip:
     - Dokument - Instanzen
     - Aktuelle Ansicht
     - Auswahl
+  pt_br: >-
+    Exporta parâmetros de elementos de tabelas para um arquivo Excel.
+    Você pode escolher quais parâmetros incluir. os valores dos parâmetros são convertidos em unidades do projeto para reimportação posterior. 
+    Parâmetros somente leitura e não suportados são marcados e bloqueados.
+    
+    shift-clique permite selecionar um escopo de exportação avançado:
+    - tabela
+    - documento - todos
+    - documento - tipos
+    - documento - instâncias
+    - vista atual
+    - seleção
 author: wurschdhaud
 min_revit_version: 2022

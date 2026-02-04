@@ -206,6 +206,15 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
                     // Apply post-processing (icon, tooltip, etc.)
                     if (ribbonItem is PushButton pushBtn)
                     {
+                        if (childComponent.Type == CommandComponentType.LinkButton)
+                        {
+                            _linkButtonBuilder.UpdateExistingLinkButton(pushBtn, childComponent);
+                        }
+                        else
+                        {
+                            UpdatePushButtonCommandBinding(pushBtn, childComponent, assemblyInfo);
+                        }
+
                         _buttonPostProcessor.Process(pushBtn, childComponent);
 
                         // Execute __selfinit__ for SmartButtons
@@ -320,6 +329,31 @@ namespace pyRevitAssemblyBuilder.UIManager.Builders
             }
 
             return pushButtonData;
+        }
+
+        /// <summary>
+        /// Updates command binding for an existing push button in a stack.
+        /// </summary>
+        private void UpdatePushButtonCommandBinding(PushButton? button, ParsedComponent component, ExtensionAssemblyInfo assemblyInfo)
+        {
+            if (button == null || component == null || assemblyInfo == null)
+                return;
+
+            try
+            {
+                var className = SanitizeClassName(component.UniqueId);
+                button.AssemblyName = assemblyInfo.Location;
+                button.ClassName = className;
+
+                if (!string.IsNullOrEmpty(component.Context))
+                {
+                    button.AvailabilityClassName = className + "_avail";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Debug($"Failed to update command binding for '{component.DisplayName}'. Exception: {ex.Message}");
+            }
         }
 
         /// <summary>

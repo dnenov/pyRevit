@@ -5,6 +5,7 @@ title:
   chinese_s: 转换线样式
   es_es: Convertir estilos de línea
   de_de: Linienstile konvertieren
+  pt_br: Converter Estilos de Linha
 tooltip:
   en_us: >-
     This is a tool to convert line styles. Run the tool,
@@ -42,3 +43,8 @@ tooltip:
     3) Linien in gefüllten Bereichen konvertieren (Gefüllte Bereiche müssen mit dem  pyRevit Werkzeug "Gefüllte Bereiche regenerieren" aktualisiert werden)
     4) Achtung: Gruppierte Linien werden nicht unterstützt!
     5) Linienstil(e) nach dem Konvertieren löschen
+  pt_br: >-
+    Esta é uma ferramenta para converter estilos de linha. Execute a ferramenta, selecione uma 
+    linha com o estilo a ser substituído e, em seguida, selecione uma linha com o estilo desejado. 
+    O script corrigirá os estilos de linha no modelo. NO ENTANTO, as linhas que fazem parte de um 
+    grupo não serão afetadas. Veja também a ferramenta "Atualizar Regiões Preenchidas"

@@ -5,6 +5,7 @@ title:
   chinese_s: 清除数据模式
   es_es: Limpiar esquema de datos
   de_de: Lösche best. Daten Schemas
+  pt_br: Remover Esquema de Dados
 tooltip:
   en_us: Erase selected data schema and its entities
   fr_fr: Supprime les schémas de données sélectionnés et ses entités
@@ -13,3 +14,4 @@ tooltip:
   es_es: Borrar esquema de datos seleccionado y sus entidades
   de_de: >-
     Es erscheint ein Auswahldialog mit allen verfügbaren Daten  Schemen im Projekt. Wählen Sie die Daten Schemen aus, die  Sie löschen wollen und bestätigen Sie die Auswahl mit dem  Button Select. Achtung: Die Daten Schemen werden von Add-Ins verwendet, um Daten zu speichern!
+  pt_br: Apagar esquema de dados selecionado e suas entidades

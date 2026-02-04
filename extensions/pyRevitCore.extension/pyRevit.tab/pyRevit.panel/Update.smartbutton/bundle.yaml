@@ -5,6 +5,7 @@ title:
   chinese_s: 更新
   es_es: Actualizar
   de_de: Aktualisieren
+  pt_br: Atualizar
 tooltip:
   en_us: Downloads updates from the remote git repositories (e.g github, bitbucket)
   fr_fr: Télécharge les mises à jour depuis les dépôts git distants (ex. github, bitbucket)
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 从远程 git 仓库下载更新（例如 github, bitbucket）
   es_es: Descarga las actualizaciones desde los repositorios remotos de git (ej. github, bitbucket)
   de_de: Lädt die Updates von remote git repositories herunter (z.B. GitHub, Bitbucket)
+  pt_br: Baixa atualizações dos repositórios git remotos (ex. github, bitbucket)
 context: zero-doc

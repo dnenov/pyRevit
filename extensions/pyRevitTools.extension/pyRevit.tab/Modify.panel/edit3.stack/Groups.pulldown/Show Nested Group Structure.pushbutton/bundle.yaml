@@ -5,6 +5,7 @@ title:
   chinese_s: 显示嵌套组结构
   es_es: Mostrar estructura de grupos anidados
   de_de: Zeige die verschachtelte Gruppenstruktur an
+  pt_br: Mostrar Estrutura de Grupos Aninhados
 tooltip:
   en_us: List the nested group structure around the selected group or element
   fr_fr: Répertoriez la structure du groupe imbriqué autour du groupe ou de l'élément sélectionné
@@ -12,4 +13,5 @@ tooltip:
   chinese_s: 列出围绕选定组或图元的嵌套组结构
   es_es: Lista la estructura de grupos anidados alrededor del grupo o elemento seleccionado
   de_de: Es wird die verschachtelte Gruppenstruktur der ausgewählten Gruppen oder des ausgewählten Elements angezeigt
+  pt_br: Lista a estrutura de grupo aninhado em torno do grupo ou elemento selecionado
 context: selection

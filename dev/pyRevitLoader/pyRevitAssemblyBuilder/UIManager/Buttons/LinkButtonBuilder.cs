@@ -53,9 +53,10 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                 return;
             }
 
-            if (ItemExistsInPanel(parentPanel, component.DisplayName))
+            var existingBtn = GetExistingButton(parentPanel, component.DisplayName);
+            if (existingBtn != null)
             {
-                Logger.Debug($"Link button '{component.DisplayName}' already exists in panel.");
+                UpdateExistingLinkButton(existingBtn, component);
                 return;
             }
 
@@ -79,6 +80,56 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
         }
 
         /// <summary>
+        /// Gets an existing link button from the panel by name.
+        /// </summary>
+        private PushButton? GetExistingButton(RibbonPanel panel, string buttonName)
+        {
+            try
+            {
+                var items = panel.GetItems();
+                foreach (var item in items)
+                {
+                    if (item.Name == buttonName && item is PushButton pb)
+                        return pb;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug($"Error getting existing link button '{buttonName}': {ex.Message}");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Updates an existing link button's properties and command binding.
+        /// </summary>
+        internal void UpdateExistingLinkButton(PushButton linkBtn, ParsedComponent component)
+        {
+            try
+            {
+                if (TryResolveLinkBinding(component, out var assemblyPath, out var className, out var availabilityClassName, out var buttonText))
+                {
+                    linkBtn.AssemblyName = assemblyPath;
+                    linkBtn.ClassName = className;
+                    if (!string.IsNullOrEmpty(availabilityClassName))
+                        linkBtn.AvailabilityClassName = availabilityClassName;
+
+                    linkBtn.ItemText = buttonText;
+                    ButtonPostProcessor.Process(linkBtn, component);
+
+                    linkBtn.Enabled = true;
+                    linkBtn.Visible = true;
+                }
+
+                Logger.Debug($"Updated existing link button '{component.DisplayName}'.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug($"Failed to update link button '{component.DisplayName}': {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Creates a PushButtonData for a LinkButton that directly references an external assembly.
         /// </summary>
         public PushButtonData? CreateLinkButtonData(ParsedComponent component)
@@ -97,39 +148,12 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
 
             try
             {
-                // Resolve the assembly path
-                var assemblyPath = ResolveAssemblyPath(component);
-                if (string.IsNullOrEmpty(assemblyPath) || !File.Exists(assemblyPath))
-                {
-                    Logger.Debug($"LinkButton '{component.DisplayName}' assembly not found at resolved path.");
+                if (!TryResolveLinkBinding(component, out var assemblyPath, out var fullCommandClass, out var fullAvailClass, out var buttonText))
                     return null;
-                }
 
-                // Use Title from bundle.yaml if available, with config script indicator
-                var buttonText = ButtonPostProcessor.GetButtonText(component);
-
-                // Get assembly name to construct fully qualified class names
-                var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
-
-                // Construct fully qualified class name (Namespace.ClassName)
-                var fullCommandClass = component.CommandClass.Contains(".")
-                    ? component.CommandClass
-                    : $"{assemblyName}.{component.CommandClass}";
-
-                var pushButtonData = new PushButtonData(
-                    component.DisplayName,
-                    buttonText,
-                    assemblyPath,
-                    fullCommandClass);
-
-                // Set availability class if specified
-                if (!string.IsNullOrEmpty(component.AvailabilityClass))
-                {
-                    var fullAvailClass = component.AvailabilityClass.Contains(".")
-                        ? component.AvailabilityClass
-                        : $"{assemblyName}.{component.AvailabilityClass}";
+                var pushButtonData = new PushButtonData(component.DisplayName, buttonText, assemblyPath, fullCommandClass);
+                if (!string.IsNullOrEmpty(fullAvailClass))
                     pushButtonData.AvailabilityClassName = fullAvailClass;
-                }
 
                 return pushButtonData;
             }
@@ -138,6 +162,53 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                 Logger.Debug($"Failed to resolve assembly path for LinkButton '{component.DisplayName}'. Exception: {ex.Message}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Resolves assembly/class bindings and button text for a LinkButton.
+        /// </summary>
+        private bool TryResolveLinkBinding(ParsedComponent component, out string assemblyPath, out string fullCommandClass, out string? fullAvailClass, out string buttonText)
+        {
+            assemblyPath = string.Empty;
+            fullCommandClass = string.Empty;
+            fullAvailClass = null;
+            buttonText = string.Empty;
+
+            if (string.IsNullOrEmpty(component.TargetAssembly))
+            {
+                Logger.Debug($"LinkButton '{component.DisplayName}' has no target assembly specified.");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(component.CommandClass))
+            {
+                Logger.Debug($"LinkButton '{component.DisplayName}' has no command class specified.");
+                return false;
+            }
+
+            assemblyPath = ResolveAssemblyPath(component) ?? string.Empty;
+            if (string.IsNullOrEmpty(assemblyPath) || !File.Exists(assemblyPath))
+            {
+                Logger.Debug($"LinkButton '{component.DisplayName}' assembly not found at resolved path.");
+                return false;
+            }
+
+            buttonText = ButtonPostProcessor.GetButtonText(component);
+
+            var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
+
+            fullCommandClass = component.CommandClass.Contains(".")
+                ? component.CommandClass
+                : $"{assemblyName}.{component.CommandClass}";
+
+            if (!string.IsNullOrEmpty(component.AvailabilityClass))
+            {
+                fullAvailClass = component.AvailabilityClass.Contains(".")
+                    ? component.AvailabilityClass
+                    : $"{assemblyName}.{component.AvailabilityClass}";
+            }
+
+            return true;
         }
 
         /// <summary>

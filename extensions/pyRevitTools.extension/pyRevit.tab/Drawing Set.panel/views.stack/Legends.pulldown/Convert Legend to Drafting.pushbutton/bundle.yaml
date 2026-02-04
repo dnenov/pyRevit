@@ -5,6 +5,7 @@ title:
   chinese_s: 将图例视图转换为详图视图
   es_es: Convertir leyenda a vista de detalle
   de_de: Legendenansicht in Zeichenansicht umwandeln
+  pt_br: Converter Legenda em Vista de Desenho
 tooltip:
   en_us: Converts selected legend views to detail views
   fr_fr: Convertir les légendes sélectionnée en vues de dessin
@@ -15,3 +16,4 @@ tooltip:
     Es erscheint ein Dialog auf dem alle Legendenansichten zur Auswahl stehen.  Die hier ausgewählten Legendenansichten werden nach der Bestätigung mit "Select"
     in Zeichenansichten umgewandelt. Achtung: Legendenkomponenten dürfen nicht
     auf der Legendansicht platziert sein!
+  pt_br: Converte vistas de legenda selecionadas em vistas de desenho

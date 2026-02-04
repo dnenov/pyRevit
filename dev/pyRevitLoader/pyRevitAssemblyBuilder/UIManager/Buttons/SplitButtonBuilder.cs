@@ -120,6 +120,9 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                 // Re-apply post-processing (icon, tooltip, etc.)
                 ButtonPostProcessor.Process(splitBtn, component);
 
+                splitBtn.Enabled = true;
+                splitBtn.Visible = true;
+
                 // Update children
                 AddChildrenToSplitButton(splitBtn, component, assemblyInfo);
 
@@ -161,7 +164,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
             if (existingItems.Count > 0)
             {
                 Logger.Debug($"Split button '{component.DisplayName}' already has {existingItems.Count} children - updating existing buttons.");
-                UpdateExistingChildren(splitBtn, component, existingItems);
+                UpdateExistingChildren(splitBtn, component, existingItems, assemblyInfo);
                 return;
             }
 
@@ -326,7 +329,7 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
         /// Updates existing child buttons in a split button during reload.
         /// Matches Python's behavior where existing buttons are updated with new properties.
         /// </summary>
-        private void UpdateExistingChildren(SplitButton splitBtn, ParsedComponent component, System.Collections.Generic.List<RibbonItem> existingItems)
+        private void UpdateExistingChildren(SplitButton splitBtn, ParsedComponent component, System.Collections.Generic.List<RibbonItem> existingItems, ExtensionAssemblyInfo assemblyInfo)
         {
             // Build a dictionary of existing items by name for quick lookup
             var existingByName = new System.Collections.Generic.Dictionary<string, PushButton>(StringComparer.OrdinalIgnoreCase);
@@ -354,6 +357,17 @@ namespace pyRevitAssemblyBuilder.UIManager.Buttons
                     // Update existing button properties
                     try
                     {
+                        if (sub.Type == CommandComponentType.LinkButton)
+                        {
+                            _linkButtonBuilder.UpdateExistingLinkButton(existingBtn, sub);
+                            Logger.Debug($"Updated existing link button '{sub.DisplayName}' in split button '{component.DisplayName}'.");
+                            continue;
+                        }
+                        else
+                        {
+                            UpdatePushButtonCommandBinding(existingBtn, sub, assemblyInfo);
+                        }
+
                         // Update display text
                         var buttonText = ButtonPostProcessor.GetButtonText(sub);
                         existingBtn.ItemText = buttonText;
